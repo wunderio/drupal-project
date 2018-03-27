@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  build_and_deploy:
     docker:
       - image: wunderio/circleci-builder
 
@@ -36,54 +36,37 @@ jobs:
             - node_modules
           key: v1-yarn-{{ checksum "yarn.lock" }}
 
+      # Set environment variables for Kontena CLI.
+      - run: |
+          BRANCH_SLUG="${CIRCLE_BRANCH//\//-}"
+          STACK_SLUG=${BRANCH_SLUG#'feature-'}
+          STACK_SLUG=${STACK_SLUG#'bug-'}
+          STACK_SLUG=${STACK_SLUG#'hotfix-'}
+          STACK_SLUG=${STACK_SLUG:0:15}
+          STACK_NAME="$CIRCLE_PROJECT_REPONAME-$STACK_SLUG"
+
+          echo "export BRANCH_SLUG=$BRANCH_SLUG" >> $BASH_ENV
+          echo "export STACK_NAME=$STACK_NAME" >> $BASH_ENV
+          echo "export VIRTUALHOST=${BRANCH_SLUG}.${CIRCLE_PROJECT_REPONAME}.dev.wdr.io" >> $BASH_ENV
+          echo "export DRUPALDOCKERIMAGE=wunder/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_SHA1}" >> $BASH_ENV
+          echo "export LOADBALANCER=loadbalancer/dev_lb" >> $BASH_ENV
+          echo "export BASICAUTH=wunder:wunder" >> $BASH_ENV
+
       - setup_remote_docker
 
-      # build and push Docker image
+      # Build the Docker image and push it to the repository.
       - run: |
           docker login -u $KONTENA_DOCKER_USER -p $KONTENA_DOCKER_PASSWORD images.kontena.io
-
-          BRANCH_SLUG="${CIRCLE_BRANCH//\//-}"
-          STACK_SLUG=${BRANCH_SLUG#'feature-'}
-          STACK_SLUG=${STACK_SLUG#'bug-'}
-          STACK_SLUG=${STACK_SLUG#'hotfix-'}
-          STACK_SLUG=${STACK_SLUG:0:15}
-          STACK_NAME="$CIRCLE_PROJECT_REPONAME-$STACK_SLUG"
-
-          export VIRTUALHOST="${BRANCH_SLUG}.${CIRCLE_PROJECT_REPONAME}.dev.wdr.io"
-          export DRUPALDOCKERIMAGE="wunder/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_SHA1}"
-          export LOADBALANCER="loadbalancer/dev_lb"
-          export BASICAUTH="wunder:wunder"
-
-          # Build the images and push them to the repository.
           kontena stack build --name $STACK_NAME
 
-  deploy:
-    docker:
-      - image: wunderio/circleci-builder
+      # Create the volume for files if needed.
+      - run: kontena volume create --driver local --scope stack "${STACK_NAME}_files" || kontena volume show "${STACK_NAME}_files"
 
-    steps:
-      - checkout
+      # Create or update the stack for the current branch.
+      - run: kontena stack install --name $STACK_NAME || kontena stack upgrade $STACK_NAME
 
+      # Run drush commands within the deployed environment.
       - run: |
-          BRANCH_SLUG="${CIRCLE_BRANCH//\//-}"
-          STACK_SLUG=${BRANCH_SLUG#'feature-'}
-          STACK_SLUG=${STACK_SLUG#'bug-'}
-          STACK_SLUG=${STACK_SLUG#'hotfix-'}
-          STACK_SLUG=${STACK_SLUG:0:15}
-          STACK_NAME="$CIRCLE_PROJECT_REPONAME-$STACK_SLUG"
-
-          export VIRTUALHOST="${BRANCH_SLUG}.${CIRCLE_PROJECT_REPONAME}.dev.wdr.io"
-          export DRUPALDOCKERIMAGE="wunder/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_SHA1}"
-          export LOADBALANCER="loadbalancer/dev_lb"
-          export BASICAUTH="wunder:wunder"
-
-          # Create the volume for files if needed.
-          kontena volume create --driver local --scope stack "${STACK_NAME}_files" || kontena volume show "${STACK_NAME}_files"
-
-          # Create or update the stack for the current branch.
-          kontena stack install --name $STACK_NAME || kontena stack upgrade $STACK_NAME
-
-          # Run drush commands within the deployed environment.
           kontena service exec $STACK_NAME/drupal drush update-db -y --root=/var/www/html/web
           kontena service exec $STACK_NAME/drupal drush config-import -y --root=/var/www/html/web
           kontena service exec $STACK_NAME/drupal drush entity-updates -y --root=/var/www/html/web
@@ -92,9 +75,5 @@ workflows:
   version: 2
   commit:
     jobs:
-      - build:
-          context: dev_wdr_io
-      - deploy:
-          requires:
-            - build
+      - build_and_deploy:
           context: dev_wdr_io
