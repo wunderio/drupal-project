@@ -72,7 +72,7 @@ services:
       PHP_FPM_CLEAR_ENV: "no"
       DB_USER_DRUPAL: drupal
       DB_NAME_DRUPAL: drupal
-      DB_HOST_DRUPAL: database
+      DB_HOST_DRUPAL: db
     secrets:
       - secret: ${STACK}-mysql-password
         name: DB_PASS_DRUPAL
@@ -85,7 +85,7 @@ services:
     volumes:
       - drupal_files:/var/www/html/web/sites/default/files
       - /var/www/html/web
-  database:
+  db:
     image: mariadb:10.2
     stateful: true
     environment:
