@@ -71,6 +71,8 @@ jobs:
           kontena service exec $STACK_NAME/drupal [ -d config/sync ] && drush config-import -n --root=/var/www/html/web
           kontena service exec $STACK_NAME/drupal drush entity-updates -n --root=/var/www/html/web
 
+      - run: echo "Deployment successful, your site is available here: $VIRTUALHOST"
+
 workflows:
   version: 2
   commit:
