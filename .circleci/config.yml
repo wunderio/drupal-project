@@ -72,7 +72,7 @@ jobs:
           kontena service exec $STACK_NAME/drupal drush entity-updates -n --root=/var/www/html/web
 
       - run: |
-          echo "Deployment successful, your site is available here: $VIRTUALHOST"
+          echo "Deployment successful, your site is available here: http://$VIRTUALHOST"
 
 workflows:
   version: 2
