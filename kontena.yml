@@ -15,6 +15,13 @@ variables:
       random_string: 32
     to:
       vault: ${STACK}-mysql-password
+  drupal-hash-salt:
+    type: string
+    from:
+      vault: ${STACK}-hash-salt
+      random_string: 32
+    to:
+      vault: ${STACK}-hash-salt
   basicauth_credentials:
     type: string
     from:
@@ -70,12 +77,15 @@ services:
     instances: 2
     environment:
       PHP_FPM_CLEAR_ENV: "no"
-      DB_USER_DRUPAL: drupal
-      DB_NAME_DRUPAL: drupal
-      DB_HOST_DRUPAL: db
+      DB_USER: drupal
+      DB_NAME: drupal
+      DB_HOST: db
     secrets:
       - secret: ${STACK}-mysql-password
-        name: DB_PASS_DRUPAL
+        name: DB_PASS
+        type: env
+      - secret: ${STACK}-hash-salt
+        name: HASH_SALT
         type: env
         # {% if basicauth_credentials %}
       - secret: "${STACK}_basic_auth"
