@@ -63,8 +63,6 @@ services:
       KONTENA_LB_BALANCE: roundrobin
       KONTENA_LB_INTERNAL_PORT: 80
       KONTENA_LB_VIRTUAL_HOSTS: "{{ virtualhost }}"
-      KONTENA_LB_CUSTOM_SETTINGS: |
-        redirect scheme https code 301 if !{ ssl_fc }
     links:
       - {{ loadbalancer }}
     volumes_from:
