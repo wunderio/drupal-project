@@ -18,7 +18,7 @@ $databases['default']['default'] = [
 $config_directories[CONFIG_SYNC_DIRECTORY] = '../config/sync';
 
 // Salt for one-time login links, cancel links, form tokens, etc.
-$settings['hash_salt'] = getenv('DRUPAL_HASH_SALT');
+$settings['hash_salt'] = getenv('HASH_SALT');
 
 /**
  * Load services definition file.

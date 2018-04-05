@@ -15,6 +15,13 @@ variables:
       random_string: 32
     to:
       vault: ${STACK}-mysql-password
+  drupal-hash-salt:
+    type: string
+    from:
+      vault: ${STACK}-hash-salt
+      random_string: 32
+    to:
+      vault: ${STACK}-hash-salt
   basicauth_credentials:
     type: string
     from:
@@ -76,6 +83,9 @@ services:
     secrets:
       - secret: ${STACK}-mysql-password
         name: DB_PASS
+        type: env
+      - secret: ${STACK}-hash-salt
+        name: HASH_SALT
         type: env
         # {% if basicauth_credentials %}
       - secret: "${STACK}_basic_auth"
