@@ -38,7 +38,7 @@ jobs:
 
       # Set environment variables for Kontena CLI.
       - run: |
-          BRANCH_SLUG="${CIRCLE_BRANCH//\//-}"
+          BRANCH_SLUG=${CIRCLE_BRANCH//[^[:alnum:]]/-}
           STACK_SLUG=${BRANCH_SLUG#feature-}
           STACK_SLUG=${STACK_SLUG#bug-}
           STACK_SLUG=${STACK_SLUG#hotfix-}
