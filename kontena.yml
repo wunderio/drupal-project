@@ -51,7 +51,7 @@ variables:
 services:
   nginx:
     image: wodby/drupal-nginx:8-1.13-3.0.2
-    instances: 2
+    instances: 1
     depends_on:
       - drupal
     environment:
@@ -72,7 +72,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    instances: 2
+    instances: 1
     environment:
       PHP_FPM_CLEAR_ENV: "no"
       DB_USER: drupal
