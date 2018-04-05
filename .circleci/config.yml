@@ -67,7 +67,7 @@ jobs:
 
       # Run drush commands within the deployed environment.
       - run: |
-          kontena service exec $STACK_NAME/drupal drush update-db -y --root=/var/www/html/web
+          kontena service exec $STACK_NAME/drupal drush updatedb -y --root=/var/www/html/web
           kontena service exec $STACK_NAME/drupal drush config-import -y --root=/var/www/html/web
           kontena service exec $STACK_NAME/drupal drush entity-updates -y --root=/var/www/html/web
 
