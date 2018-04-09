@@ -79,7 +79,7 @@ jobs:
             kontena service exec $STACK_NAME/drupal -- drush entity-updates -n
           else
             # Install drupal if needed, alternatively you could import a database dump.
-            kontena service exec $STACK_NAME/drupal -- drush site-install -n
+            kontena service exec $STACK_NAME/drupal -- drush site-install -n config_installer
           fi
 
       - run: |
