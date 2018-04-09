@@ -1,0 +1,13 @@
+**/*.md
+**/CHANGELOG*
+**/README*
+**/LICENSE*
+kontena.yml
+.circleci/*
+phpcs.xml
+**/*.sql
+**/*.gz
+**/*.zip
+web/core/**/tests
+web/modules/contrib/**/tests
+vendor/**/Tests
