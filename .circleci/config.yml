@@ -7,7 +7,7 @@ jobs:
     steps:
       - checkout
 
-      - run: phpcs --standard=phpcs.xml
+      - run: phpcs --standard=phpcs.xml -s
 
       - restore_cache:
           keys:
