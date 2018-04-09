@@ -6,6 +6,7 @@
 /web/themes/contrib/
 /web/profiles/contrib/
 /web/libraries/
+/web/_ping.php
 
 # Ignore local configuration
 /web/sites/*/settings.local.php

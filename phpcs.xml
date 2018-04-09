@@ -9,6 +9,7 @@
     <!-- exclude vendor code -->
     <exclude-pattern>vendor|drush|scripts</exclude-pattern>
     <exclude-pattern>web/core|web/*/contrib</exclude-pattern>
+    <exclude-pattern>web/_ping.php</exclude-pattern>
 
     <!-- exclude some Drupal files that contain issues -->
     <exclude-pattern>web/sites/default/default.settings.php</exclude-pattern>
