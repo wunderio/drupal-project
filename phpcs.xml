@@ -30,6 +30,7 @@
         <exclude name="Drupal.Commenting.InlineComment" />
         <exclude name="Drupal.Array.Array" />
         <exclude name="Drupal.Files.TxtFileLineLength" />
+        <exclude name="Drupal.Files.EndFileNewline.NoneFound" />
         <exclude name="PEAR.Commenting.ClassComment" />
     </rule>
 
