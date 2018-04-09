@@ -72,10 +72,10 @@ jobs:
       - run: |
           bootstrapped=$(kontena service exec $STACK_NAME/drupal -- drush status --field=bootstrap)
 
-          if [ bootstrapped ]
+          if [[ $bootstrapped = *'Success'* ]]
           then
             kontena service exec $STACK_NAME/drupal -- drush updatedb -n
-            [ -d config/sync ] && kontena service exec $STACK_NAME/drupal -- drush config-import -n
+            test -d config/sync && kontena service exec $STACK_NAME/drupal -- drush config-import -n
             kontena service exec $STACK_NAME/drupal -- drush entity-updates -n
           else
             # Install drupal if needed, alternatively you could import a database dump.
