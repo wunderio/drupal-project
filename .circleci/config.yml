@@ -42,8 +42,11 @@ jobs:
           STACK_SLUG=${BRANCH_SLUG#feature-}
           STACK_SLUG=${STACK_SLUG#bug-}
           STACK_SLUG=${STACK_SLUG#hotfix-}
-          STACK_SLUG=${STACK_SLUG:0:15}
-          STACK_NAME="$CIRCLE_PROJECT_REPONAME-$STACK_SLUG"
+          STACK_SLUG=${STACK_SLUG:0:14}
+          PROJECT_SLUG=${CIRCLE_PROJECT_REPONAME//client-/}
+          PROJECT_SLUG=${CIRCLE_PROJECT_REPONAME//internal-/}
+          PROJECT_SLUG=${PROJECT_SLUG:0:14}
+          STACK_NAME="$PROJECT_SLUG-$STACK_SLUG"
 
           echo "export BRANCH_SLUG=$BRANCH_SLUG" >> $BASH_ENV
           echo "export STACK_NAME=$STACK_NAME" >> $BASH_ENV
