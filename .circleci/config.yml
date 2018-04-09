@@ -13,7 +13,7 @@ jobs:
           keys:
             - v1-dependencies-{{ checksum "composer.lock" }}
 
-      - run: composer install -n --prefer-dist --ignore-platform-reqs
+      - run: composer install -n --prefer-dist --ignore-platform-reqs --no-dev
 
       - save_cache:
           paths:
