@@ -68,6 +68,10 @@ jobs:
       # Create or update the stack for the current branch.
       - run: kontena stack install --name $STACK_NAME || kontena stack upgrade $STACK_NAME
 
+      # Install drupal if needed, alternatively you could import a database dump.
+      - run: |
+          kontena service exec $STACK_NAME/drupal -- [ `drush status --field=bootstrap` ] || drush site-install -n
+
       # Run drush commands within the deployed environment.
       - run: |
           kontena service exec $STACK_NAME/drupal -- drush updatedb -n --root=/var/www/html/web
