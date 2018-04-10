@@ -22,3 +22,6 @@
 
 # Ignore .env files as they are personal
 /.env
+
+# Ignore node modules
+node_modules
