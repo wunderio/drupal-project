@@ -72,6 +72,8 @@ services:
       KONTENA_LB_VIRTUAL_HOSTS: "{{ virtualhost }}"
     links:
       - {{ loadbalancer }}
+    volumes:
+      - drupal_files:/var/www/html/web/sites/default/files
   drupal:
     image: images.kontena.io/wunder/{{ docker-image-prefix }}-drupal:{{ docker-image-version }}
     build:
@@ -96,7 +98,6 @@ services:
         # {% endif %}
     volumes:
       - drupal_files:/var/www/html/web/sites/default/files
-      - /var/www/html/web
   db:
     image: mariadb:10.2
     stateful: true
