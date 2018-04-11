@@ -1,3 +1,4 @@
+# Ignore file for the Drupal container.
 **/*.md
 **/CHANGELOG*
 **/README*

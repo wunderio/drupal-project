@@ -51,7 +51,8 @@ jobs:
           echo "export BRANCH_SLUG=$BRANCH_SLUG" >> $BASH_ENV
           echo "export STACK_NAME=$STACK_NAME" >> $BASH_ENV
           echo "export VIRTUALHOST=${BRANCH_SLUG}.${CIRCLE_PROJECT_REPONAME}.dev.wdr.io" >> $BASH_ENV
-          echo "export DRUPALDOCKERIMAGE=wunder/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_SHA1}" >> $BASH_ENV
+          echo "export DOCKER_IMAGE_PREFIX=$CIRCLE_PROJECT_REPONAME" >> $BASH_ENV
+          echo "export DOCKER_IMAGE_VERSION=$CIRCLE_SHA1" >> $BASH_ENV
           echo "export LOADBALANCER=loadbalancer/dev_lb" >> $BASH_ENV
           echo "export BASICAUTH=wunder:wunder" >> $BASH_ENV
 
