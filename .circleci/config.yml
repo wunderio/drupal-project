@@ -37,24 +37,7 @@ jobs:
           key: v1-yarn-{{ checksum "yarn.lock" }}
 
       # Set environment variables for Kontena CLI.
-      - run: |
-          BRANCH_SLUG=${CIRCLE_BRANCH//[^[:alnum:]]/-}
-          STACK_SLUG=${BRANCH_SLUG#feature-}
-          STACK_SLUG=${STACK_SLUG#bug-}
-          STACK_SLUG=${STACK_SLUG#hotfix-}
-          STACK_SLUG=${STACK_SLUG:0:14}
-          PROJECT_SLUG=${CIRCLE_PROJECT_REPONAME//client-/}
-          PROJECT_SLUG=${CIRCLE_PROJECT_REPONAME//internal-/}
-          PROJECT_SLUG=${PROJECT_SLUG:0:14}
-          STACK_NAME="$PROJECT_SLUG-$STACK_SLUG"
-
-          echo "export BRANCH_SLUG=$BRANCH_SLUG" >> $BASH_ENV
-          echo "export STACK_NAME=$STACK_NAME" >> $BASH_ENV
-          echo "export VIRTUALHOST=${BRANCH_SLUG}.${CIRCLE_PROJECT_REPONAME}.dev.wdr.io" >> $BASH_ENV
-          echo "export DOCKER_IMAGE_PREFIX=$CIRCLE_PROJECT_REPONAME" >> $BASH_ENV
-          echo "export DOCKER_IMAGE_VERSION=$CIRCLE_SHA1" >> $BASH_ENV
-          echo "export LOADBALANCER=loadbalancer/dev_lb" >> $BASH_ENV
-          echo "export BASICAUTH=wunder:wunder" >> $BASH_ENV
+      - run: generate-kontena-config >> $BASH_ENV
 
       - setup_remote_docker
 
