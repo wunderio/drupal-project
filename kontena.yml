@@ -43,14 +43,21 @@ variables:
       service_link:
         prompt: Choose a loadbalancer
         image: kontena/lb
-  drupal_docker_image:
+  docker-image-prefix:
     type: string
     from:
-      env: DRUPALDOCKERIMAGE
-      prompt: Drupal Docker image (wunder/projectname:version)
+      env: DOCKER_IMAGE_PREFIX
+      prompt: Docker image prefix
+  docker-image-version:
+    type: string
+    from:
+      env: DOCKER_IMAGE_VERSION
+      prompt: Docker image version
 services:
   nginx:
-    image: wodby/drupal-nginx:8-1.13-3.0.2
+    image: images.kontena.io/wunder/{{ docker-image-prefix }}-nginx:{{ docker-image-version }}
+    build:
+      context: web
     instances: 1
     depends_on:
       - drupal
@@ -65,13 +72,12 @@ services:
       KONTENA_LB_VIRTUAL_HOSTS: "{{ virtualhost }}"
     links:
       - {{ loadbalancer }}
-    volumes_from:
-      - drupal-%s
+    volumes:
+      - drupal_files:/var/www/html/web/sites/default/files
   drupal:
-    image: images.kontena.io/${drupal_docker_image}
+    image: images.kontena.io/wunder/{{ docker-image-prefix }}-drupal:{{ docker-image-version }}
     build:
       context: .
-      dockerfile: Dockerfile
     instances: 1
     environment:
       PHP_FPM_CLEAR_ENV: "no"
@@ -92,7 +98,6 @@ services:
         # {% endif %}
     volumes:
       - drupal_files:/var/www/html/web/sites/default/files
-      - /var/www/html/web
   db:
     image: mariadb:10.2
     stateful: true
