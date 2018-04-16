@@ -67,7 +67,7 @@ jobs:
           fi
 
       - run: |
-          echo "Deployment successful, your site is available here: http://$VIRTUALHOST"
+          echo "Deployment stack $STACK_NAME successfully, your site is available here: http://$VIRTUALHOST"
 
 workflows:
   version: 2
