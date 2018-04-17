@@ -74,6 +74,12 @@ services:
       - {{ loadbalancer }}
     volumes:
       - drupal_files:/var/www/html/web/sites/default/files
+    secrets:
+        # {% if basicauth_credentials %}
+      - secret: "${STACK}_basic_auth"
+        name: KONTENA_LB_BASIC_AUTH_SECRETS
+        type: env
+        # {% endif %}
   drupal:
     image: images.kontena.io/wunder/{{ docker-image-prefix }}-drupal:{{ docker-image-version }}
     build:
@@ -91,11 +97,6 @@ services:
       - secret: ${STACK}-hash-salt
         name: HASH_SALT
         type: env
-        # {% if basicauth_credentials %}
-      - secret: "${STACK}_basic_auth"
-        name: KONTENA_BASIC_AUTH_SECRETS
-        type: env
-        # {% endif %}
     volumes:
       - drupal_files:/var/www/html/web/sites/default/files
   db:
