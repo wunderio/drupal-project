@@ -69,9 +69,31 @@ jobs:
       - run: |
           echo "Deployment stack $STACK_NAME successfully, your site is available here: http://$VIRTUALHOST"
 
+  drupal-cron:
+    docker:
+      - image: wunderio/circleci-builder
+
+    steps:
+      # Set environment variables for Kontena CLI.
+      - run: generate-kontena-config >> $BASH_ENV
+
+      - run: |
+          kontena service exec $STACK_NAME/drupal -- drush cron
+
 workflows:
   version: 2
   commit:
     jobs:
       - build_and_deploy:
+          context: dev_wdr_io
+  cron:
+    triggers:
+      - schedule:
+          cron: "0 * * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - drupal-cron:
           context: dev_wdr_io
