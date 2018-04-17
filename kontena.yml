@@ -79,6 +79,8 @@ services:
     build:
       context: .
     instances: 1
+    depends_on:
+      - db
     environment:
       PHP_FPM_CLEAR_ENV: "no"
       DB_USER: drupal
