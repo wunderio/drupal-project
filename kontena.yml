@@ -25,11 +25,8 @@ variables:
   basicauth_credentials:
     type: string
     from:
-      vault: ${STACK}_basic_auth
       env: BASICAUTH
-      prompt: Basicauth credentials (user [username] insecure-password [password])
-    to:
-      vault: ${STACK}_basic_auth
+      prompt: Basicauth credentials in the format "user [username] insecure-password [password]"
   virtualhost:
     type: string
     from:
@@ -70,6 +67,9 @@ services:
       KONTENA_LB_BALANCE: roundrobin
       KONTENA_LB_INTERNAL_PORT: 80
       KONTENA_LB_VIRTUAL_HOSTS: "{{ virtualhost }}"
+      # {% if basicauth_credentials %}
+      KONTENA_LB_BASIC_AUTH_SECRETS: {{ basicauth_credentials }}
+      # {% endif %}
     links:
       - {{ loadbalancer }}
     volumes:
@@ -91,11 +91,6 @@ services:
       - secret: ${STACK}-hash-salt
         name: HASH_SALT
         type: env
-        # {% if basicauth_credentials %}
-      - secret: "${STACK}_basic_auth"
-        name: KONTENA_BASIC_AUTH_SECRETS
-        type: env
-        # {% endif %}
     volumes:
       - drupal_files:/var/www/html/web/sites/default/files
   db:
