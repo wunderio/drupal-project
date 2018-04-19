@@ -9,10 +9,12 @@ phpcs.xml
 **/*.sql
 **/*.gz
 **/*.zip
-node_modules
+**/node_modules
+**/.git
 **/*.php
 **/*.module
 **/*.install
 **/*.yml
 core/**/tests
 modules/contrib/**/tests
+sites/**/files

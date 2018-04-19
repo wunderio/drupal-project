@@ -12,4 +12,6 @@ phpcs.xml
 web/core/**/tests
 web/modules/contrib/**/tests
 vendor/**/Tests
-node_modules
+**/node_modules
+**/.git
+web/sites/**/files
