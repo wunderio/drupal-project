@@ -110,6 +110,14 @@ services:
       - secret: ${STACK}-mysql-password
         name: MYSQL_PASSWORD
         type: env
+    deploy:
+      wait_for_port: 3306
+    health_check:
+      protocol: tcp
+      port: 3306
+      interval: 10
+      initial_delay: 10
+      timeout: 2
 volumes:
   drupal_files:
     external:
