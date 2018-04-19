@@ -74,6 +74,8 @@ services:
       - {{ loadbalancer }}
     volumes:
       - drupal_files:/var/www/html/web/sites/default/files
+    affinity:
+      - "service==drupal"
   drupal:
     image: images.kontena.io/wunder/{{ docker-image-prefix }}-drupal:{{ docker-image-version }}
     build:
