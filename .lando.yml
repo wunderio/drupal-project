@@ -1,0 +1,47 @@
+name: wunderlando
+recipe: drupal8
+
+compose:
+  - compose.yml
+
+config:
+  webroot: web
+  via: nginx
+  php: '7.1'
+  database: mariadb:10.1
+  #xdebug: true
+
+tooling:
+  codeception:
+    service: appserver
+    description: Run codeception
+    cmd:
+      - ./vendor/bin/codecept
+      - "--env=lando"
+
+services:  
+  mailhog:
+    type: mailhog
+    hogfrom:
+      - appserver
+
+  appserver:
+    overrides:
+      services:
+        environment:
+          WKV_SITE_ENV: lando
+          DB_PASS: drupal8
+          DB_USER: drupal8
+          DB_HOST: database
+          DB_NAME: drupal8
+          HASH_SALT: notsosecurehash
+
+proxy:
+  mailhog:
+    - mail.lndo.site
+
+events:
+  # Clear caches after a database import
+  post-db-import:
+    - appserver: cd $LANDO_WEBROOT && drush cr -y
+
