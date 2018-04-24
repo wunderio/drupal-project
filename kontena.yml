@@ -90,7 +90,7 @@ services:
       DB_HOST: db
     secrets:
       - secret: ${STACK}-mysql-password
-        name: DB_PASS
+        name: DB_PASSWORD
         type: env
       - secret: ${STACK}-hash-salt
         name: HASH_SALT
