@@ -2,7 +2,7 @@ name: Silta
 recipe: drupal8
 
 compose:
-  - compose.yml
+  - docker-compose.yml
 
 config:
   webroot: web
