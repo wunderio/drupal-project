@@ -28,6 +28,7 @@ jobs:
       - restore_cache:
           keys:
             - v1-yarn-{{ checksum "yarn.lock" }}
+            - v1-yarn-
 
       - run: yarn install
 
