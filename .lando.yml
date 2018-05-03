@@ -1,8 +1,8 @@
-name: wunderlando
+name: Silta
 recipe: drupal8
 
 compose:
-  - compose.yml
+  - docker-compose.yml
 
 config:
   webroot: web
@@ -29,11 +29,6 @@ services:
     overrides:
       services:
         environment:
-          WKV_SITE_ENV: lando
-          DB_PASS: drupal8
-          DB_USER: drupal8
-          DB_HOST: database
-          DB_NAME: drupal8
           HASH_SALT: notsosecurehash
 
 proxy:
