@@ -51,7 +51,7 @@ jobs:
       - run: kontena volume create --driver local --scope stack "${STACK_NAME}_files" || kontena volume show "${STACK_NAME}_files"
 
       # Create or update the stack for the current branch.
-      - run: kontena stack install --name $STACK_NAME || kontena stack upgrade $STACK_NAME
+      - run: kontena stack install --name $STACK_NAME || kontena stack upgrade --force $STACK_NAME
 
       # Run drush commands within the deployed environment.
       - run: |
