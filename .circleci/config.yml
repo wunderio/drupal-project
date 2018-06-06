@@ -62,9 +62,12 @@ jobs:
             kontena service exec $STACK_NAME/drupal -- drush updatedb -n
             test -d config/sync && kontena service exec $STACK_NAME/drupal -- drush config-import -n
             kontena service exec $STACK_NAME/drupal -- drush entity-updates -n
-          else
+          elif [ -d config/sync ]
+          then
             # Install drupal if needed, alternatively you could import a database dump.
             kontena service exec $STACK_NAME/drupal -- drush site-install -n config_installer
+          else
+            echo "No configuration found. Please export your configuration first."
           fi
 
       - run: |
