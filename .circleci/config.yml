@@ -92,9 +92,9 @@ jobs:
       #     --namespace=$CIRCLE_PROJECT_REPONAME $ARGS
 
       - run: |
-          helm dependency build ./chart
+          helm repo add wunder-charts https://wunderio.github.io/charts/
 
-          helm upgrade --install $RELEASE_NAME ./chart \
+          helm upgrade --install $RELEASE_NAME wunder-charts/drupal \
             --set drupal.image=$DOCKER_REPO_HOST/$DOCKER_REPO_PROJ/$CIRCLE_PROJECT_REPONAME-drupal:$CIRCLE_SHA1 \
             --set nginx.image=$DOCKER_REPO_HOST/$DOCKER_REPO_PROJ/$CIRCLE_PROJECT_REPONAME-nginx:$CIRCLE_SHA1 \
             --set mariadb.rootUser.password=$DB_ROOT_PASS \
