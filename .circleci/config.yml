@@ -2,7 +2,7 @@ version: 2
 jobs:
   phpcs:
     docker:
-      - image: wunderio/circleci-builder:k8s
+      - image: wunderio/silta-circleci:v0.1
 
     steps:
       - checkout
@@ -11,7 +11,7 @@ jobs:
 
   build:
     docker:
-      - image: wunderio/circleci-builder:k8s
+      - image: wunderio/silta-circleci:v0.1
 
     steps:
       - checkout
@@ -60,7 +60,7 @@ jobs:
 
   deploy:
     docker:
-      - image: wunderio/circleci-builder:k8s
+      - image: wunderio/silta-circleci:v0.1
 
     steps:
       - checkout
