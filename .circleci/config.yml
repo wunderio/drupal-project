@@ -1,13 +1,20 @@
 version: 2
 jobs:
-  build_and_deploy:
+  phpcs:
     docker:
-      - image: wunderio/circleci-builder
+      - image: wunderio/circleci-builder:k8s
 
     steps:
       - checkout
 
       - run: phpcs --standard=phpcs.xml -s
+
+  build:
+    docker:
+      - image: wunderio/circleci-builder:k8s
+
+    steps:
+      - checkout
 
       - restore_cache:
           keys:
@@ -37,67 +44,78 @@ jobs:
             - node_modules
           key: v1-yarn-{{ checksum "yarn.lock" }}
 
-      # Set environment variables for Kontena CLI.
-      - run: generate-kontena-config >> $BASH_ENV
-
       - setup_remote_docker
 
-      # Build the Docker image and push it to the repository.
       - run: |
-          docker login -u $KONTENA_DOCKER_USER -p $KONTENA_DOCKER_PASSWORD images.kontena.io
-          kontena stack build --name $STACK_NAME
+          #echo $DOCKER_PASSWORD | docker login -u $DOCKER_USER --password-stdin $DOCKER_REPO_HOST
+          echo $GCLOUD_KEY_JSON | docker login -u _json_key --password-stdin https://eu.gcr.io
 
-      # Create the volume for files if needed.
-      - run: kontena volume create --driver local --scope stack "${STACK_NAME}_files" || kontena volume show "${STACK_NAME}_files"
+          # Build the Nginx image and push it to the repository.
+          docker build -t $DOCKER_REPO_HOST/$DOCKER_REPO_PROJ/$CIRCLE_PROJECT_REPONAME-nginx:$CIRCLE_SHA1 web
+          docker push $DOCKER_REPO_HOST/$DOCKER_REPO_PROJ/$CIRCLE_PROJECT_REPONAME-nginx:$CIRCLE_SHA1
 
-      # Create or update the stack for the current branch.
-      - run: kontena stack install --name $STACK_NAME || kontena stack upgrade --force $STACK_NAME
+          # Build the Drupal image and push it to the repository.
+          docker build -t $DOCKER_REPO_HOST/$DOCKER_REPO_PROJ/$CIRCLE_PROJECT_REPONAME-drupal:$CIRCLE_SHA1 .
+          docker push $DOCKER_REPO_HOST/$DOCKER_REPO_PROJ/$CIRCLE_PROJECT_REPONAME-drupal:$CIRCLE_SHA1
 
-      # Run drush commands within the deployed environment.
-      - run: |
-          bootstrapped=$(kontena service exec $STACK_NAME/drupal -- drush status --field=bootstrap)
-
-          if [[ $bootstrapped = *'Success'* ]]
-          then
-            kontena service exec $STACK_NAME/drupal -- drush updatedb -n
-            test -d config/sync && kontena service exec $STACK_NAME/drupal -- drush config-import -n
-            kontena service exec $STACK_NAME/drupal -- drush entity-updates -n
-          elif [ -d config/sync ]
-          then
-            # Install drupal if needed, alternatively you could import a database dump.
-            kontena service exec $STACK_NAME/drupal -- drush site-install -n config_installer
-          else
-            echo "No configuration found. Please export your configuration first."
-          fi
-
-      - run: |
-          echo "Deployment stack $STACK_NAME successfully, your site is available here: http://$VIRTUALHOST"
-
-  drupal-cron:
+  deploy:
     docker:
-      - image: wunderio/circleci-builder
+      - image: wunderio/circleci-builder:k8s
 
     steps:
-      # Set environment variables for Kontena CLI.
-      - run: generate-kontena-config >> $BASH_ENV
+      - checkout
+
+      # Set the release name for later reuse.
+      - run: |
+          LOWERCASE_BRANCH=${CIRCLE_BRANCH,,}
+          echo "export RELEASE_NAME='${LOWERCASE_BRANCH//[^[:alnum:]]/-}'" >> $BASH_ENV
 
       - run: |
-          kontena service exec $STACK_NAME/drupal -- drush cron
+          echo $GCLOUD_KEY_JSON > ${HOME}/gcloud-service-key.json
+          gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+          gcloud config set project silta-204108
+          gcloud config set compute/zone europe-west2-a
+          gcloud container clusters get-credentials silta-1 --zone europe-west2-a --project silta-204108
+          kubectl config get-contexts
+          helm init
+          echo $CIRCLE_BRANCH
+          echo $CIRCLE_PROJECT_REPONAME
+      
+      # # Read and decrypt secrets and create volumes
+      # # TODO: agree on concept for secrets management and consider using for sensitive secrets
+      # - run: |
+      #     # read secrets (created with "openssl aes-256-cbc -e -in secrets -out secrets.enc -k $ENC_KEY")
+      #     ARGS=$(openssl aes-256-cbc -d -base64 -in secrets.enc -k $ENC_KEY | while \ 
+      #     read line ; do echo -n "--from-literal=$line "; done)
+      #     # generate secrets volumes for use in pods
+      #     kubectl create secret generic $RELEASE_NAME-drupal-secrets \ 
+      #     --namespace=$CIRCLE_PROJECT_REPONAME $ARGS
+
+      - run: |
+          helm dependency build ./chart
+
+          helm upgrade --install $RELEASE_NAME ./chart \
+            --set drupal.image=$DOCKER_REPO_HOST/$DOCKER_REPO_PROJ/$CIRCLE_PROJECT_REPONAME-drupal:$CIRCLE_SHA1 \
+            --set nginx.image=$DOCKER_REPO_HOST/$DOCKER_REPO_PROJ/$CIRCLE_PROJECT_REPONAME-nginx:$CIRCLE_SHA1 \
+            --set mariadb.rootUser.password=$DB_ROOT_PASS \
+            --set mariadb.db.password=$DB_USER_PASS \
+            --namespace=$CIRCLE_PROJECT_REPONAME
+
+      # Wait for the kubernetes deployment to be complete.
+      - run: kubectl rollout status deployment/$RELEASE_NAME-drupal --namespace=$CIRCLE_PROJECT_REPONAME --watch
+
+      # TODO: output the right domain.
+      - run: |
+          echo "Deployed $RELEASE_NAME successfully, your site is available here: http://$DOMAIN"
 
 workflows:
   version: 2
   commit:
     jobs:
-      - build_and_deploy:
-          context: dev_wdr_io
-  cron:
-    triggers:
-      - schedule:
-          cron: "0 * * * *"
-          filters:
-            branches:
-              only:
-                - master
-    jobs:
-      - drupal-cron:
-          context: dev_wdr_io
+      - phpcs
+      - build:
+          context: global_nonprod
+      - deploy:
+          context: global_nonprod
+          requires:
+            - build
