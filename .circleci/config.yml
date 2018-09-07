@@ -68,7 +68,7 @@ jobs:
       # Set the release name for later reuse.
       - run: |
           LOWERCASE_BRANCH=${CIRCLE_BRANCH,,}
-          echo "export RELEASE_NAME='${LOWERCASE_BRANCH//[^[:alnum:]]/-}'" >> $BASH_ENV
+          echo "export RELEASE_NAME='$CIRCLE_PROJECT_REPONAME--${LOWERCASE_BRANCH//[^[:alnum:]]/-}'" >> $BASH_ENV
 
       - run: |
           echo $GCLOUD_KEY_JSON > ${HOME}/gcloud-service-key.json
