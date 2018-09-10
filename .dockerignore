@@ -3,7 +3,6 @@
 **/CHANGELOG*
 **/README*
 **/LICENSE*
-kontena.yml
 .circleci/*
 phpcs.xml
 **/*.sql

@@ -6,25 +6,13 @@
 $databases['default']['default'] = [
   'database' =>  getenv('DB_NAME'),
   'username' => getenv('DB_USER'),
-  'password' => getenv('DB_PASSWORD'),
+  'password' => getenv('DB_PASS'),
   'host' => getenv('DB_HOST'),
   'port' => '3306',
   'driver' => 'mysql',
   'prefix' => '',
   'collation' => 'utf8mb4_general_ci',
 ];
-
-if (getenv('LANDO_INFO')) {
-  $lando_info = json_decode(getenv('LANDO_INFO'), TRUE);
-  $databases['default']['default'] = [
-    'driver' => 'mysql',
-    'database' => $lando_info['database']['creds']['database'],
-    'username' => $lando_info['database']['creds']['user'],
-    'password' => $lando_info['database']['creds']['password'],
-    'host' => $lando_info['database']['internal_connection']['host'],
-    'port' => $lando_info['database']['internal_connection']['port'],
-  ];
-}
 
 // Location of the site configuration files.
 $config_directories[CONFIG_SYNC_DIRECTORY] = '../config/sync';
