@@ -76,7 +76,6 @@ jobs:
           gcloud config set project silta-204108
           gcloud config set compute/zone europe-west2-a
           gcloud container clusters get-credentials silta-1 --zone europe-west2-a --project silta-204108
-          kubectl config get-contexts
           helm init
           echo $CIRCLE_BRANCH
           echo $CIRCLE_PROJECT_REPONAME
