@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  phpcs:
+  validate:
     docker:
       - image: wunderio/silta-circleci:v0.1
 
@@ -109,7 +109,7 @@ workflows:
   version: 2
   commit:
     jobs:
-      - phpcs
+      - validate
       - build:
           context: global_nonprod
       - deploy:
