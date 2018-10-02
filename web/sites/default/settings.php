@@ -40,6 +40,13 @@ $settings['file_scan_ignore_directories'] = [
 ];
 
 /**
+ * If a volume has been set for private files, tell Drupal about it.
+ */
+if (getenv('PRIVATE_FILES_PATH')) {
+  $settings['file_private_path'] = getenv('PRIVATE_FILES_PATH');
+}
+
+/**
  * Load local development override configuration, if available.
  *
  * Use settings.local.php to override variables on secondary (staging,
