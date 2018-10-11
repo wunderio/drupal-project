@@ -1,0 +1,10 @@
+
+# Values in this file override the default values of our helm chart.
+#
+# See https://github.com/wunderio/charts/blob/master/drupal/README.md
+# for all possible options.
+
+# Example: enable private files for Drupal.
+# drupal:
+#   privateFiles:
+#     enabled: true

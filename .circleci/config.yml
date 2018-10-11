@@ -91,6 +91,7 @@ jobs:
             --set mariadb.rootUser.password=$DB_ROOT_PASS \
             --set mariadb.db.password=$DB_USER_PASS \
             --namespace=$CIRCLE_PROJECT_REPONAME \
+            --values silta.yml \
             --wait
 
 workflows:
