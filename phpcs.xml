@@ -23,6 +23,9 @@
     <!-- exclude third-party node modules -->
     <exclude-pattern>node_modules/</exclude-pattern>
 
+    <!-- exclude CSS files, where we don't usually follow Drupal standards  -->
+    <exclude-pattern>*.css</exclude-pattern>
+
     <rule ref="Drupal">
         <exclude name="Drupal.Commenting.FileComment" />
         <exclude name="Drupal.Commenting.DocComment" />
