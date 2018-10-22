@@ -92,6 +92,7 @@ jobs:
             --set mariadb.db.password=$DB_USER_PASS \
             --namespace=${CIRCLE_PROJECT_REPONAME,,} \
             --values silta.yml \
+            --timeout=600 \
             --wait
 
 workflows:
