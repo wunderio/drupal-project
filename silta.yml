@@ -5,6 +5,5 @@
 # for all possible options.
 
 # Example: enable private files for Drupal.
-# drupal:
-#   privateFiles:
-#     enabled: true
+#privateFiles:
+#  enabled: true

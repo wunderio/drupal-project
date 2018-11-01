@@ -14,3 +14,5 @@ vendor/**/Tests
 **/node_modules
 **/.git
 web/sites/**/files
+web/.dockerignore
+Dockerfile

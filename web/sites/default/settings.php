@@ -14,6 +14,21 @@ $databases['default']['default'] = [
   'collation' => 'utf8mb4_general_ci',
 ];
 
+if (getenv('LANDO_INFO')) {
+  /*
+   * Load database credentials from Lando.
+   */
+  $lando_info = json_decode(getenv('LANDO_INFO'), TRUE);
+  $databases['default']['default'] = [
+    'driver' => 'mysql',
+    'database' => $lando_info['database']['creds']['database'],
+    'username' => $lando_info['database']['creds']['user'],
+    'password' => $lando_info['database']['creds']['password'],
+    'host' => $lando_info['database']['internal_connection']['host'],
+    'port' => $lando_info['database']['internal_connection']['port'],
+  ];
+}
+
 // Location of the site configuration files.
 $config_directories[CONFIG_SYNC_DIRECTORY] = '../config/sync';
 
@@ -38,6 +53,11 @@ $settings['container_yamls'][] = $app_root . '/' . $site_path . '/services.yml';
 $settings['file_scan_ignore_directories'] = [
   'node_modules',
 ];
+
+/**
+ * Generated twig files should not be on shared storage.
+ */
+$settings['php_storage']['twig']['directory'] = '/tmp';
 
 /**
  * If a volume has been set for private files, tell Drupal about it.
