@@ -58,6 +58,10 @@ jobs:
           docker build -t $DOCKER_REPO_HOST/$DOCKER_REPO_PROJ/${CIRCLE_PROJECT_REPONAME,,}-drupal:$CIRCLE_SHA1 .
           docker push $DOCKER_REPO_HOST/$DOCKER_REPO_PROJ/${CIRCLE_PROJECT_REPONAME,,}-drupal:$CIRCLE_SHA1
 
+          # Build the Shell image and push it to the repository.
+          docker build -t $DOCKER_REPO_HOST/$DOCKER_REPO_PROJ/${CIRCLE_PROJECT_REPONAME,,}-shell:$CIRCLE_SHA1 -f silta/shell/Dockerfile .
+          docker push $DOCKER_REPO_HOST/$DOCKER_REPO_PROJ/${CIRCLE_PROJECT_REPONAME,,}-shell:$CIRCLE_SHA1
+
   deploy:
     docker:
       - image: wunderio/silta-circleci:v0.1
@@ -66,14 +70,18 @@ jobs:
       - checkout
 
       # Set the release name for later reuse.
-      # Release name length is 37 chars long, which leaves max 16 chars for kubernetes resource name.
-      # Release name is prefixed with w because  it _HAS_ to start with alphabetic character. w 4 wunder.
       - run: |
-          LOWERCASE_BRANCH=${CIRCLE_BRANCH,,}
-          REPONAME_HASH=$(echo ${CIRCLE_PROJECT_REPONAME,,} | shasum -a 256 | cut -c 1-8 )
-          BRANCHNAME_HASH=$(echo $LOWERCASE_BRANCH | shasum -a 256 | cut -c 1-8 )
-          BRANCHNAME_TRUNCATED=$(echo ${LOWERCASE_BRANCH//[^[:alnum:]]/-} | cut -c 1-20 | sed 's/^\(.*\)-$/\1/' )
-          echo "export RELEASE_NAME='w$REPONAME_HASH-$BRANCHNAME_HASH-$BRANCHNAME_TRUNCATED'" >> $BASH_ENV
+          BRANCHNAME_LOWER=${CIRCLE_BRANCH,,}
+          BRANCHNAME=${BRANCHNAME_LOWER//[^[:alnum:]]/-}
+          BRANCHNAME_HASH=$(echo $BRANCHNAME | shasum -a 256 | cut -c 1-4 )
+          BRANCHNAME_TRUNCATED=$(echo $BRANCHNAME | cut -c 1-15 | sed 's/^\(.*\)-$/\1/' )
+          REPONAME=${CIRCLE_PROJECT_REPONAME,,}
+          REPONAME_HASH=$(echo $REPONAME | shasum -a 256 | cut -c 1-4 )
+          REPONAME_TRUNCATED=$(echo $REPONAME | cut -c 1-15 | sed 's/^\(.*\)-$/\1/' )
+          # Truncate long names
+          if [ ${#BRANCHNAME} -ge 25 ]; then BRANCHNAME=$BRANCHNAME_TRUNCATED-$BRANCHNAME_HASH; fi;
+          if [ ${#REPONAME} -ge 25 ]; then REPONAME=$REPONAME_TRUNCATED-$REPONAME_HASH; fi;
+          echo "export RELEASE_NAME='$REPONAME--$BRANCHNAME'" >> $BASH_ENV
 
       - run: |
           echo $GCLOUD_KEY_JSON > ${HOME}/gcloud-service-key.json
@@ -88,12 +96,16 @@ jobs:
             --set environmentName=$CIRCLE_BRANCH \
             --set php.image=$DOCKER_REPO_HOST/$DOCKER_REPO_PROJ/${CIRCLE_PROJECT_REPONAME,,}-drupal:$CIRCLE_SHA1 \
             --set nginx.image=$DOCKER_REPO_HOST/$DOCKER_REPO_PROJ/${CIRCLE_PROJECT_REPONAME,,}-nginx:$CIRCLE_SHA1 \
+            --set shell.image=$DOCKER_REPO_HOST/$DOCKER_REPO_PROJ/${CIRCLE_PROJECT_REPONAME,,}-shell:$CIRCLE_SHA1 \
             --set mariadb.rootUser.password=$DB_ROOT_PASS \
             --set mariadb.db.password=$DB_USER_PASS \
+            --set shell.gitAuth.repositoryUrl="${CIRCLE_REPOSITORY_URL}" \
+            --set shell.gitAuth.apiToken="${GITAUTH_API_TOKEN}" \
             --namespace=${CIRCLE_PROJECT_REPONAME,,} \
-            --values silta.yml \
-            --timeout=600 \
-            --wait
+            --values silta.yml
+
+          echo "Log output from the deployment container"
+          kubectl logs job/${RELEASE_NAME}-post-release -n ${CIRCLE_PROJECT_REPONAME,,} -f --pod-running-timeout=3m
 
 workflows:
   version: 2
