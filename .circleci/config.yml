@@ -105,7 +105,7 @@ jobs:
             --values silta.yml
 
           echo "Log output from the deployment container"
-          kubectl logs job/${RELEASE_NAME}-post-release -n ${CIRCLE_PROJECT_REPONAME,,} -f --pod-running-timeout=3m
+          kubectl logs job/${RELEASE_NAME}-post-release -n ${CIRCLE_PROJECT_REPONAME,,} -f --pod-running-timeout=5m
 
 workflows:
   version: 2
