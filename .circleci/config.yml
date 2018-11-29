@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  silta: silta/silta@dev:circleci-orb
+  silta: silta/silta@0
 
 jobs:
   validate:
