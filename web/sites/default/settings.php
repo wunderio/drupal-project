@@ -13,6 +13,9 @@ if (getenv('LANDO_INFO')) {
     'host' => $lando_info['database']['internal_connection']['host'],
     'port' => $lando_info['database']['internal_connection']['port'],
   ];
+
+  // Use the hash_salt setting from Lando.
+  $settings['hash_salt'] = getenv('HASH_SALT');
 }
 
 // Location of the site configuration files.
