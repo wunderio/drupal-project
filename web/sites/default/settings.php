@@ -20,9 +20,7 @@ if (getenv('LANDO_INFO')) {
   // Skip file system permissions hardening when using local development with Lando.
   $settings['skip_permissions_hardening'] = TRUE;
 
-  /**
-   * Skip trusted host pattern when using Lando.
-   */
+  // Skip trusted host pattern when using Lando.
   $settings['trusted_host_patterns'] = ['.*'];
 }
 
