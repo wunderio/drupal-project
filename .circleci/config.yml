@@ -3,47 +3,24 @@ version: 2.1
 orbs:
   silta: silta/silta@0
 
-jobs:
-  validate:
-    executor: silta/silta
-
-    steps:
-      - checkout
-
-      - silta/phpcs
-
-  build:
-    executor: silta/silta
-
-    steps:
-      - checkout
-
-      - silta/drupal-composer-install
-
-      - silta/yarn-install
-
-      - silta/drupal-docker-build
-
-  deploy:
-    executor: silta/silta
-
-    steps:
-      - checkout
-
-      - silta/set-release-name
-
-      - silta/gcloud-login
-
-      - silta/drupal-helm-deploy
-
 workflows:
   version: 2
   commit:
     jobs:
-      - validate
-      - build:
+      - silta/drupal-validate:
+          name: validate
+          post-validation:
+            - run: echo "You can add additional validation here!"
+
+      - silta/drupal-build:
+          name: build
           context: global_nonprod
-      - deploy:
+          codebase-build:
+            - silta/drupal-composer-install
+            - silta/yarn-install
+
+      - silta/drupal-deploy:
+          name: deploy
           context: global_nonprod
           requires:
             - build
