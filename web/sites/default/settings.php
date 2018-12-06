@@ -17,8 +17,13 @@ if (getenv('LANDO_INFO')) {
   // Use the hash_salt setting from Lando.
   $settings['hash_salt'] = getenv('HASH_SALT');
 
-  //Skip file system permissions hardening when using local development with Lando.
+  // Skip file system permissions hardening when using local development with Lando.
   $settings['skip_permissions_hardening'] = TRUE;
+
+  /**
+   * Skip trusted host pattern when using Lando.
+   */
+  $settings['trusted_host_patterns'] = ['.*'];
 }
 
 // Location of the site configuration files.
