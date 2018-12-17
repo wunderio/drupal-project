@@ -1,120 +1,26 @@
-version: 2
-jobs:
-  validate:
-    docker:
-      - image: wunderio/silta-circleci:v0.1
+version: 2.1
 
-    steps:
-      - checkout
-
-      - run: phpcs --standard=phpcs.xml -s
-
-  build:
-    docker:
-      - image: wunderio/silta-circleci:v0.1
-
-    steps:
-      - checkout
-
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "composer.lock" }}
-
-      - run: composer install -n --prefer-dist --ignore-platform-reqs --no-dev
-
-      - save_cache:
-          paths:
-            - ./vendor
-            - ./web/core
-            - ./web/modules/contrib
-            - ./web/themes/contrib
-            - ./web/profiles/contrib
-            - ./web/libraries
-          key: v1-dependencies-{{ checksum "composer.lock" }}
-
-      - restore_cache:
-          keys:
-            - v1-yarn-{{ checksum "yarn.lock" }}
-            - v1-yarn-
-
-      - run: yarn install
-
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-yarn-{{ checksum "yarn.lock" }}
-
-      - setup_remote_docker
-
-      - run: |
-          #echo $DOCKER_PASSWORD | docker login -u $DOCKER_USER --password-stdin $DOCKER_REPO_HOST
-          echo $GCLOUD_KEY_JSON | docker login -u _json_key --password-stdin https://eu.gcr.io
-
-          # Build the Nginx image and push it to the repository.
-          docker build -t $DOCKER_REPO_HOST/$DOCKER_REPO_PROJ/${CIRCLE_PROJECT_REPONAME,,}-nginx:$CIRCLE_SHA1 -f silta/nginx.Dockerfile web
-          docker push $DOCKER_REPO_HOST/$DOCKER_REPO_PROJ/${CIRCLE_PROJECT_REPONAME,,}-nginx:$CIRCLE_SHA1
-
-          # Build the Drupal image and push it to the repository.
-          docker build -t $DOCKER_REPO_HOST/$DOCKER_REPO_PROJ/${CIRCLE_PROJECT_REPONAME,,}-php:$CIRCLE_SHA1 -f silta/php.Dockerfile .
-          docker push $DOCKER_REPO_HOST/$DOCKER_REPO_PROJ/${CIRCLE_PROJECT_REPONAME,,}-php:$CIRCLE_SHA1
-
-          # Build the Shell image and push it to the repository.
-          docker build -t $DOCKER_REPO_HOST/$DOCKER_REPO_PROJ/${CIRCLE_PROJECT_REPONAME,,}-shell:$CIRCLE_SHA1 -f silta/shell.Dockerfile .
-          docker push $DOCKER_REPO_HOST/$DOCKER_REPO_PROJ/${CIRCLE_PROJECT_REPONAME,,}-shell:$CIRCLE_SHA1
-
-  deploy:
-    docker:
-      - image: wunderio/silta-circleci:v0.1
-
-    steps:
-      - checkout
-
-      # Set the release name for later reuse.
-      - run: |
-          BRANCHNAME_LOWER=${CIRCLE_BRANCH,,}
-          BRANCHNAME=${BRANCHNAME_LOWER//[^[:alnum:]]/-}
-          BRANCHNAME_HASH=$(echo $BRANCHNAME | shasum -a 256 | cut -c 1-4 )
-          BRANCHNAME_TRUNCATED=$(echo $BRANCHNAME | cut -c 1-15 | sed 's/^\(.*\)-$/\1/' )
-          REPONAME=${CIRCLE_PROJECT_REPONAME,,}
-          REPONAME_HASH=$(echo $REPONAME | shasum -a 256 | cut -c 1-4 )
-          REPONAME_TRUNCATED=$(echo $REPONAME | cut -c 1-15 | sed 's/^\(.*\)-$/\1/' )
-          # Truncate long names
-          if [ ${#BRANCHNAME} -ge 25 ]; then BRANCHNAME=$BRANCHNAME_TRUNCATED-$BRANCHNAME_HASH; fi;
-          if [ ${#REPONAME} -ge 25 ]; then REPONAME=$REPONAME_TRUNCATED-$REPONAME_HASH; fi;
-          echo "export RELEASE_NAME='$REPONAME--$BRANCHNAME'" >> $BASH_ENV
-
-      - run: |
-          echo $GCLOUD_KEY_JSON > ${HOME}/gcloud-service-key.json
-          gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
-          gcloud config set project silta-204108
-          gcloud config set compute/zone europe-west2-a
-          gcloud container clusters get-credentials silta-1 --zone europe-west2-a --project silta-204108
-
-      - run: |
-          helm upgrade --install $RELEASE_NAME drupal \
-            --repo https://wunderio.github.io/charts/ \
-            --set environmentName=$CIRCLE_BRANCH \
-            --set php.image=$DOCKER_REPO_HOST/$DOCKER_REPO_PROJ/${CIRCLE_PROJECT_REPONAME,,}-php:$CIRCLE_SHA1 \
-            --set nginx.image=$DOCKER_REPO_HOST/$DOCKER_REPO_PROJ/${CIRCLE_PROJECT_REPONAME,,}-nginx:$CIRCLE_SHA1 \
-            --set shell.image=$DOCKER_REPO_HOST/$DOCKER_REPO_PROJ/${CIRCLE_PROJECT_REPONAME,,}-shell:$CIRCLE_SHA1 \
-            --set mariadb.rootUser.password=$DB_ROOT_PASS \
-            --set mariadb.db.password=$DB_USER_PASS \
-            --set shell.gitAuth.repositoryUrl="${CIRCLE_REPOSITORY_URL}" \
-            --set shell.gitAuth.apiToken="${GITAUTH_API_TOKEN}" \
-            --namespace=${CIRCLE_PROJECT_REPONAME,,} \
-            --values silta.yml
-
-          echo "Log output from the deployment container"
-          kubectl logs job/${RELEASE_NAME}-post-release -n ${CIRCLE_PROJECT_REPONAME,,} -f --pod-running-timeout=5m
+orbs:
+  silta: silta/silta@0.1
 
 workflows:
   version: 2
   commit:
     jobs:
-      - validate
-      - build:
+      - silta/drupal-validate:
+          name: validate
+          post-validation:
+            - run: echo "You can add additional validation here!"
+
+      - silta/drupal-build:
+          name: build
           context: global_nonprod
-      - deploy:
+          codebase-build:
+            - silta/drupal-composer-install
+            - silta/yarn-install
+
+      - silta/drupal-deploy:
+          name: deploy
           context: global_nonprod
           requires:
             - build
