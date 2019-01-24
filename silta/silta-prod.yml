@@ -1,0 +1,25 @@
+
+# Provide a high-availability deployment.
+replicas: 2
+
+# Uncomment these lines to disable basic auth protection.
+#nginx:
+# basicauth:
+#   enabled: false
+
+php:
+  # Reserve more resources for our PHP containerss.
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256m
+
+# Connect to an externally hosted database.
+#  env:
+#    DB_HOST: 'hosted.database.server.com'
+#    DB_NAME: 'drupal-1A4G3C'
+#    DB_USER: 'drupal'
+#    DB_PASS: 'never store passwords'
+# Disable the built-in database when using an external database.
+#mariadb:
+#  enabled: false
