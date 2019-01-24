@@ -24,3 +24,16 @@ workflows:
           context: global_nonprod
           requires:
             - build
+          filters:
+            branches:
+              ignore: master
+
+      - silta/drupal-deploy:
+          name: deploy
+          context: global_nonprod
+          requires:
+            - build
+          silta_config: silta/silta.yml,silta/silta-prod.yml
+          filters:
+            branches:
+              only: master
