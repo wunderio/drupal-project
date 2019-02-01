@@ -26,7 +26,7 @@ workflows:
             - build
           filters:
             branches:
-              ignore: master
+              ignore: production
 
       - silta/drupal-deploy:
           name: deploy
@@ -36,4 +36,4 @@ workflows:
           silta_config: silta/silta.yml,silta/silta-prod.yml
           filters:
             branches:
-              only: master
+              only: production
