@@ -23,6 +23,14 @@ if (getenv('PRIVATE_FILES_PATH')) {
 }
 
 /**
+ * If Elasticsearch is enabled, add configuration for the Elasticsearch Helper module.
+ */
+if (getenv('ELASTICSEARCH_HOST')) {
+  $config['elasticsearch_helper.settings']['elasticsearch_helper']['host'] = getenv('ELASTICSEARCH_HOST');;
+  $config['elasticsearch_helper.settings']['elasticsearch_helper']['port'] = "9200";
+}
+
+/**
  * Set the memcache server hostname when a memcached server is available
  */
 if (getenv('MEMCACHED_HOST')) {
@@ -32,4 +40,4 @@ if (getenv('MEMCACHED_HOST')) {
 /**
  * Generated twig files should not be on shared storage.
  */
-$settings['php_storage']['twig']['directory'] = '/tmp';
+$settings['php_storage']['twig']['directory'] = '../generated-php';
