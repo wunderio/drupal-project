@@ -8,7 +8,7 @@ config:
   webroot: web
   via: nginx
   php: '7.1'
-  database: mariadb:10.1
+  database: mariadb:10.2
   #xdebug: true
 
 tooling:
@@ -19,7 +19,7 @@ tooling:
       - ./vendor/bin/codecept
       - "--env=lando"
 
-services:  
+services:
   mailhog:
     type: mailhog
     hogfrom:
