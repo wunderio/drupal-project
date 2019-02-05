@@ -16,3 +16,4 @@ vendor/**/Tests
 web/sites/**/files
 web/.dockerignore
 Dockerfile
+composer.lock
