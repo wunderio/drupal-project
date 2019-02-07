@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  silta: silta/silta@dev:feature/slt-108-skip-unnecessary-builds
+  silta: silta/silta@0.1
 
 workflows:
   version: 2
