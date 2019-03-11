@@ -27,6 +27,15 @@ services:
         environment:
           HASH_SALT: notsosecurehash
 
+  # chrome:
+  #   type: compose
+  #   services:
+  #     image: selenium/standalone-chrome
+  #     volumes:
+  #       - /dev/shm:/dev/shm
+  #     ports:
+  #       - "4444:4444"
+
 proxy:
   mailhog:
     - mail.lndo.site
