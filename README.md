@@ -23,13 +23,16 @@ Have a look at the file for details, but in short this is how it works:
 
 ## Local development
 
-Install [Lando](https://docs.devwithlando.io/). Add your project's name and other project-specific settings to `.lando.yml` and run `lando start`. Useful helper commands:
+Install [Lando](https://docs.devwithlando.io/). Add your project's name and other project-specific settings to `.lando.yml` and run `lando start`. Run `lando dsi demo_umami -y` to install `demo_umami` profile.
+
+Useful helper commands:
 
 - `lando cre` runs `composer require`
 - `lando cup` runs `composer update`
 - `lando cupdc` runs `composer update drupal/core webflo/drupal-core-require-dev --with-dependencies`
+- `lando dsi` runs `drush si --db-url=mysql://drupal8:drupal8@database:3306/drupal8`
 
-Run `lando` for for complete list of available Lando commands.
+Run `lando` for complete list of available Lando commands.
 
 ### Testing
 
