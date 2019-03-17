@@ -27,9 +27,9 @@ Install [Lando](https://docs.devwithlando.io/). Add your project's name and othe
 
 Useful helper commands:
 
-- `lando cre`: runs `composer require`
-- `lando cup`: runs `composer update`
-- `lando cupdc`: runs `composer update drupal/core webflo/drupal-core-require-dev --with-dependencies`
+- `lando cre` runs `composer require`
+- `lando cup` runs `composer update`
+- `lando cupdc` runs `composer update drupal/core webflo/drupal-core-require-dev --with-dependencies`
 
 Run `lando` for for complete list of available Lando commands.
 
