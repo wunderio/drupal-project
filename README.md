@@ -50,8 +50,8 @@ Usage: `lando codeception <command>`
 
 Create Codeception tests folder by running `lando codeception bootstrap`.
 
-#### [PHPStan](https://github.com/phpstan/phpstan) with [phpstan-drupal](https://github.com/mglaman/phpstan-drupal) rules
+#### [PHPStan](https://github.com/phpstan/phpstan) with [phpstan-drupal](https://github.com/mglaman/phpstan-drupal) extension
 
 Usage: `lando phpstan <command>`
 
-Example: analyse contrib modules for deprecation testing by running `lando phpstan analyse web/modules/contrib/`.
+Example: analyze contrib modules for depreciation by running `lando phpstan analyse web/modules/contrib/`.
