@@ -15,6 +15,12 @@ tooling:
     cmd:
       - ./vendor/bin/codecept
       - "--env=lando"
+  phpcs:
+    service: appserver
+    cmd: /app/vendor/bin/phpcs --standard=Drupal,DrupalPractice
+  phpcbf:
+    service: appserver
+    cmd: /app/vendor/bin/phpcbf --standard=Drupal,DrupalPractice
 
 services:
   mailhog:

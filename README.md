@@ -21,3 +21,14 @@ Have a look at the file for details, but in short this is how it works:
 - Create a custom docker image for Drupal and nginx, and push those to a docker registry (typically that of your cloud provider).
 - Install or update our helm chart while passing our custom images as parameters.
 - The helm chart executes the usual drush deployment commands.
+
+## Testing
+
+### [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer)
+
+Syntax: `lando phpcs {path/to/code}`, `lando phpcbf {path/to/code}`
+
+Examples:
+
+- `lando phpcs web/modules/custom`
+- `lando phpcbf web/modules/custom`

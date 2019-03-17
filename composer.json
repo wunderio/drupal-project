@@ -32,6 +32,8 @@
         "wunderio/drupal-ping": "^1.0"
     },
     "require-dev": {
+        "dealerdirect/phpcodesniffer-composer-installer": "*",
+        "drupal/coder": "^8.3",
         "webflo/drupal-core-require-dev": "~8.5"
     },
     "conflict": {
