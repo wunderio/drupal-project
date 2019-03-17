@@ -20,6 +20,10 @@ tooling:
     service: appserver
     description: Runs PHP Code Beautifier and Fixer using Drupal, DrupalPractice standards
     cmd: /app/vendor/bin/phpcbf --standard=Drupal,DrupalPractice
+  phpstan:
+    service: appserver
+    description: Runs PHP Static Analysis Tool
+    cmd: /app/vendor/bin/phpstan
   cre:
     service: appserver
     description: Runs composer require

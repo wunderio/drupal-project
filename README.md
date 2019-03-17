@@ -23,9 +23,7 @@ Have a look at the file for details, but in short this is how it works:
 
 ## Local development
 
-Install [Lando](https://docs.devwithlando.io/). Add your project's name and other project-specific settings to `.lando.yml` and run `lando start`.
-
-Useful helper commands:
+Install [Lando](https://docs.devwithlando.io/). Add your project's name and other project-specific settings to `.lando.yml` and run `lando start`. Useful helper commands:
 
 - `lando cre` runs `composer require`
 - `lando cup` runs `composer update`
@@ -51,3 +49,9 @@ Examples:
 Usage: `lando codeception <command>`
 
 Create Codeception tests folder by running `lando codeception bootstrap`.
+
+#### [PHPStan](https://github.com/phpstan/phpstan)
+
+Usage: `lando phpstan <command>`
+
+Example: analyse contrib modules by running `lando phpstan analyse web/modules/contrib/`.
