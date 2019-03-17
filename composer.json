@@ -21,7 +21,7 @@
         "drupal-composer/drupal-scaffold": "^2.2",
         "drupal/config_installer": "~1.7",
         "drupal/console": "^1.0.2",
-        "drupal/core": "~8.5",
+        "drupal/core": "^8.6.0",
         "drupal/simplei": "^1.0",
         "drupal/warden": "*",
         "drush/drush": "^9.0.0",
@@ -35,7 +35,7 @@
         "codeception/codeception": "^2.5",
         "dealerdirect/phpcodesniffer-composer-installer": "*",
         "drupal/coder": "^8.3",
-        "webflo/drupal-core-require-dev": "~8.5"
+        "webflo/drupal-core-require-dev": "^8.6.0"
     },
     "conflict": {
         "drupal/drupal": "*"
