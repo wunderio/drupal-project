@@ -10,16 +10,28 @@ config:
 tooling:
   codeception:
     service: appserver
-    description: Run Codeception tests.
+    description: Runs Codeception tests
     cmd: /app/vendor/bin/codecept
   phpcs:
     service: appserver
-    description: Run phpcs using Drupal, DrupalPractice standards.
+    description: Runs PHP_CodeSniffer using Drupal, DrupalPractice standards
     cmd: /app/vendor/bin/phpcs --standard=Drupal,DrupalPractice
   phpcbf:
     service: appserver
-    description: Run phpbf using Drupal, DrupalPractice standards.
+    description: Runs PHP Code Beautifier and Fixer using Drupal, DrupalPractice standards
     cmd: /app/vendor/bin/phpcbf --standard=Drupal,DrupalPractice
+  cre:
+    service: appserver
+    description: Runs composer require
+    cmd: composer require
+  cup:
+    service: appserver
+    description: Runs composer update
+    cmd: composer update --with-dependencies
+  cupdc:
+    service: appserver
+    description: Runs composer update drupal/core webflo/drupal-core-require-dev --with-dependencies
+    cmd: composer update drupal/core webflo/drupal-core-require-dev --with-dependencies
 
 services:
   mailhog:

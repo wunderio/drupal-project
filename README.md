@@ -25,11 +25,21 @@ Have a look at the file for details, but in short this is how it works:
 
 Install [Lando](https://docs.devwithlando.io/). Add your project's name and other project-specific settings to `.lando.yml` and run `lando start`.
 
+Useful helper commands:
+
+- `lando cre`: runs `composer require`
+- `lando cup`: runs `composer require`
+- `lando cupdc`: runs `composer update drupal/core webflo/drupal-core-require-dev --with-dependencies`
+
+Run `lando` for for complete list of available Lando commands.
+
 ### Testing
 
-Supported testing methods by using `lando` prefix:
+Supported testing tools:
 
 #### [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer)
+
+Usage: `lando phpcs <path>`
 
 Examples:
 
@@ -37,5 +47,7 @@ Examples:
 - `lando phpcbf web/modules/custom`
 
 #### [Codeception](https://github.com/Codeception/Codeception)
+
+Usage: `lando codeception <command>`
 
 Create Codeception tests folder by running `lando codeception bootstrap`.
