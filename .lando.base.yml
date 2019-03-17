@@ -6,7 +6,6 @@ config:
   via: nginx
   php: '7.1'
   database: mariadb:10.2
-  #xdebug: true
 
 tooling:
   codeception:
