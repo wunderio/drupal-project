@@ -24,11 +24,7 @@ Have a look at the file for details, but in short this is how it works:
 
 ## Testing
 
-### [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer)
-
-Syntax: `lando phpcs {path/to/code}`, `lando phpcbf {path/to/code}`
-
-Examples:
+[PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer) is supported out of the box using `lando` prefix. Examples:
 
 - `lando phpcs web/modules/custom`
 - `lando phpcbf web/modules/custom`
