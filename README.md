@@ -22,7 +22,11 @@ Have a look at the file for details, but in short this is how it works:
 - Install or update our helm chart while passing our custom images as parameters.
 - The helm chart executes the usual drush deployment commands.
 
-## Testing
+## Local development
+
+Install [Lando](https://docs.devwithlando.io/) and run `lando start`.
+
+### Testing
 
 [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer) is supported out of the box using `lando` prefix. Examples:
 
