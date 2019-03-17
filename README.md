@@ -24,7 +24,7 @@ Have a look at the file for details, but in short this is how it works:
 
 ## Local development
 
-Install [Lando](https://docs.devwithlando.io/) and run `lando start`.
+Install [Lando](https://docs.devwithlando.io/). Add your project's name to `.lando.yml` and run `lando start`.
 
 ### Testing
 

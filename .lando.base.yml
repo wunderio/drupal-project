@@ -1,0 +1,55 @@
+name: Silta
+recipe: drupal8
+
+config:
+  webroot: web
+  via: nginx
+  php: '7.1'
+  database: mariadb:10.2
+  #xdebug: true
+
+tooling:
+  codeception:
+    service: appserver
+    description: Run codeception
+    cmd:
+      - ./vendor/bin/codecept
+      - "--env=lando"
+  phpcs:
+    service: appserver
+    cmd: /app/vendor/bin/phpcs --standard=Drupal,DrupalPractice
+  phpcbf:
+    service: appserver
+    cmd: /app/vendor/bin/phpcbf --standard=Drupal,DrupalPractice
+
+services:
+  mailhog:
+    type: mailhog
+    hogfrom:
+      - appserver
+
+  appserver:
+    overrides:
+        environment:
+          HASH_SALT: notsosecurehash
+
+  # chrome:
+  #   type: compose
+  #   services:
+  #     image: selenium/standalone-chrome
+  #     volumes:
+  #       - /dev/shm:/dev/shm
+  #     ports:
+  #       - "4444:4444"
+
+proxy:
+  mailhog:
+    - mail.lndo.site
+
+events:
+  pre-start:
+    - appserver: composer install
+  # Clear caches after a database import
+  post-db-import:
+    - appserver: cd $LANDO_WEBROOT && drush cr -y
+
