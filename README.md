@@ -35,7 +35,7 @@ Run `lando` for for complete list of available Lando commands.
 
 Supported testing tools:
 
-#### [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer)
+#### [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer) with Drupal, DrupalPractice standards
 
 Usage: `lando phpcs <path>`
 
@@ -50,8 +50,8 @@ Usage: `lando codeception <command>`
 
 Create Codeception tests folder by running `lando codeception bootstrap`.
 
-#### [PHPStan](https://github.com/phpstan/phpstan)
+#### [PHPStan](https://github.com/phpstan/phpstan) with [phpstan-drupal](https://github.com/mglaman/phpstan-drupal) rules
 
 Usage: `lando phpstan <command>`
 
-Example: analyse contrib modules by running `lando phpstan analyse web/modules/contrib/`.
+Example: analyse contrib modules for deprecation testing by running `lando phpstan analyse web/modules/contrib/`.
