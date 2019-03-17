@@ -24,6 +24,10 @@ tooling:
     service: appserver
     description: Runs PHP Static Analysis Tool
     cmd: /app/vendor/bin/phpstan
+  phpunit:
+    service: appserver
+    description: Runs PHPUnit tests
+    cmd: /app/vendor/bin/phpunit
   cre:
     service: appserver
     description: Runs composer require

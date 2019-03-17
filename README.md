@@ -55,3 +55,7 @@ Create Codeception tests folder by running `lando codeception bootstrap`.
 Usage: `lando phpstan <command>`
 
 Example: analyze contrib modules for depreciation by running `lando phpstan analyse web/modules/contrib/`.
+
+#### [PHPUnit](https://github.com/sebastianbergmann/phpunit/)
+
+Usage: `lando phpunit <command>`
