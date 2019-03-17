@@ -11,15 +11,15 @@ config:
 tooling:
   codeception:
     service: appserver
-    description: Run codeception
-    cmd:
-      - ./vendor/bin/codecept
-      - "--env=lando"
+    description: Run Codeception tests.
+    cmd: /app/vendor/bin/codecept
   phpcs:
     service: appserver
+    description: Run phpcs using Drupal, DrupalPractice standards.
     cmd: /app/vendor/bin/phpcs --standard=Drupal,DrupalPractice
   phpcbf:
     service: appserver
+    description: Run phpbf using Drupal, DrupalPractice standards.
     cmd: /app/vendor/bin/phpcbf --standard=Drupal,DrupalPractice
 
 services:

@@ -6,13 +6,12 @@ This project template is an opinionated fork of the popular [Drupal-composer tem
 
 ## Usage
 
-- Copy this repository and push it to our organization. 
+- Copy this repository and push it to our organization.
 - Log in to CircleCI using your Github account and add the new project.
 
- 
 ## How it works
 
-Each pushed commit is processed according to the instructions in `.circleci/config.yml` in the repository. 
+Each pushed commit is processed according to the instructions in `.circleci/config.yml` in the repository.
 Have a look at the file for details, but in short this is how it works:
 
 - Run the CircleCI jobs using a [custom docker image](https://github.com/wunderio/circleci-builder) that has all the tools we need.  
@@ -28,7 +27,15 @@ Install [Lando](https://docs.devwithlando.io/). Add your project's name to `.lan
 
 ### Testing
 
-[PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer) is supported out of the box using `lando` prefix. Examples:
+Supported testing methods by using `lando` prefix:
+
+#### [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer)
+
+Examples:
 
 - `lando phpcs web/modules/custom`
 - `lando phpcbf web/modules/custom`
+
+#### [Codeception](https://github.com/Codeception/Codeception)
+
+Create Codeception tests folder by running `lando codeception bootstrap`.
