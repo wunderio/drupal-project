@@ -42,8 +42,6 @@ Examples:
 
 Usage: `lando codeception <command>`
 
-Create Codeception tests folder by running `lando codeception bootstrap`.
-
 #### [PHPStan](https://github.com/phpstan/phpstan) with [phpstan-drupal](https://github.com/mglaman/phpstan-drupal) extension
 
 Usage: `lando phpstan <command>`
