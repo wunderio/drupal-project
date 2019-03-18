@@ -1,10 +1,24 @@
+actor: Tester
 paths:
     tests: tests
-    output: tests/_output
+    log: tests/_log
     data: tests/_data
     support: tests/_support
     envs: tests/_envs
-actor_suffix: Tester
+settings:
+    bootstrap: _bootstrap.php
+    colors: true
+    memory_limit: 1024M
 extensions:
     enabled:
         - Codeception\Extension\RunFailed
+params:
+  - tests/_envs/parameters.yml # load params from configuration
+  - env # try to load params from environment vars
+modules:
+    config:
+        Db:
+            dsn: ''
+            user: ''
+            password: ''
+            dump: tests/_data/dump.sql

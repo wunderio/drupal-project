@@ -1,0 +1,13 @@
+# `circleci` environment config goes here
+modules:
+  config:
+    WebDriver:
+      browser: chrome
+      url: 'http://localhost:8080/'
+      port: 4444
+      restart: true
+      host: localhost
+    PhpBrowser:
+      url: 'http://localhost:8080/'
+#    REST:
+#      url: 'http://localhost:9200/'

@@ -4,9 +4,29 @@
 # Perform tests in browser using the WebDriver or PhpBrowser.
 # If you need both WebDriver and PHPBrowser tests - create a separate suite.
 
-actor: AcceptanceTester
+class_name: AcceptanceTester
 modules:
     enabled:
-        - PhpBrowser:
-            url: http://localhost/myapp
+        - WebDriver:
+            url: %SITE_URL%
+            browser: chrome
+            restart: true
+            host: chrome
+            window_size: 1000x2000
         - \Helper\Acceptance
+        - DrupalBootstrap
+        - DrupalUser:
+            cleanup_entities:
+            - 'file'
+        - DrupalEntity
+        - DrupalWatchdog:
+            level: 'ERROR'
+            channels:
+              php: 'WARNING'
+        - DrupalDrush
+extensions:
+    enabled:
+        - Codeception\Extension\Recorder
+    config:
+        Codeception\Extension\Recorder:
+          delete_successful: true
