@@ -1,29 +1,5 @@
 <?php
 
-if (getenv('LANDO_INFO')) {
-  /*
-   * Load database credentials from Lando.
-   */
-  $lando_info = json_decode(getenv('LANDO_INFO'), TRUE);
-  $databases['default']['default'] = [
-    'driver' => 'mysql',
-    'database' => $lando_info['database']['creds']['database'],
-    'username' => $lando_info['database']['creds']['user'],
-    'password' => $lando_info['database']['creds']['password'],
-    'host' => $lando_info['database']['internal_connection']['host'],
-    'port' => $lando_info['database']['internal_connection']['port'],
-  ];
-
-  // Use the hash_salt setting from Lando.
-  $settings['hash_salt'] = getenv('HASH_SALT');
-
-  // Skip file system permissions hardening when using local development with Lando.
-  $settings['skip_permissions_hardening'] = TRUE;
-
-  // Skip trusted host pattern when using Lando.
-  $settings['trusted_host_patterns'] = ['.*'];
-}
-
 // Location of the site configuration files.
 $config_directories[CONFIG_SYNC_DIRECTORY] = '../config/sync';
 
@@ -56,6 +32,13 @@ $settings['file_scan_ignore_directories'] = [
  */
 if (file_exists($app_root . '/' . $site_path . '/settings.local.php')) {
   include $app_root . '/' . $site_path . '/settings.local.php';
+}
+
+/**
+ * Lando configuration overrides.
+ */
+if (getenv('LANDO_INFO') && file_exists($app_root . '/' . $site_path . '/settings.lando.php')) {
+  include $app_root . '/' . $site_path . '/settings.lando.php';
 }
 
 /**
