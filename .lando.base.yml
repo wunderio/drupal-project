@@ -28,22 +28,6 @@ tooling:
     service: appserver
     description: Runs PHPUnit tests
     cmd: /app/vendor/bin/phpunit
-  cre:
-    service: appserver
-    description: Runs composer require
-    cmd: composer require
-  cup:
-    service: appserver
-    description: Runs composer update
-    cmd: composer update --with-dependencies
-  cupdc:
-    service: appserver
-    description: Runs composer update drupal/core webflo/drupal-core-require-dev --with-dependencies
-    cmd: composer update drupal/core webflo/drupal-core-require-dev --with-dependencies
-  dsi:
-    service: appserver
-    description: Runs drush site install with drupal8 recipe's --db-url
-    cmd: /app/vendor/bin/drush si --db-url=mysql://drupal8:drupal8@database:3306/drupal8
 
 services:
   mailhog:
