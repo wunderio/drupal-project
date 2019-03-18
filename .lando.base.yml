@@ -12,6 +12,9 @@ tooling:
     service: appserver
     description: Runs Codeception tests
     cmd: /app/vendor/bin/codecept
+  drush:
+    description: Runs Drush version defined in Composer
+    cmd: /app/vendor/bin/drush --root=/app/web
   phpcs:
     service: appserver
     description: Runs PHP_CodeSniffer using Drupal, DrupalPractice standards
