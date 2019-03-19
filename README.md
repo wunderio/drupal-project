@@ -42,6 +42,12 @@ Examples:
 
 Usage: `lando codeception <command>`
 
+Examples:
+
+- `lando codeception run acceptance`
+- `lando codeception run functional`
+- `lando codeception run unit`
+
 #### [PHPStan](https://github.com/phpstan/phpstan) with [phpstan-drupal](https://github.com/mglaman/phpstan-drupal) extension
 
 Usage: `lando phpstan <command>`
