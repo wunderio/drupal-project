@@ -33,24 +33,24 @@ tooling:
     cmd: /app/vendor/bin/phpunit
 
 services:
-  mailhog:
-    type: mailhog
-    hogfrom:
-      - appserver
-
   appserver:
     overrides:
         environment:
           HASH_SALT: notsosecurehash
-
-  # chrome:
-  #   type: compose
-  #   services:
-  #     image: selenium/standalone-chrome
-  #     volumes:
-  #       - /dev/shm:/dev/shm
-  #     ports:
-  #       - "4444:4444"
+  chrome:
+    type: compose
+    services:
+      image: selenium/standalone-chrome
+      user: root
+      ports:
+        - "4444:4444"
+      volumes: 
+        - /dev/shm:/dev/shm
+      command: /opt/bin/entry_point.sh
+  mailhog:
+    type: mailhog
+    hogfrom:
+      - appserver
 
 proxy:
   mailhog:
@@ -59,7 +59,5 @@ proxy:
 events:
   pre-start:
     - appserver: composer install
-  # Clear caches after a database import
   post-db-import:
     - appserver: cd $LANDO_WEBROOT && drush cr -y
-
