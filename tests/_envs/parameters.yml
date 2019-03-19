@@ -1,1 +1,1 @@
-SITE_URL: 'https://silta.lndo.site'
+SITE_URL: 'https://${LANDO_APP_NAME}.l${LANDO_DOMAIN}'
