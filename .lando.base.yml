@@ -17,12 +17,12 @@ tooling:
     cmd: /app/vendor/bin/drush --root=/app/web
   phpcs:
     service: appserver
-    description: Runs PHP_CodeSniffer using Drupal, DrupalPractice standards
-    cmd: /app/vendor/bin/phpcs --standard=Drupal,DrupalPractice
+    description: Runs PHP_CodeSniffer
+    cmd: /app/vendor/bin/phpcs
   phpcbf:
     service: appserver
-    description: Runs PHP Code Beautifier and Fixer using Drupal, DrupalPractice standards
-    cmd: /app/vendor/bin/phpcbf --standard=Drupal,DrupalPractice
+    description: Runs PHP Code Beautifier and Fixer
+    cmd: /app/vendor/bin/phpcbf
   phpstan:
     service: appserver
     description: Runs PHP Static Analysis Tool

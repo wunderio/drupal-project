@@ -35,8 +35,8 @@ Usage: `lando phpcs <path>`
 
 Examples:
 
-- `lando phpcs web/modules/custom`
-- `lando phpcbf web/modules/custom`
+- `lando phpcs --standard=Drupal,DrupalPractice web/modules/contrib`
+- `lando phpcbf --standard=Drupal,DrupalPractice web/modules/contrib`
 
 #### [Codeception](https://github.com/Codeception/Codeception)
 
