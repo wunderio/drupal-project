@@ -44,7 +44,7 @@ Examples:
 - `lando codeception run functional`
 - `lando codeception run unit`
 
-#### [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer) with Drupal, DrupalPractice standards
+#### [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer)
 
 Usage: `lando phpcs <parameters>`
 
