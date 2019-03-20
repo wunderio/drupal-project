@@ -1,8 +1,8 @@
 <?php
 
-
 /**
- * Inherited Methods
+ * Inherited Methods.
+ *
  * @method void wantToTest($text)
  * @method void wantTo($text)
  * @method void execute($callable)
@@ -15,12 +15,15 @@
  * @method \Codeception\Lib\Friend haveFriend($name, $actorClass = NULL)
  *
  * @SuppressWarnings(PHPMD)
-*/
-class FunctionalTester extends \Codeception\Actor
-{
-    use _generated\FunctionalTesterActions;
+ */use Codeception\Actor;
 
-   /**
-    * Define custom actions here
+/**
+ *
+ */
+class FunctionalTester extends Actor {
+  use _generated\FunctionalTesterActions;
+
+  /**
+    * Define custom actions here.
     */
 }

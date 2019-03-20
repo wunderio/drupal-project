@@ -1,2 +1,6 @@
 <?php
-// This is global bootstrap for autoloading
+
+/**
+ * @file
+ * This is global bootstrap for autoloading.
+ */
