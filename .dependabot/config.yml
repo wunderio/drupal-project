@@ -2,9 +2,9 @@ version: 1
 
 update_configs:
   - package_manager: "php:composer"
-    directory: "/drupal"
+    directory: "/"
     update_schedule: "live"
 
   - package_manager: "javascript"
-    directory: "/drupal"
+    directory: "/"
     update_schedule: "live"
