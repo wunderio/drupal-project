@@ -37,6 +37,7 @@ Examples:
 
 - `lando phpcs --standard=Drupal,DrupalPractice web/modules/contrib`
 - `lando phpcbf --standard=Drupal,DrupalPractice web/modules/contrib`
+- `lando phpcs --standard=codeception tests`
 
 #### [Codeception](https://github.com/Codeception/Codeception)
 
