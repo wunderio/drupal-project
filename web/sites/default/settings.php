@@ -11,7 +11,7 @@ $settings['container_yamls'][] = $app_root . '/' . $site_path . '/services.yml';
 /**
  * The default list of directories that will be ignored by Drupal's file API.
  *
- * By default ignore node_modules folders to avoid issues
+ * By default ignore node_modules and bower_components folders to avoid issues
  * with common frontend tools and recursive scanning of directories looking for
  * extensions.
  *
@@ -20,6 +20,7 @@ $settings['container_yamls'][] = $app_root . '/' . $site_path . '/services.yml';
  */
 $settings['file_scan_ignore_directories'] = [
   'node_modules',
+  'bower_components',
 ];
 
 /**
