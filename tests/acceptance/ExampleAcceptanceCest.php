@@ -1,13 +1,14 @@
 <?php
 
-class ExampleAcceptanceCest {
+class ExampleAcceptanceCest
+{
 
   /**
    * @param \AcceptanceTester $i
    */
-  public function exampleAcceptanceTest(AcceptanceTester $i) {
-    $i->amOnPage('/');
-    $i->loginWithRole('authenticated');
-  }
-
+    public function exampleAcceptanceTest(AcceptanceTester $i)
+    {
+        $i->amOnPage('/');
+        $i->loginWithRole('authenticated');
+    }
 }

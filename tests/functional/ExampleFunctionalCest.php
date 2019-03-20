@@ -1,13 +1,14 @@
 <?php
 
-class ExampleFunctionalCest {
+class ExampleFunctionalCest
+{
 
   /**
    * @param \FunctionalTester $I
    */
-  public function exampleFunctionalTest(FunctionalTester $I) {
-    $I->amOnPage('/');
-    $I->seeResponseCodeIs(200);
-  }
-
+    public function exampleFunctionalTest(FunctionalTester $I)
+    {
+        $I->amOnPage('/');
+        $I->seeResponseCodeIs(200);
+    }
 }
