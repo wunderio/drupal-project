@@ -1,8 +1,8 @@
 <?php
 
+
 /**
- * Inherited Methods.
- *
+ * Inherited Methods
  * @method void wantToTest($text)
  * @method void wantTo($text)
  * @method void execute($callable)
@@ -15,15 +15,12 @@
  * @method \Codeception\Lib\Friend haveFriend($name, $actorClass = NULL)
  *
  * @SuppressWarnings(PHPMD)
- */use Codeception\Actor;
+*/
+class UnitTester extends \Codeception\Actor
+{
+    use _generated\UnitTesterActions;
 
-/**
- *
- */
-class UnitTester extends Actor {
-  use _generated\UnitTesterActions;
-
-  /**
-    * Define custom actions here.
+   /**
+    * Define custom actions here
     */
 }
