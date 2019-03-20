@@ -53,6 +53,7 @@ Examples:
 - `lando phpcs --standard=Drupal,DrupalPractice web/modules/contrib`
 - `lando phpcbf --standard=Drupal,DrupalPractice web/modules/contrib`
 - `lando phpcs --standard=codeception tests`
+- `lando phpcs --standard=phpcs.xml -s web/modules/contrib/` (use custom ruleset's defined in `phpcs.xml`)
 
 #### [PHPStan](https://github.com/phpstan/phpstan) with [phpstan-drupal](https://github.com/mglaman/phpstan-drupal) extension
 
