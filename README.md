@@ -25,12 +25,6 @@ Have a look at the file for details, but in short this is how it works:
 
 Install [Lando](https://docs.devwithlando.io/). Default environment setup is defined in `.lando.base.yml` file, use `.lando.yml` file for any overrides. Add your project's name and other project-specific settings to `.lando.yml` and run `lando start`. Use `lando` command for complete list of available Lando commands.
 
-Supported dependency and package managers:
-
-- `lando composer`
-- `lando npm`
-- `lando yarn`
-
 ### Testing
 
 Supported testing tools:
