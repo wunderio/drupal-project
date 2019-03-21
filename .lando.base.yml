@@ -41,7 +41,7 @@ tooling:
 services:
   appserver:
     run:
-      - cd /app && composer install
+      - composer install
     overrides:
         environment:
           HASH_SALT: notsosecurehash
