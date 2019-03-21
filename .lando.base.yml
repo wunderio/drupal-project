@@ -15,6 +15,9 @@ tooling:
   drush:
     description: Runs Drush version defined in Composer
     cmd: /app/vendor/bin/drush --root=/app/web
+  npm:
+    description: Runs npm commands
+    service: node
   phpcs:
     service: appserver
     description: Runs PHP_CodeSniffer
@@ -31,6 +34,9 @@ tooling:
     service: appserver
     description: Runs PHPUnit tests
     cmd: /app/vendor/bin/phpunit
+  yarn:
+    description: Runs Yarn commands
+    service: node
 
 services:
   appserver:
@@ -53,6 +59,10 @@ services:
     type: mailhog
     hogfrom:
       - appserver
+  node:
+    type: node:10
+    build:
+      - yarn
 
 proxy:
   mailhog:

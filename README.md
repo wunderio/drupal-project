@@ -25,6 +25,12 @@ Have a look at the file for details, but in short this is how it works:
 
 Install [Lando](https://docs.devwithlando.io/). Add your project's name and other project-specific settings to `.lando.yml` and run `lando start`. Run `lando` for complete list of available Lando commands.
 
+Supported dependency and package managers:
+
+- `lando composer`
+- `lando npm`
+- `lando yarn`
+
 ### Testing
 
 Supported testing tools:
