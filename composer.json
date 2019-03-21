@@ -81,6 +81,9 @@
             "drush/Commands/{$name}": ["type:drupal-drush"]
         },
         "composer-exit-on-patch-failure": true,
+        "dropin-paths": {
+            "web/": ["type:web-dropin"]
+        },
         "patches": {
         }
     }
