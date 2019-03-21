@@ -70,3 +70,7 @@ Example: analyze contrib modules for depreciation by running `lando phpstan anal
 #### [PHPUnit](https://github.com/sebastianbergmann/phpunit/)
 
 Usage: `lando phpunit <parameters>`
+
+### Demo content
+
+Use `lando drush si --db-url=mysql://drupal8:drupal8@database:3306/drupal8 demo_umami -y` to install default Drupal 8 site with `demo_umami` profile.
