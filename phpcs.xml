@@ -26,6 +26,9 @@
     <!-- exclude CSS files, where we don't usually follow Drupal standards  -->
     <exclude-pattern>*.css</exclude-pattern>
 
+    <!-- exclude tests folder, where we follow other standards  -->
+    <exclude-pattern>tests/</exclude-pattern>
+
     <rule ref="Drupal">
         <exclude name="Drupal.Commenting.FileComment" />
         <exclude name="Drupal.Commenting.DocComment" />
