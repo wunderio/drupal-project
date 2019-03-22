@@ -11,7 +11,7 @@ workflows:
           name: validate
           post-validation:
             - run: phpcs --standard=phpcs.xml -s --ignore=tests
-            - run: phpcs --standard=codeception tests
+            # - run: phpcs --standard=codeception tests
 
       - silta/drupal-build-deploy: &build-deploy
           name: build-deploy
