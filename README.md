@@ -30,7 +30,7 @@ Install [Lando](https://docs.devwithlando.io/). Default environment setup is def
 - `lando` - Complete list of available Lando commands.
 - `lando info` - Info about your app's services. More details are available using `--deep` flag.
 - `lando logs -s <service>` - Show service's log.
-- `lando drush si demo_umami -y` - Install Drupal 8 site with `demo_umami` profile.
+- `lando drush si demo_umami` - Install Drupal 8 site with `demo_umami` profile.
 
 ### Testing
 
