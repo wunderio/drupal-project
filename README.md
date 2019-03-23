@@ -31,7 +31,7 @@ Default environment setup is defined in `.lando.base.yml` file. Use `.lando.yml`
 
 - `lando` - Complete list of available Lando [commands](https://docs.devwithlando.io/cli/usage.html).
 - `lando info` - Info about running [services](https://docs.devwithlando.io/config/services.html). More details are available using `--deep` flag.
-- `lando logs -s <service>` - Show service's [log](https://docs.devwithlando.io/cli/logs.html).
+- `lando logs -s <service>` - Show service's [logs](https://docs.devwithlando.io/cli/logs.html).
 - `lando drush si --existing-config` - Install Drupal 8 site from [existing configuration](https://www.drupal.org/node/2897299).
 
 ### Testing
