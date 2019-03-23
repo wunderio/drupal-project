@@ -23,14 +23,14 @@ Have a look at the file for details, but in short this is how it works:
 
 ## Local development
 
-Install [Lando](https://docs.devwithlando.io/), add your project's name to `.lando.yml` and run `lando start`.
+Quick start: install [Lando](https://docs.devwithlando.io/), add your project's name to `.lando.yml` and run `lando start`.
 
 Default environment setup is defined in `.lando.base.yml` file. Use `.lando.yml` file for any project level overrides and `.lando.local.yml` for local changes ([docs](https://docs.devwithlando.io/config/lando.html)).
 
 ### Useful commands
 
 - `lando` - Complete list of available Lando commands.
-- `lando info` - Info about your app's services. More details are available using `--deep` flag.
+- `lando info` - Info about running services. More details are available using `--deep` flag.
 - `lando logs -s <service>` - Show service's log.
 - `lando drush si demo_umami` - Install Drupal 8 site with `demo_umami` profile.
 
