@@ -23,7 +23,14 @@ Have a look at the file for details, but in short this is how it works:
 
 ## Local development
 
-Install [Lando](https://docs.devwithlando.io/). Default environment setup is defined in `.lando.base.yml` file, use `.lando.yml` file for any overrides. Add your project's name and other project-specific settings to `.lando.yml` and run `lando start`. Use `lando` command for complete list of available Lando commands.
+Install [Lando](https://docs.devwithlando.io/). Default environment setup is defined in `.lando.base.yml` file. Use `.lando.yml` file for any overrides ([docs](https://docs.devwithlando.io/config/lando.html)). Add your project's name and other project-specific settings to `.lando.yml` and run `lando start`. 
+
+### Useful commands
+
+- `lando` - Complete list of available Lando commands.
+- `lando info` - Info about your app's services. More details are available using `--deep` flag.
+- `lando logs -s <service>` - Show service's log.
+- `lando drush si demo_umami -y` - Install Drupal 8 site with `demo_umami` profile.
 
 ### Testing
 
@@ -64,7 +71,3 @@ Example: analyze contrib modules for depreciation by running `lando phpstan anal
 #### [PHPUnit](https://github.com/sebastianbergmann/phpunit/)
 
 Usage: `lando phpunit <parameters>`
-
-### Demo content
-
-Use `lando drush si --db-url=mysql://drupal8:drupal8@database:3306/drupal8 demo_umami -y` to install default Drupal 8 site with `demo_umami` profile.
