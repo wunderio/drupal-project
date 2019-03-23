@@ -23,7 +23,7 @@ Have a look at the file for details, but in short this is how it works:
 
 ## Local development
 
-Install [Lando](https://docs.devwithlando.io/). Default environment setup is defined in `.lando.base.yml` file. Use `.lando.yml` file for any overrides ([docs](https://docs.devwithlando.io/config/lando.html)). Add your project's name and other project-specific settings to `.lando.yml` and run `lando start`. 
+Install [Lando](https://docs.devwithlando.io/). Default environment setup is defined in `.lando.base.yml` file. Use `.lando.yml` file for any project level overrides and `.lando.local.yml` for local changes ([docs](https://docs.devwithlando.io/config/lando.html)). Add your project's name and other project-specific settings to `.lando.yml` and run `lando start`. 
 
 ### Useful commands
 
