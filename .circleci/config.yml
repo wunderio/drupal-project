@@ -11,8 +11,8 @@ workflows:
           name: validate
           post-validation:
             - run: echo "You can add additional validation here!"
-            # - run: composer install
-            # - run: phpcs --standard=codeception tests
+            - run: composer install -n --prefer-dist --ignore-platform-reqs --optimize-autoloader
+            - run: phpcs --standard=codeception tests
 
       - silta/drupal-build-deploy: &build-deploy
           name: build-deploy
