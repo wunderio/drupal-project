@@ -1,9 +1,6 @@
 name: Silta
 recipe: drupal8
 
-compose:
-  - docker-compose.yml
-
 config:
   webroot: web
   via: nginx
@@ -20,16 +17,24 @@ tooling:
       - "--env=lando"
 
 services:
+  appserver:
+    overrides:
+      environment:
+        HASH_SALT: notsosecurehash
+  # chrome:
+  #   type: compose
+  #   services:
+  #     image: selenium/standalone-chrome
+  #     user: root
+  #     ports:
+  #       - "4444:4444"
+  #     volumes:
+  #       - /dev/shm:/dev/shm
+  #     command: /opt/bin/entry_point.sh
   mailhog:
     type: mailhog
     hogfrom:
       - appserver
-
-  appserver:
-    overrides:
-      services:
-        environment:
-          HASH_SALT: notsosecurehash
 
 proxy:
   mailhog:
