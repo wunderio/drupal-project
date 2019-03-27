@@ -32,10 +32,4 @@ Quick start: install [Lando](https://docs.devwithlando.io/), add your project's 
 - `lando info` - Info about running [services](https://docs.devwithlando.io/config/services.html). More details are available using `--deep` flag.
 - `lando logs -s <service>` - Show service's [logs](https://docs.devwithlando.io/cli/logs.html).
 - `lando drush si --existing-config` - Install Drupal 8 site from [existing configuration](https://www.drupal.org/node/2897299).
-
-### Frontend tools
-
-- Yarn: `lando yarn <parameters>`
-- npm: `lando npm <parameters>`
-
-Activate preferable tool for automatic installation of dependencies by uncommenting your selection at `.lando.yml` > `services:node:build`.
+- `lando yarn <command>` - Use Yarn.

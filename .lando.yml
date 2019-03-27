@@ -15,17 +15,12 @@ tooling:
     cmd:
       - ./vendor/bin/codecept
       - "--env=lando"
-  npm:
-    description: Runs npm commands
-    service: node
   yarn:
     description: Runs Yarn commands
     service: node
 
 services:
   appserver:
-    build:
-      - composer install
     overrides:
       environment:
         HASH_SALT: notsosecurehash
@@ -46,9 +41,7 @@ services:
   node:
     type: node:10
     build:
-      # Uncomment preferable tool for installing dependencies 
-      # - yarn install
-      # - npm install
+      - yarn install
 
 proxy:
   mailhog:
