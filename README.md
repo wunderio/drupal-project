@@ -21,3 +21,21 @@ Have a look at the file for details, but in short this is how it works:
 - Create a custom docker image for Drupal and nginx, and push those to a docker registry (typically that of your cloud provider).
 - Install or update our helm chart while passing our custom images as parameters.
 - The helm chart executes the usual drush deployment commands.
+
+## Local development
+
+Quick start: install [Lando](https://docs.devwithlando.io/), add your project's name to `.lando.yml` and run `lando start`.
+
+### Useful commands
+
+- `lando` - Complete list of available Lando [commands](https://docs.devwithlando.io/cli/usage.html).
+- `lando info` - Info about running [services](https://docs.devwithlando.io/config/services.html). More details are available using `--deep` flag.
+- `lando logs -s <service>` - Show service's [logs](https://docs.devwithlando.io/cli/logs.html).
+- `lando drush si --existing-config` - Install Drupal 8 site from [existing configuration](https://www.drupal.org/node/2897299).
+
+### Frontend tools
+
+- Yarn: `lando yarn <parameters>`
+- npm: `lando npm <parameters>`
+
+Activate preferable tool for automatic installation of dependencies by uncommenting your selection at `.lando.yml` > `services:node:build`.
