@@ -24,6 +24,8 @@ tooling:
 
 services:
   appserver:
+    build:
+      - composer install
     overrides:
       environment:
         HASH_SALT: notsosecurehash
