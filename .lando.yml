@@ -15,8 +15,8 @@ tooling:
     cmd:
       - ./vendor/bin/codecept
       - "--env=lando"
-  yarn:
-    description: Runs Yarn commands
+  npm:
+    description: Runs npm commands
     service: node
 
 services:
@@ -39,9 +39,9 @@ services:
     hogfrom:
       - appserver
   node:
-    type: node:10
+    type: node
     build:
-      - yarn install
+      - npm install
 
 proxy:
   mailhog:
