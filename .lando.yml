@@ -15,6 +15,9 @@ tooling:
     cmd:
       - ./vendor/bin/codecept
       - "--env=lando"
+  npm:
+    description: Runs npm commands
+    service: node
 
 services:
   appserver:
@@ -37,6 +40,10 @@ services:
     type: mailhog
     hogfrom:
       - appserver
+  node:
+    type: node
+    build:
+      - npm install
 
 proxy:
   mailhog:

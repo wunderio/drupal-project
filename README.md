@@ -21,3 +21,7 @@ Have a look at the file for details, but in short this is how it works:
 - Create a custom docker image for Drupal and nginx, and push those to a docker registry (typically that of your cloud provider).
 - Install or update our helm chart while passing our custom images as parameters.
 - The helm chart executes the usual drush deployment commands.
+
+## Local development
+
+Quick start: install [Lando](https://docs.devwithlando.io/), add your project's name to `.lando.yml` and run `lando start`.
