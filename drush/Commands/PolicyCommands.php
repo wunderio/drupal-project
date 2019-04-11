@@ -3,7 +3,6 @@
 namespace Drush\Commands;
 
 use Consolidation\AnnotatedCommand\CommandData;
-use Drush\Commands\DrushCommands;
 
 /**
  * Edit this file to reflect your organization's needs.
@@ -19,7 +18,7 @@ class PolicyCommands extends DrushCommands {
    * @throws \Exception
    */
   public function sqlSyncValidate(CommandData $commandData) {
-    if ($commandData->input()->getArgument('destination') == '@prod') {
+    if ($commandData->input()->getArgument('target') == '@prod') {
       throw new \Exception(dt('Per !file, you may never overwrite the production database.', ['!file' => __FILE__]));
     }
   }
@@ -32,7 +31,7 @@ class PolicyCommands extends DrushCommands {
    * @throws \Exception
    */
   public function rsyncValidate(CommandData $commandData) {
-    if (preg_match("/^@prod/", $commandData->input()->getArgument('destination'))) {
+    if (preg_match("/^@prod/", $commandData->input()->getArgument('target'))) {
       throw new \Exception(dt('Per !file, you may never rsync to the production site.', ['!file' => __FILE__]));
     }
   }
