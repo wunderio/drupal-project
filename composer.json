@@ -26,7 +26,7 @@
         "drupal/warden": "*",
         "drush/drush": "^9.0.0",
         "machbarmacher/gdpr-dump": "dev-master",
-        "vlucas/phpdotenv": "^2.4",
+        "vlucas/phpdotenv": "^3.3",
         "webflo/drupal-finder": "^1.0.0",
         "webmozart/path-util": "^2.3",
         "wunderio/drupal-ping": "^1.0",
