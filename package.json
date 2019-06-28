@@ -2,5 +2,8 @@
   "dependencies": {},
   "devDependencies": {
     "webpack": "^4.5.0"
+  },
+  "scripts": {
+    "build": "echo 'No build command specified in package.json'"
   }
 }

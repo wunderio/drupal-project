@@ -16,7 +16,7 @@ workflows:
           name: build-deploy
           codebase-build:
             - silta/drupal-composer-install
-            - silta/yarn-install
+            - silta/npm-install-build
           context: global_nonprod
           filters:
             branches:
