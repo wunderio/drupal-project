@@ -21,8 +21,6 @@ tooling:
 
 services:
   appserver:
-    build:
-      - composer install
     overrides:
       environment:
         HASH_SALT: notsosecurehash
@@ -50,7 +48,8 @@ proxy:
     - mail.lndo.site
 
 events:
+  pre-start:
+    - appserver: composer install
   # Clear caches after a database import
   post-db-import:
     - appserver: cd $LANDO_WEBROOT && drush cr -y
-
