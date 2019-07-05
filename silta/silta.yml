@@ -3,7 +3,3 @@
 #
 # See https://github.com/wunderio/charts/blob/master/drupal/values.yaml
 # for all possible options.
-
-# Example: enable private files for Drupal.
-#privateFiles:
-#  enabled: true
