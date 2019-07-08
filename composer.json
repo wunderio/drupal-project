@@ -16,20 +16,21 @@
         }
     ],
     "require": {
+        "php": ">=5.6",
         "composer/installers": "^1.2",
-        "cweagans/composer-patches": "^1.6",
-        "drupal-composer/drupal-scaffold": "^2.2",
-        "drupal/config_installer": "~1.7",
+        "cweagans/composer-patches": "^1.6.5",
+        "drupal-composer/drupal-scaffold": "^2.5",
         "drupal/console": "^1.0.2",
-        "drupal/core": "~8.5",
-        "drupal/simplei": "^1.0",
-        "drupal/warden": "*",
+        "drupal/core": "^8.7.0",
         "drush/drush": "^9.0.0",
-        "machbarmacher/gdpr-dump": "dev-master",
-        "vlucas/phpdotenv": "^3.3",
         "webflo/drupal-finder": "^1.0.0",
         "webmozart/path-util": "^2.3",
-        "zaporylie/composer-drupal-optimizations": "^1.1"
+        "vlucas/phpdotenv": "^3.3",
+        "zaporylie/composer-drupal-optimizations": "^1.1",
+        "drupal/config_installer": "~1.7",
+        "drupal/simplei": "^1.0",
+        "drupal/warden": "*",
+        "machbarmacher/gdpr-dump": "dev-master"
     },
     "require-dev": {
         "webflo/drupal-core-require-dev": "~8.5"
