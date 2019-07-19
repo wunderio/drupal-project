@@ -30,4 +30,4 @@ Quick start: install [Lando](https://docs.devwithlando.io/), add your project's 
 
 Template includes Elasticsearch & Kibana 7 local setup. Elasticsearch is using [Lando's internal Elasticsearch service](https://docs.devwithlando.io/tutorials/elasticsearch.html), Kibana is using [blacktop/kibana](https://hub.docker.com/r/blacktop/kibana/) image.
 
-Uncomment `elasticsearch` and `kibana` services and proxies sections at `.lando.yml` to enable the corresponding services. Elasticsearch server config file (incl. CORS settings) is available at `.lando/elasticsearch.yml`.
+Uncomment `elasticsearch` and `kibana` services and proxies sections at `.lando.yml` to enable the corresponding services. Elasticsearch server config file (incl. [CORS settings](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-http.html)) is available at `.lando/elasticsearch.yml`.
