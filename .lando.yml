@@ -74,3 +74,6 @@ events:
   # Clear caches after a database import
   post-db-import:
     - appserver: cd $LANDO_WEBROOT && drush cr -y
+
+# Lando version at the time of creation of .lando.yml.
+version: v3.0.0-rc.18
