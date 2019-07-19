@@ -34,6 +34,24 @@ services:
   #     volumes:
   #       - /dev/shm:/dev/shm
   #     command: /opt/bin/entry_point.sh
+  elasticsearch:
+    services:
+      # CORS settings.
+      command: docker-entrypoint.sh elasticsearch -Ecluster.name=catalog -Ehttp.port=9200 -Ehttp.cors.allow-origin="*" -Ehttp.cors.enabled=true -Ehttp.cors.allow-headers=X-Requested-With,X-Auth-Token,Content-Type,Content-Length,Authorization -Ehttp.cors.allow-credentials=true
+      image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.1
+      ports:
+        - "9200"
+        - "9300"
+    type: compose
+  kibana:
+    services:
+      command: ./bin/kibana
+      depends_on:
+        - elasticsearch
+      image: docker.elastic.co/kibana/kibana-oss:6.8.1
+      ports:
+        - "5601"
+    type: compose   
   mailhog:
     type: mailhog
     hogfrom:
@@ -44,6 +62,10 @@ services:
       - npm install
 
 proxy:
+  elasticsearch:
+    - es.lndo.site:9200
+  kibana:
+    - kibana.lndo.site:5601
   mailhog:
     - mail.lndo.site
 
