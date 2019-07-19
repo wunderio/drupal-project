@@ -25,3 +25,7 @@ Have a look at the file for details, but in short this is how it works:
 ## Local development
 
 Quick start: install [Lando](https://docs.devwithlando.io/), add your project's name to `.lando.yml` and run `lando start`.
+
+### Elasticsearch & Kibana
+
+Template includes Elasticsearch & Kibana 7 local setup. Uncomment `elasticsearch` and `kibana` services and proxies sections at `.lando.yml` to enable the corresponding services. Elasticsearch server config file (incl. CORS settings) is available at `.lando/elasticsearch.yml`.
