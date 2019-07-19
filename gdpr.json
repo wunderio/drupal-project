@@ -1,8 +1,0 @@
-{
-  "users_field_data": {
-    "name": {"formatter": "name"},
-    "pass": {"formatter": "password"},
-    "mail": {"formatter": "email"},
-    "init": {"formatter": "clear"}
-  }
-}
