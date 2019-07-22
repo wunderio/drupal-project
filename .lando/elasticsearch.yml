@@ -23,5 +23,3 @@ node:
   ingest: true
 discovery:
   type: single-node
-plugin:
-  mandatory: analysis-icu
