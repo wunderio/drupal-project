@@ -38,8 +38,6 @@ services:
   #   type: elasticsearch:7
   #   portforward: true
   #   mem: 1026m
-  #   config:
-  #     server: .lando/elasticsearch.yml
   #   # Install `analysis-icu` plugin after ES service boots up.
   #   run_as_root:
   #     - elasticsearch-plugin install analysis-icu
