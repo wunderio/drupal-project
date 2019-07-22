@@ -25,3 +25,11 @@ Have a look at the file for details, but in short this is how it works:
 ## Local development
 
 Quick start: install [Lando](https://docs.devwithlando.io/), add your project's name to `.lando.yml` and run `lando start`.
+
+### Elasticsearch & Kibana
+
+Template includes Elasticsearch & Kibana 7 local setup. ES is using [Lando's internal ES service](https://docs.devwithlando.io/tutorials/elasticsearch.html), Kibana [blacktop/kibana](https://hub.docker.com/r/blacktop/kibana/) image.
+
+Uncomment `elasticsearch` and `kibana` services and proxies sections at `.lando.yml` to enable the corresponding services. Consult [this Lando ES example](https://github.com/lando/lando/tree/master/examples/elasticsearch) to customize ES server configuration.
+
+You can find default ES settings by running `lando ssh -s elasticsearch -u root -c "cat /opt/bitnami/elasticsearch/config/elasticsearch.yml"`.

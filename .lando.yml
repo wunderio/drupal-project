@@ -34,6 +34,22 @@ services:
   #     volumes:
   #       - /dev/shm:/dev/shm
   #     command: /opt/bin/entry_point.sh
+  # elasticsearch:
+  #   type: elasticsearch:7
+  #   portforward: true
+  #   mem: 1026m
+  #   # Install `analysis-icu` plugin after ES service boots up.
+  #   run_as_root:
+  #     - elasticsearch-plugin install analysis-icu
+  # kibana:
+  #   services:
+  #     command: /docker-entrypoint.sh kibana
+  #     depends_on:
+  #       - elasticsearch
+  #     image: blacktop/kibana:7
+  #     ports:
+  #       - "5601"
+  #   type: compose
   mailhog:
     type: mailhog
     hogfrom:
@@ -44,6 +60,10 @@ services:
       - npm install
 
 proxy:
+  # elasticsearch:
+  #   - es.lndo.site:9200
+  # kibana:
+  #   - kibana.lndo.site:5601
   mailhog:
     - mail.lndo.site
 
@@ -53,3 +73,6 @@ events:
   # Clear caches after a database import
   post-db-import:
     - appserver: cd $LANDO_WEBROOT && drush cr -y
+
+# Lando version at the time of creation of .lando.yml.
+version: v3.0.0-rc.18
