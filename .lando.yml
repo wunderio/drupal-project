@@ -36,7 +36,7 @@ services:
   #     command: /opt/bin/entry_point.sh
   # elasticsearch:
   #   type: elasticsearch:7
-  #   portforward: true
+  #   portforward: "9200"
   #   mem: 1026m
   #   # Install `analysis-icu` plugin after ES service boots up.
   #   run_as_root:
