@@ -1,6 +1,14 @@
 
-# Provide a high-availability deployment.
+# Provide a high-availability, autoscaling deployment.
 replicas: 2
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+
+# Enable daily backups.
+backup:
+  enabled: true
 
 # Uncomment these lines to disable basic auth protection.
 #nginx:
