@@ -22,6 +22,9 @@ php:
       cpu: 200m
       memory: 256m
 
+  # Don't show errors in production.
+  errorLevel: "hide"
+
 # Connect to an externally hosted database.
 #  env:
 #    DB_HOST: 'hosted.database.server.com'
