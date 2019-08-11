@@ -48,14 +48,14 @@ services:
   #   run_as_root:
   #     - elasticsearch-plugin install analysis-icu
   # kibana:
+  #   type: compose
   #   services:
-  #     command: /docker-entrypoint.sh kibana
-  #     depends_on:
-  #       - elasticsearch
   #     image: blacktop/kibana:7
+  #     command: /docker-entrypoint.sh kibana
   #     ports:
   #       - "5601:5601"
-  #   type: compose
+  #     depends_on:
+  #       - elasticsearch
   mailhog:
     type: mailhog
     hogfrom:
