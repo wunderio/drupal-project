@@ -28,8 +28,8 @@ Quick start: install [Lando](https://docs.devwithlando.io/), add your project's 
 
 ### Elasticsearch & Kibana
 
-Template includes Elasticsearch & Kibana 7 local setup. ES is using [Lando's internal ES service](https://docs.devwithlando.io/tutorials/elasticsearch.html), Kibana [blacktop/kibana](https://hub.docker.com/r/blacktop/kibana/) image.
+Template includes Elasticsearch & Kibana 7 local setup based on [blacktop Docker images](https://hub.docker.com/u/blacktop).
 
-Uncomment `elasticsearch` and `kibana` services and proxies sections at `.lando.yml` to enable the corresponding services. Consult [this Lando ES example](https://github.com/lando/lando/tree/master/examples/elasticsearch) to customize ES server configuration.
+Uncomment `elasticsearch` and `kibana` services and proxies sections at `.lando.yml` to enable the corresponding services.
 
-You can find default ES settings by running `lando ssh -s elasticsearch -u root -c "cat /opt/bitnami/elasticsearch/config/elasticsearch.yml"`.
+You can find default ES settings by running `lando ssh -s elasticsearch -u root -c "cat /usr/share/elasticsearch/config/elasticsearch.yml"`.
