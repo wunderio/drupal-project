@@ -35,21 +35,27 @@ services:
   #       - /dev/shm:/dev/shm
   #     command: /opt/bin/entry_point.sh
   # elasticsearch:
-  #   type: elasticsearch:7
-  #   portforward: "9200"
-  #   mem: 1026m
-  #   # Install `analysis-icu` plugin after ES service boots up.
+  #   type: compose
+  #   services:
+  #     image: blacktop/elasticsearch:7
+  #     command: /elastic-entrypoint.sh elasticsearch
+  #     ports: 
+  #       - "9200:9200"
+  #   # Install ES requirement JDK here & set JAVA_HOME at `.lando/.env`
+  #   build_as_root:
+  #     - apk --no-cache add openjdk11
+  #   # Install `analysis-icu` plugin after ES service boots up
   #   run_as_root:
   #     - elasticsearch-plugin install analysis-icu
   # kibana:
+  #   type: compose
   #   services:
-  #     command: /docker-entrypoint.sh kibana
-  #     depends_on:
-  #       - elasticsearch
   #     image: blacktop/kibana:7
+  #     command: /docker-entrypoint.sh kibana
   #     ports:
   #       - "5601:5601"
-  #   type: compose
+  #     depends_on:
+  #       - elasticsearch
   mailhog:
     type: mailhog
     hogfrom:
@@ -74,5 +80,8 @@ events:
   post-db-import:
     - appserver: cd $LANDO_WEBROOT && drush cr -y
 
-# Lando version at the time of creation of .lando.yml.
-version: v3.0.0-rc.18
+env_file:
+  - .lando/.env
+
+# Lando version at the time of last update of .lando.yml
+version: v3.0.0-rc.19
