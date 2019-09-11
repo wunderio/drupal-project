@@ -6,6 +6,10 @@ autoscaling:
   minReplicas: 2
   maxReplicas: 5
 
+# Don't delay the production deployment process to create the reference data.
+referenceData:
+  updateAfterDeployment: false
+
 # Enable daily backups.
 backup:
   enabled: true
