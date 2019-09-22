@@ -20,6 +20,7 @@ class ScriptHandler {
     $drupalFinder = new DrupalFinder();
     $drupalFinder->locateRoot(getcwd());
     $drupalRoot = $drupalFinder->getDrupalRoot();
+    $composerRoot = $drupalFinder->getComposerRoot();
 
     $dirs = [
       'modules',
@@ -42,21 +43,32 @@ class ScriptHandler {
       require_once $drupalRoot . '/core/includes/install.inc';
       $settings['config_directories'] = [
         CONFIG_SYNC_DIRECTORY => (object) [
-          'value' => Path::makeRelative($drupalFinder->getComposerRoot() . '/config/sync', $drupalRoot),
+          'value' => Path::makeRelative($composerRoot . '/config/sync', $drupalRoot),
           'required' => TRUE,
         ],
       ];
       drupal_rewrite_settings($settings, $drupalRoot . '/sites/default/settings.php');
       $fs->chmod($drupalRoot . '/sites/default/settings.php', 0666);
-      $event->getIO()->write("Create a sites/default/settings.php file with chmod 0666");
+      $event->getIO()->write("Created a sites/default/settings.php file with chmod 0666");
     }
 
-    // Create the files directory with chmod 0777
-    if (!$fs->exists($drupalRoot . '/sites/default/files')) {
+    // Create the ../files directory with chmod 0777
+    $files = $composerRoot . '/files';
+    if (!$fs->exists($files)) {
       $oldmask = umask(0);
-      $fs->mkdir($drupalRoot . '/sites/default/files', 0777);
+      $fs->mkdir($files, 0777);
       umask($oldmask);
-      $event->getIO()->write("Create a sites/default/files directory with chmod 0777");
+      $event->getIO()->write("Created a ../files directory with chmod 0777");
+    }
+
+    // Create the symbolic link to ../files directory
+    $defaultFilesPath = Path::makeRelative($drupalRoot . '/sites/default/files', $composerRoot);
+    $filesPath = Path::makeRelative($files, $composerRoot . '/sites/default/files');
+    if (!$fs->exists($defaultFilesPath)) {
+      $oldmask = umask(0);
+      $fs->symlink($filesPath, $defaultFilesPath, true);
+      umask($oldmask);
+      $event->getIO()->write("Created a symbolic link to ../files directory");
     }
   }
 
