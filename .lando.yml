@@ -39,6 +39,8 @@ services:
   #     command: /elastic-entrypoint.sh elasticsearch
   #     ports: 
   #       - "9200:9200"
+  #     volumes:
+  #       - ./.lando/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
   #   # Install ES requirement JDK here & set JAVA_HOME at `.lando/.env`
   #   build_as_root:
   #     - apk --no-cache add openjdk11
