@@ -1,0 +1,21 @@
+parameters:
+  stop_on_failure: true
+  ascii:
+    failed: ~
+    succeeded: ~
+  tasks:
+    php_compatibility: ~
+    check_file_permissions: ~
+    php_check_syntax: ~
+    phpcs: ~
+    ecs: ~
+    yaml_lint: ~
+    json_lint: ~
+  extensions:
+    - Wunderio\GrumPHP\Task\PhpCompatibility\PhpCompatibilityExtensionLoader
+    - Wunderio\GrumPHP\Task\PhpCheckSyntax\PhpCheckSyntaxExtensionLoader
+    - Wunderio\GrumPHP\Task\CheckFilePermissions\CheckFilePermissionsExtensionLoader
+    - Wunderio\GrumPHP\Task\Ecs\EcsExtensionLoader
+    - Wunderio\GrumPHP\Task\Phpcs\PhpcsExtensionLoader
+    - Wunderio\GrumPHP\Task\YamlLint\YamlLintExtensionLoader
+    - Wunderio\GrumPHP\Task\JsonLint\JsonLintExtensionLoader

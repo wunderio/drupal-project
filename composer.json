@@ -28,11 +28,11 @@
         "zaporylie/composer-drupal-optimizations": "^1.1",
         "drupal/config_installer": "~1.7",
         "drupal/simplei": "^1.0",
-        "drupal/warden": "*",
-        "machbarmacher/gdpr-dump": "dev-master"
+        "drupal/warden": "*"
     },
     "require-dev": {
-        "webflo/drupal-core-require-dev": "~8.5"
+        "webflo/drupal-core-require-dev": "~8.5",
+        "wunderio/code-quality": "~1.0.2"
     },
     "conflict": {
         "drupal/drupal": "*"
