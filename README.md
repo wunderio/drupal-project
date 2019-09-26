@@ -55,15 +55,15 @@ silta_config: silta/silta.yml,silta/secrets
 
 ### [Services](https://docs.lando.dev/config/services.html)
 
+- `chrome` - uses [selenium/standalone-chrome](https://hub.docker.com/r/selenium/standalone-chrome/) image, uncomment the service definition at `.lando.yml` to enable.
 - `elasticsearch` - uses [blacktop/elasticsearch:7](https://github.com/blacktop/docker-elasticsearch-alpine) image, uncomment the service and proxy definitions at `.lando.yml` to enable.
 - `kibana`  - uses [blacktop/kibana:7](https://github.com/blacktop/docker-kibana-alpine) image, uncomment the service and proxy definitions at `.lando.yml` to enable.
 - `mailhog` - uses Lando [MailHog service](https://docs.lando.dev/config/mailhog.html).
 - `node` - uses Lando [Node service](https://docs.lando.dev/config/node.html).
-- `chrome` - uses [selenium/standalone-chrome](https://hub.docker.com/r/selenium/standalone-chrome/) image, uncomment the service definition at `.lando.yml` to enable.
 
 ### [Tools](https://docs.lando.dev/config/tooling.html)
 
+- `lando` - tools / commands overview.
 - `lando codecept <commands>` - run [Codeception](https://codeception.com/) tests.
 - `lando grumphp <commands>` - run [GrumPHP](https://github.com/phpro/grumphp) code quality checks. Modified or new files are checked on git commit, see more at [wunderio/code-quality](https://github.com/wunderio/code-quality).
 - `lando npm <commands>` - run npm commands.
-- `lando` - tools / commands overview.
