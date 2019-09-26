@@ -65,5 +65,5 @@ silta_config: silta/silta.yml,silta/secrets
 
 - `lando` - tools / commands overview.
 - `lando codecept <commands>` - run [Codeception](https://codeception.com/) tests.
-- `lando grumphp <commands>` - run [GrumPHP](https://github.com/phpro/grumphp) code quality checks. Modified or new files are checked on git commit, see more at [wunderio/code-quality](https://github.com/wunderio/code-quality).
+- `lando grumphp <commands>` - run [GrumPHP](https://github.com/phpro/grumphp) code quality checks. Modified or new files are checked on git commit, see more at `lando grumphp -h` or [wunderio/code-quality](https://github.com/wunderio/code-quality).
 - `lando npm <commands>` - run npm commands.
