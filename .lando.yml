@@ -9,12 +9,14 @@ config:
   #xdebug: true
 
 tooling:
-  codeception:
-    service: appserver
-    description: Run codeception
+  codecept:
+    description: Runs codeception commands
     cmd:
-      - ./vendor/bin/codecept
-      - "--env=lando"
+      - appserver: ./vendor/bin/codecept --env=lando
+  grumphp:
+    description: Runs grumphp commands
+    cmd:
+      - appserver: ./vendor/bin/grumphp
   npm:
     description: Runs npm commands
     service: node
