@@ -4,11 +4,15 @@ parameters:
     failed: ~
     succeeded: ~
   tasks:
-    php_compatibility: ~
+    php_compatibility:
+      run_on: ['web/modules/custom', 'web/themes/custom', 'sites/default/settings.php']
     check_file_permissions: ~
-    php_check_syntax: ~
-    phpcs: ~
-    ecs: ~
+    php_check_syntax:
+      run_on: ['web/modules/custom', 'web/themes/custom', 'sites/default/settings.php']
+    phpcs:
+      run_on: ['web/modules/custom', 'web/themes/custom']
+    ecs:
+      run_on: ['web/modules/custom', 'web/themes/custom']
     yaml_lint: ~
     json_lint: ~
   extensions:

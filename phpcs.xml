@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!-- See http://pear.php.net/manual/en/package.php.php-codesniffer.annotated-ruleset.php -->
-<ruleset name="Relax Drupal">
+<ruleset name="Drupal Custom">
 
     <description>Drupal coding standard</description>
 
@@ -26,22 +26,7 @@
     <!-- exclude CSS files, where we don't usually follow Drupal standards  -->
     <exclude-pattern>*.css</exclude-pattern>
 
-    <rule ref="Drupal">
-        <exclude name="Drupal.Commenting.FileComment" />
-        <exclude name="Drupal.Commenting.DocComment" />
-        <exclude name="Drupal.Commenting.FunctionComment" />
-        <exclude name="Drupal.Commenting.InlineComment" />
-        <exclude name="Drupal.Arrays.Array" />
-        <exclude name="Drupal.Files.TxtFileLineLength" />
-        <exclude name="Drupal.Files.EndFileNewline.NoneFound" />
-        <exclude name="PEAR.Commenting.ClassComment" />
-    </rule>
-
-    <rule ref="Drupal.Files.LineLength">
-        <properties>
-            <!-- Be a bit more tolerant when it comes to line lengths -->
-            <property name="lineLimit" value="110"/>
-        </properties>
-    </rule>
+    <rule ref="WunderDrupal"/>
+    <rule ref="WunderSecurity"/>
 
 </ruleset>

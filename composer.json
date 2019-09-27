@@ -32,7 +32,7 @@
     },
     "require-dev": {
         "webflo/drupal-core-require-dev": "~8.5",
-        "wunderio/code-quality": "~1.0.2"
+        "wunderio/code-quality": "^1.0.3"
     },
     "conflict": {
         "drupal/drupal": "*"
