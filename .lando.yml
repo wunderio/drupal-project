@@ -9,10 +9,6 @@ config:
   #xdebug: true
 
 tooling:
-  codecept:
-    description: Runs codeception commands
-    cmd:
-      - appserver: ./vendor/bin/codecept --env=lando
   grumphp:
     description: Runs grumphp commands
     cmd:
