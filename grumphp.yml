@@ -5,14 +5,15 @@ parameters:
     succeeded: ~
   tasks:
     php_compatibility:
-      run_on: ['web/modules/custom', 'web/themes/custom', 'sites/default/settings.php']
+      run_on: ['web/modules/custom', 'web/themes/custom', 'web/sites']
     check_file_permissions: ~
     php_check_syntax:
-      run_on: ['web/modules/custom', 'web/themes/custom', 'sites/default/settings.php']
+      run_on: ['web/modules/custom', 'web/themes/custom', 'web/sites']
     phpcs:
-      run_on: ['web/modules/custom', 'web/themes/custom']
+      standard:
+        - phpcs.xml
     ecs:
-      run_on: ['web/modules/custom', 'web/themes/custom']
+      run_on: ['web/modules/custom', 'web/themes/custom', 'web/sites']
     yaml_lint: ~
     json_lint: ~
   extensions:

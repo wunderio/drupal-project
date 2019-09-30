@@ -1,6 +1,11 @@
 <?php
 
-/*
+/**
+ * @file
+ * Settings for Lando environment.
+ */
+
+/**
  * Load database credentials from Lando app environment.
  */
 $lando_info = json_decode(getenv('LANDO_INFO'), TRUE);
@@ -16,7 +21,7 @@ $databases['default']['default'] = [
 // Use the hash_salt setting from Lando.
 $settings['hash_salt'] = getenv('HASH_SALT');
 
-// Skip file system permissions hardening when using local development with Lando.
+// Skip file system permissions hardening in local development with Lando.
 $settings['skip_permissions_hardening'] = TRUE;
 
 // Skip trusted host pattern when using Lando.
