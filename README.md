@@ -21,7 +21,7 @@ Have a look at the file for details, but in short this is how it works:
 - Install or update our helm chart while passing our custom images as parameters.
 - The helm chart executes the usual drush deployment commands.
 
-### Secrets
+## Secrets
 
 Project can override values and do file encryption using openssl.
 Encryption key has to be identical to the one in circleci context.
