@@ -10,8 +10,7 @@ parameters:
     php_check_syntax:
       run_on: ['web/modules/custom', 'web/themes/custom', 'web/sites']
     phpcs:
-      standard:
-        - phpcs.xml
+      standard: ['phpcs.xml']
     ecs:
       run_on: ['web/modules/custom', 'web/themes/custom', 'web/sites']
     yaml_lint: ~
