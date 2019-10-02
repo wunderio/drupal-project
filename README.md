@@ -6,13 +6,12 @@ This project template is an opinionated fork of the popular [Drupal-composer tem
 
 ## Usage
 
-- Copy this repository and push it to our organization. 
+- Copy this repository and push it to our organization.
 - Log in to CircleCI using your Github account and add the new project.
 
- 
 ## How it works
 
-Each pushed commit is processed according to the instructions in `.circleci/config.yml` in the repository. 
+Each pushed commit is processed according to the instructions in `.circleci/config.yml` in the repository.
 Have a look at the file for details, but in short this is how it works:
 
 - Run the CircleCI jobs using a [custom docker image](https://github.com/wunderio/circleci-builder) that has all the tools we need.  
@@ -22,35 +21,48 @@ Have a look at the file for details, but in short this is how it works:
 - Install or update our helm chart while passing our custom images as parameters.
 - The helm chart executes the usual drush deployment commands.
 
-# Secrets
+## Secrets
 
 Project can override values and do file encryption using openssl.
 Encryption key has to be identical to the one in circleci context.
 
 Decrypting secrets file:
-```
+
+```sh
 openssl enc -d -aes-256-cbc -pbkdf2 -in silta/secrets -out silta/secrets.dec
 ```
 
 Encrypting secrets file:
-```
+
+```sh
 openssl aes-256-cbc -pbkdf2 -in silta/secrets.dec -out silta/secrets
 ```
 
 Secret values can be attached to circleci `drupal-build-deploy` job like this
-```
+
+```sh
 decrypt_files: silta/secrets
 silta_config: silta/silta.yml,silta/secrets
 ```
 
 ## Local development
 
-Quick start: install [Lando](https://docs.devwithlando.io/), add your project's name to `.lando.yml` and run `lando start`.
+### [Setup](https://docs.lando.dev/basics/installation.html)
 
-### Elasticsearch & Kibana
+1. Install the latest [Lando](https://github.com/lando/lando/releases) and read the [documentation](https://docs.lando.dev/).
+2. Update your project name and other Lando [Drupal 8 recipe](https://docs.lando.dev/config/drupal8.html)'s parameters at `.lando.yml`.
+3. Run `lando start`.
 
-Template includes Elasticsearch & Kibana 7 local setup based on [blacktop Docker images](https://hub.docker.com/u/blacktop).
+### [Services](https://docs.lando.dev/config/services.html)
 
-Uncomment `elasticsearch` and `kibana` services and proxies sections at `.lando.yml` to enable the corresponding services.
+- `chrome` - uses [selenium/standalone-chrome](https://hub.docker.com/r/selenium/standalone-chrome/) image, uncomment the service definition at `.lando.yml` to enable.
+- `elasticsearch` - uses [blacktop/elasticsearch:7](https://github.com/blacktop/docker-elasticsearch-alpine) image, uncomment the service and proxy definitions at `.lando.yml` to enable.
+- `kibana`  - uses [blacktop/kibana:7](https://github.com/blacktop/docker-kibana-alpine) image, uncomment the service and proxy definitions at `.lando.yml` to enable.
+- `mailhog` - uses Lando [MailHog service](https://docs.lando.dev/config/mailhog.html).
+- `node` - uses Lando [Node service](https://docs.lando.dev/config/node.html).
 
-You can find default ES settings by running `lando ssh -s elasticsearch -u root -c "cat /usr/share/elasticsearch/config/elasticsearch.yml"`.
+### [Tools](https://docs.lando.dev/config/tooling.html)
+
+- `lando` - tools / commands overview.
+- `lando grumphp <commands>` - run [GrumPHP](https://github.com/phpro/grumphp) code quality checks. Modified or new files are checked on git commit, see more at `lando grumphp -h` or [wunderio/code-quality](https://github.com/wunderio/code-quality).
+- `lando npm <commands>` - run npm commands.

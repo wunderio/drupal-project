@@ -1,8 +1,10 @@
 <?xml version="1.0"?>
 <!-- See http://pear.php.net/manual/en/package.php.php-codesniffer.annotated-ruleset.php -->
-<ruleset name="Relax Drupal">
-
+<ruleset name="Drupal Custom">
     <description>Drupal coding standard</description>
+
+    <!-- Set ignore warnings. -->
+    <!-- <config name="ignore_warnings_on_exit" value="1" />  -->
 
     <file>.</file>
 
@@ -10,6 +12,7 @@
     <exclude-pattern>vendor|drush|scripts</exclude-pattern>
     <exclude-pattern>web/core|web/*/contrib</exclude-pattern>
     <exclude-pattern>web/_ping.php</exclude-pattern>
+    <exclude-pattern>web/autoload.php</exclude-pattern>
 
     <!-- exclude some Drupal files that contain issues -->
     <exclude-pattern>web/sites/default/default.settings.php</exclude-pattern>
@@ -26,22 +29,7 @@
     <!-- exclude CSS files, where we don't usually follow Drupal standards  -->
     <exclude-pattern>*.css</exclude-pattern>
 
-    <rule ref="Drupal">
-        <exclude name="Drupal.Commenting.FileComment" />
-        <exclude name="Drupal.Commenting.DocComment" />
-        <exclude name="Drupal.Commenting.FunctionComment" />
-        <exclude name="Drupal.Commenting.InlineComment" />
-        <exclude name="Drupal.Arrays.Array" />
-        <exclude name="Drupal.Files.TxtFileLineLength" />
-        <exclude name="Drupal.Files.EndFileNewline.NoneFound" />
-        <exclude name="PEAR.Commenting.ClassComment" />
-    </rule>
-
-    <rule ref="Drupal.Files.LineLength">
-        <properties>
-            <!-- Be a bit more tolerant when it comes to line lengths -->
-            <property name="lineLimit" value="110"/>
-        </properties>
-    </rule>
+    <rule ref="WunderDrupal"/>
+    <rule ref="WunderSecurity"/>
 
 </ruleset>

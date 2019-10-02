@@ -1,0 +1,25 @@
+parameters:
+  stop_on_failure: true
+  ascii:
+    failed: ~
+    succeeded: ~
+  tasks:
+    php_compatibility:
+      run_on: ['web/modules/custom', 'web/themes/custom', 'web/sites']
+    check_file_permissions: ~
+    php_check_syntax:
+      run_on: ['web/modules/custom', 'web/themes/custom', 'web/sites']
+    phpcs:
+      standard: ['phpcs.xml']
+    ecs:
+      run_on: ['web/modules/custom', 'web/themes/custom', 'web/sites']
+    yaml_lint: ~
+    json_lint: ~
+  extensions:
+    - Wunderio\GrumPHP\Task\PhpCompatibility\PhpCompatibilityExtensionLoader
+    - Wunderio\GrumPHP\Task\PhpCheckSyntax\PhpCheckSyntaxExtensionLoader
+    - Wunderio\GrumPHP\Task\CheckFilePermissions\CheckFilePermissionsExtensionLoader
+    - Wunderio\GrumPHP\Task\Ecs\EcsExtensionLoader
+    - Wunderio\GrumPHP\Task\Phpcs\PhpcsExtensionLoader
+    - Wunderio\GrumPHP\Task\YamlLint\YamlLintExtensionLoader
+    - Wunderio\GrumPHP\Task\JsonLint\JsonLintExtensionLoader
