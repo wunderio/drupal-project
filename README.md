@@ -14,7 +14,7 @@ Have a look at the file for details, but in short this is how it works:
 
 - Run the CircleCI jobs using a [custom docker image](https://github.com/wunderio/circleci-builder) that has all the tools we need.  
 - Validate the codebase with phpcs and other static code analysis tools.
-- Build the codebase by downloading vendor code using `composer` and `yarn`.
+- Build the codebase by downloading vendor code using `composer` and `npm`.
 - Create a custom docker image for Drupal and nginx, and push those to a docker registry (typically that of your cloud provider).
 - Install or update our helm chart while passing our custom images as parameters.
 - The helm chart executes the usual drush deployment commands.
