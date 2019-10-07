@@ -19,30 +19,6 @@ Have a look at the file for details, but in short this is how it works:
 - Install or update our helm chart while passing our custom images as parameters.
 - The helm chart executes the usual drush deployment commands.
 
-## Secrets
-
-Project can override values and do file encryption using openssl.
-Encryption key has to be identical to the one in circleci context.
-
-Decrypting secrets file:
-
-```sh
-openssl enc -d -aes-256-cbc -pbkdf2 -in silta/secrets -out silta/secrets.dec
-```
-
-Encrypting secrets file:
-
-```sh
-openssl aes-256-cbc -pbkdf2 -in silta/secrets.dec -out silta/secrets
-```
-
-Secret values can be attached to circleci `drupal-build-deploy` job like this
-
-```sh
-decrypt_files: silta/secrets
-silta_config: silta/silta.yml,silta/secrets
-```
-
 ## Local development
 
 ### [Setup](https://docs.lando.dev/basics/installation.html)
