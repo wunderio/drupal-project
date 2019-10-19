@@ -19,6 +19,8 @@ tooling:
 
 services:
   appserver:
+    build:
+      - composer install
     overrides:
       environment:
         HASH_SALT: notsosecurehash
@@ -67,21 +69,18 @@ services:
 
 proxy:
   # elasticsearch:
-  #   - es.lndo.site:9200
+  #   - elasticsearch-silta.lndo.site:9200
   # kibana:
-  #   - kibana.lndo.site:5601
+  #   - kibana-silta.lndo.site:5601
   mailhog:
-    - mail.lndo.site
+    - mail-silta.lndo.site
 
 events:
-  pre-start:
-    - appserver: composer install
-  # Clear caches after a database import
   post-db-import:
     - appserver: cd $LANDO_WEBROOT && drush cr -y
 
 env_file:
   - .lando/.env
 
-# Lando version at the time of last update of .lando.yml
-version: v3.0.0-rc.19
+# Tested with Lando version
+version: v3.0.0-rc.22
