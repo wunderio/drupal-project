@@ -30,7 +30,7 @@
         "drupal/warden": "*"
     },
     "require-dev": {
-        "webflo/drupal-core-require-dev": "~8.5",
+        "drupal/core-dev": "^8.7.0",
         "wunderio/code-quality": "^1.0.3",
         "zaporylie/composer-drupal-optimizations": "^1.1"
     },
