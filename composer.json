@@ -19,15 +19,15 @@
         "php": ">=7.0.8",
         "composer/installers": "^1.2",
         "cweagans/composer-patches": "^1.6.5",
-        "drupal/core-composer-scaffold": "8.8.x-dev",
-        "drupal/core-recommended": "^8.7.0",
-        "drush/drush": "^9.0.0",
-        "webflo/drupal-finder": "^1.0.0",
-        "webmozart/path-util": "^2.3",
-        "vlucas/phpdotenv": "^3.3",
         "drupal/config_installer": "~1.7",
+        "drupal/core-composer-scaffold": "^8.8",
+        "drupal/core-recommended": "^8.7.0",
         "drupal/simplei": "^1.0",
-        "drupal/warden": "*"
+        "drupal/warden": "*",
+        "drush/drush": "^9.0.0",
+        "vlucas/phpdotenv": "^3.3",
+        "webflo/drupal-finder": "^1.0.0",
+        "webmozart/path-util": "^2.3"
     },
     "require-dev": {
         "drupal/core-dev": "^8.7.0",
