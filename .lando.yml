@@ -12,7 +12,7 @@ tooling:
   grumphp:
     description: Runs grumphp commands
     cmd:
-      - appserver: ./vendor/bin/grumphp
+      - appserver: cd /app && ./vendor/bin/grumphp
   npm:
     description: Runs npm commands
     service: node
@@ -37,7 +37,7 @@ services:
   #   services:
   #     image: blacktop/elasticsearch:7
   #     command: /elastic-entrypoint.sh elasticsearch
-  #     ports: 
+  #     ports:
   #       - "9200:9200"
   #     volumes:
   #       - ./.lando/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
