@@ -30,3 +30,8 @@ For additional instructions, please see the [Silta documentation](https://github
 - `lando` - tools / commands overview.
 - `lando grumphp <commands>` - run [GrumPHP](https://github.com/phpro/grumphp) code quality checks. Modified or new files are checked on git commit, see more at `lando grumphp -h` or [wunderio/code-quality](https://github.com/wunderio/code-quality).
 - `lando npm <commands>` - run npm commands.
+
+### Drupal development hints
+
+- [Updating Drupal Core](https://github.com/drupal-composer/drupal-project#updating-drupal-core)
+- [Altering Scaffold Files](https://www.drupal.org/docs/develop/using-composer/using-drupals-composer-scaffold#toc_4) (`robots.txt`, `.htaccess` etc.)
