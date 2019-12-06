@@ -1,7 +1,7 @@
 <?php
 
 // Location of the site configuration files.
-$config_directories[CONFIG_SYNC_DIRECTORY] = '../config/sync';
+$settings['config_sync_directory'] = '../config/sync';
 
 /**
  * Load services definition file.
