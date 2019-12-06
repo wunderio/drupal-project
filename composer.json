@@ -22,7 +22,7 @@
         "drupal/core": "^8.8.0",
         "drupal/core-composer-scaffold": "^8.8.0",
         "drupal/simplei": "^1.0",
-        "drupal/warden": "^2.0.0",
+        "drupal/warden": "^2.0",
         "drush/drush": "^9.0.0",
         "vlucas/phpdotenv": "^3.3",
         "webflo/drupal-finder": "^1.0.0"
