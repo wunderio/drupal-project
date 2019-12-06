@@ -24,7 +24,7 @@
         "drupal/simplei": "^1.0",
         "drupal/warden": "^2.0",
         "drush/drush": "^9.0.0",
-        "vlucas/phpdotenv": "^3.3",
+        "vlucas/phpdotenv": "^4.0",
         "webflo/drupal-finder": "^1.0.0"
     },
     "require-dev": {
