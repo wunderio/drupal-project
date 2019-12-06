@@ -7,7 +7,7 @@ This project template is an opinionated fork of the popular [Drupal-composer tem
 - Copy this repository and push it to our organization.
 - Log in to CircleCI using your Github account and add the new project.
 
-For additional instructions, please see the [Silta documentation](https://github.com/wunderio/silta)
+For additional instructions, please see the [Silta documentation](https://github.com/wunderio/silta).
 
 ## Local development
 
