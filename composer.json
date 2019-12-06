@@ -18,14 +18,14 @@
     "require": {
         "composer/installers": "^1.2",
         "cweagans/composer-patches": "^1.6.5",
+        "drupal/config_installer": "~1.7",
         "drupal/core": "^8.8.0",
         "drupal/core-composer-scaffold": "^8.8.0",
-        "drush/drush": "^9.0.0",
-        "webflo/drupal-finder": "^1.0.0",
-        "vlucas/phpdotenv": "^3.3",
-        "drupal/config_installer": "~1.7",
         "drupal/simplei": "^1.0",
-        "drupal/warden": "*"
+        "drupal/warden": "^2.0.0",
+        "drush/drush": "^9.0.0",
+        "vlucas/phpdotenv": "^3.3",
+        "webflo/drupal-finder": "^1.0.0"
     },
     "require-dev": {
         "drupal/core-dev": "^8.8.0",
