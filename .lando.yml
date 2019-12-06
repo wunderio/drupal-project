@@ -86,4 +86,4 @@ env_file:
   - .lando/.env
 
 # Tested with Lando version
-version: v3.0.0-rc.22
+version: v3.0.0-rc.23
