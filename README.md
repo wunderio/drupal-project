@@ -33,5 +33,5 @@ For additional instructions, please see the [Silta documentation](https://github
 
 ### Drupal development hints
 
-- [Updating Drupal Core](https://github.com/drupal-composer/drupal-project#updating-drupal-core)
-- [Altering Scaffold Files](https://www.drupal.org/docs/develop/using-composer/using-drupals-composer-scaffold#toc_4) (`robots.txt`, `.htaccess` etc.)
+- [Updating Drupal core](https://www.drupal.org/docs/8/update/update-core-via-composer).
+- [Altering scaffold files](https://www.drupal.org/docs/develop/using-composer/using-drupals-composer-scaffold#toc_4) (`robots.txt`, `.htaccess` etc.).
