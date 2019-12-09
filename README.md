@@ -7,7 +7,7 @@ This project template is an opinionated fork of the popular [Drupal-composer tem
 - Copy this repository and push it to our organization.
 - Log in to CircleCI using your Github account and add the new project.
 
-For additional instructions, please see the [Silta documentation](https://github.com/wunderio/silta)
+For additional instructions, please see the [Silta documentation](https://github.com/wunderio/silta).
 
 ## Local development
 
@@ -30,3 +30,8 @@ For additional instructions, please see the [Silta documentation](https://github
 - `lando` - tools / commands overview.
 - `lando grumphp <commands>` - run [GrumPHP](https://github.com/phpro/grumphp) code quality checks. Modified or new files are checked on git commit, see more at `lando grumphp -h` or [wunderio/code-quality](https://github.com/wunderio/code-quality).
 - `lando npm <commands>` - run npm commands.
+
+### Drupal development hints
+
+- [Updating Drupal core](https://www.drupal.org/docs/8/update/update-core-via-composer).
+- [Altering scaffold files](https://www.drupal.org/docs/develop/using-composer/using-drupals-composer-scaffold#toc_4) (`robots.txt`, `.htaccess` etc.).
