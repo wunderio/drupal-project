@@ -12,3 +12,7 @@
 #  user: www-admin
 #  root: /path/to/drupal
 #  uri: http://stage.example.com
+
+local:
+  root: ${env.LANDO_WEBROOT}
+  uri: https://${env.LANDO_APP_PROJECT}.${env.LANDO_DOMAIN}
