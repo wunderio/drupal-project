@@ -16,7 +16,6 @@ For additional instructions, please see the [Silta documentation](https://github
 1. Install the latest [Lando](https://github.com/lando/lando/releases) and read the [documentation](https://docs.lando.dev/).
 2. Update your project name and other Lando [Drupal 8 recipe](https://docs.lando.dev/config/drupal8.html)'s parameters at `.lando.yml`.
 3. Run `lando start`.
-4. Import the database `lando db-import </path/to/dumpfile>`.
 
 ### [Services](https://docs.lando.dev/config/services.html)
 
