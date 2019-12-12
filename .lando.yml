@@ -80,7 +80,7 @@ events:
   pre-start:
     - appserver: composer install
   post-db-import:
-    - appserver: cd $LANDO_WEBROOT && drush cr -y && drush @local uli
+    - appserver: cd $LANDO_WEBROOT && drush cache:rebuild -y && drush @local user:login
 
 env_file:
   - .lando/.env
