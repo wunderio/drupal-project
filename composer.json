@@ -19,10 +19,10 @@
         "composer/installers": "^1.2",
         "cweagans/composer-patches": "^1.6.5",
         "drupal/config_installer": "~1.7",
-        "drupal/core-recommended": "^8.8.0",
         "drupal/core-composer-scaffold": "^8.8.0",
+        "drupal/core-recommended": "^8.8.0",
         "drupal/simplei": "^1.0",
-        "drupal/warden": "^2.0",
+        "drupal/warden": "^1.2",
         "drush/drush": "^9.7.1 || ^10.0.0",
         "vlucas/phpdotenv": "^4.0",
         "webflo/drupal-finder": "^1.0.0"
