@@ -12,7 +12,7 @@ tooling:
   grumphp:
     description: Runs grumphp commands
     cmd:
-      - appserver: ./vendor/bin/grumphp
+      - appserver: cd /app && ./vendor/bin/grumphp
   npm:
     description: Runs npm commands
     service: node
@@ -29,8 +29,6 @@ tooling:
 
 services:
   appserver:
-    build:
-      - composer install
     overrides:
       environment:
         HASH_SALT: notsosecurehash
@@ -53,12 +51,15 @@ services:
   #       - "9200:9200"
   #     volumes:
   #       - ./.lando/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-  #   # Install ES requirement JDK here & set JAVA_HOME at `.lando/.env`
+  #   # Install ES requirement JDK
   #   build_as_root:
   #     - apk --no-cache add openjdk11
   #   # Install `analysis-icu` plugin after ES service boots up
   #   run_as_root:
   #     - elasticsearch-plugin install analysis-icu
+  #   overrides:
+  #     environment:
+  #       JAVA_HOME: /usr/lib/jvm/default-jvm
   # kibana:
   #   type: compose
   #   services:
@@ -86,11 +87,13 @@ proxy:
     - mail-silta.lndo.site
 
 events:
+  pre-start:
+    - appserver: composer install
   post-db-import:
-    - appserver: cd $LANDO_WEBROOT && drush cr -y
+    - appserver: cd $LANDO_WEBROOT && drush cache:rebuild -y && drush @local user:login
 
 env_file:
   - .lando/.env
 
 # Tested with Lando version
-version: v3.0.0-rc.22
+version: v3.0.0-rc.23
