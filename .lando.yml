@@ -6,7 +6,7 @@ config:
   via: nginx
   php: '7.2'
   database: mariadb:10.2
-  #xdebug: true
+  xdebug: false
 
 tooling:
   grumphp:
