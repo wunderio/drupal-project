@@ -61,15 +61,13 @@ services:
   #       - "9200:9200"
   #     volumes:
   #       - ./.lando/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-  #   # Install ES requirement JDK
-  #   build_as_root:
-  #     - apk --no-cache add openjdk11
-  #   # Install `analysis-icu` plugin after ES service boots up
   #   run_as_root:
+  #     # Install `analysis-icu` plugin after ES service boots up
   #     - elasticsearch-plugin install analysis-icu
   #   overrides:
   #     environment:
   #       JAVA_HOME: /usr/lib/jvm/default-jvm
+  #       ES_JAVA_OPTS: -Xms512m -Xmx512m
   # kibana:
   #   type: compose
   #   services:
@@ -106,4 +104,4 @@ env_file:
   - .lando/.env
 
 # Tested with Lando version
-version: v3.0.0-rc.23
+version: v3.0.0-rrc.2
