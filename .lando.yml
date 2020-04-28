@@ -54,6 +54,8 @@ services:
   #     command: /opt/bin/entry_point.sh
   # elasticsearch:
   #   type: compose
+  #   ssl: true
+  #   sslExpose: false
   #   services:
   #     image: blacktop/elasticsearch:7
   #     command: /elastic-entrypoint.sh elasticsearch
@@ -104,4 +106,4 @@ env_file:
   - .lando/.env
 
 # Tested with Lando version
-version: v3.0.0-rrc.2
+version: v3.0.0-rrc.5
