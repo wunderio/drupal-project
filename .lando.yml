@@ -54,11 +54,14 @@ services:
   #     command: /opt/bin/entry_point.sh
   # elasticsearch:
   #   type: compose
+  #   ssl: true
+  #   sslExpose: false
   #   services:
   #     image: blacktop/elasticsearch:7
   #     command: /elastic-entrypoint.sh elasticsearch
   #     ports:
   #       - "9200:9200"
+  #       - "9300:9300"
   #     volumes:
   #       - ./.lando/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
   #   run_as_root:
@@ -104,4 +107,4 @@ env_file:
   - .lando/.env
 
 # Tested with Lando version
-version: v3.0.0-rrc.2
+version: v3.0.0-rrc.5
