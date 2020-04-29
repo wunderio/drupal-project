@@ -54,6 +54,7 @@ services:
   #     command: /opt/bin/entry_point.sh
   # elasticsearch:
   #   type: compose
+  #   meUser: elasticsearch
   #   ssl: true
   #   sslExpose: false
   #   services:
@@ -73,6 +74,7 @@ services:
   #       ES_JAVA_OPTS: -Xms512m -Xmx512m
   # kibana:
   #   type: compose
+  #   meUser: kibana
   #   services:
   #     image: blacktop/kibana:7
   #     command: /docker-entrypoint.sh kibana
