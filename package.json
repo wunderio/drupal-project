@@ -1,7 +1,28 @@
 {
-  "dependencies": {},
-  "devDependencies": {},
+  "name": "wunder-d8-starter",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [
+    "Drupal 8",
+    "Eslint",
+    "Stylelint"
+  ],
+  "author": "Wunder",
+  "license": "MIT",
+  "dependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-plugin-import": "^2.20.1",
+    "stylelint": "^13.2.0",
+    "stylelint-config-prettier": "^8.0.1",
+    "stylelint-config-standard": "^20.0.0"
+  },
   "scripts": {
-    "build": "echo 'No build command specified in package.json'"
+    "lint": "eslint ./components"
+  },
+  "devDependencies": {
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "prettier": "1.19.1"
   }
 }
