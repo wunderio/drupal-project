@@ -28,6 +28,7 @@ For additional instructions, please see the [Silta documentation](https://github
 ### [Tools](https://docs.lando.dev/config/tooling.html)
 
 - `lando` - tools / commands overview.
+- `lando composer-lock-diff` - see what has changed after a `composer update` using [davidrjonas/composer-lock-diff](https://github.com/davidrjonas/composer-lock-diff) tool.
 - `lando grumphp <commands>` - run [GrumPHP](https://github.com/phpro/grumphp) code quality checks. Modified or new files are checked on git commit, see more at `lando grumphp -h` or [wunderio/code-quality](https://github.com/wunderio/code-quality).
 - `lando npm <commands>` - run [npm](https://www.npmjs.com/) commands.
 - `lando xdebug-on`, `lando xdebug-off` - enable / disable [Xdebug](https://xdebug.org/) for [nginx](https://nginx.org/en/).

@@ -29,6 +29,7 @@
         "webflo/drupal-finder": "^1.0.0"
     },
     "require-dev": {
+        "davidrjonas/composer-lock-diff": "^1.0@dev",
         "drupal/core-dev": "^8.8.0",
         "wunderio/code-quality": "^1.0.3",
         "zaporylie/composer-drupal-optimizations": "^1.1"

@@ -9,6 +9,10 @@ config:
   xdebug: false
 
 tooling:
+  composer-lock-diff:
+    description: Runs composer-lock-diff commands
+    cmd:
+      - appserver: cd /app && ./vendor/bin/composer-lock-diff
   grumphp:
     description: Runs grumphp commands
     cmd:
