@@ -27,7 +27,7 @@ workflows:
           <<: *build-deploy
           name: build-deploy-prod
           silta_config: silta/silta.yml,silta/silta-prod.yml
-          context: global_nonprod
+          context: silta_finland
           filters:
             branches:
               only: production

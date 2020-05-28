@@ -1,9 +1,8 @@
 
-# Provide a high-availability, autoscaling deployment.
-replicas: 2
+# Enable autoscaling for production.
 autoscaling:
   enabled: true
-  minReplicas: 2
+  minReplicas: 1
   maxReplicas: 5
 
 # Don't delay the production deployment process to create the reference data.
@@ -28,6 +27,12 @@ php:
 
   # Don't show errors in production.
   errorLevel: "hide"
+
+nginx:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 50M
 
 # Connect to an externally hosted database.
 #  env:

@@ -26,6 +26,16 @@ tooling:
     description: Disables xdebug for nginx
     cmd: rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && pkill -o -USR2 php-fpm
     user: root
+  xdebug-profiler-on:
+    service: appserver
+    description: Enable xdebug profiler.
+    cmd: echo "xdebug.profiler_enable = 1\\nxdebug.profiler_output_dir = /app" >> /usr/local/etc/php/conf.d/xxx-lando-default.ini && pkill -o -USR2 php-fpm
+    user: root
+  xdebug-profiler-off:
+    service: appserver
+    description: Disable xdebug profiler.
+    cmd: pkill -o -USR2 php-fpm && cp /usr/local/etc/php/conf.d/xxx-lando-default.ini /tmp/lando.ini && sed -i '/xdebug\.profiler/d' /tmp/lando.ini && cp /tmp/lando.ini /usr/local/etc/php/conf.d/xxx-lando-default.ini
+    user: root
 
 services:
   appserver:
@@ -55,6 +65,7 @@ services:
   #       "
   # kibana:
   #   type: compose
+  #   meUser: kibana
   #   services:
   #     image: bitnami/kibana:7.7.0
   #     ports:
@@ -89,4 +100,4 @@ env_file:
   - .lando/.env
 
 # Tested with Lando version
-version: v3.0.0-rc.23
+version: v3.0.0-rrc.5
