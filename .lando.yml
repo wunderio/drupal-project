@@ -43,32 +43,25 @@ services:
   #       - /dev/shm:/dev/shm
   #     command: /opt/bin/entry_point.sh
   # elasticsearch:
-  #   type: compose
-  #   services:
-  #     image: blacktop/elasticsearch:7
-  #     command: /elastic-entrypoint.sh elasticsearch
-  #     ports:
-  #       - "9200:9200"
-  #     volumes:
-  #       - ./.lando/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-  #   # Install ES requirement JDK
-  #   build_as_root:
-  #     - apk --no-cache add openjdk11
-  #   # Install `analysis-icu` plugin after ES service boots up
+  #   type: elasticsearch:7
+  #   portforward: 9200
+  #   mem: 1050m
   #   run_as_root:
-  #     - elasticsearch-plugin install analysis-icu
-  #   overrides:
-  #     environment:
-  #       JAVA_HOME: /usr/lib/jvm/default-jvm
+  #     - |
+  #       /bin/sh -c "
+  #       if [ ! -d '/opt/bitnami/elasticsearch/plugins/analysis-icu' ]; then
+  #         elasticsearch-plugin install analysis-icu
+  #       fi
+  #       "
   # kibana:
   #   type: compose
   #   services:
-  #     image: blacktop/kibana:7
-  #     command: /docker-entrypoint.sh kibana
+  #     image: bitnami/kibana:7.7.0
   #     ports:
   #       - "5601:5601"
-  #     depends_on:
-  #       - elasticsearch
+  #     command: kibana
+  #     volumes:
+  #       - .lando/kibana.yml:/opt/bitnami/kibana/config/kibana.yml
   mailhog:
     type: mailhog
     hogfrom:
