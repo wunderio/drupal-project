@@ -1,5 +1,5 @@
 extends:
-  - airbnb
+  - airbnb/base
   - prettier
   - plugin:prettier/recommended
 plugins:
