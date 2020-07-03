@@ -1,11 +1,11 @@
 name: silta
-recipe: drupal8
+recipe: drupal9
 
 config:
-  webroot: web
+  php: '7.3'
   via: nginx
-  php: '7.2'
-  database: mariadb:10.2
+  webroot: web
+  database: mariadb:10.3
   xdebug: false
 
 tooling:
@@ -39,6 +39,8 @@ tooling:
 
 services:
   appserver:
+    build:
+      - composer install
     overrides:
       environment:
         HASH_SALT: notsosecurehash
@@ -100,8 +102,6 @@ proxy:
     - mail-silta.lndo.site
 
 events:
-  pre-start:
-    - appserver: composer install
   post-db-import:
     - appserver: cd $LANDO_WEBROOT && drush cache:rebuild -y && drush @local user:login
 
@@ -109,4 +109,4 @@ env_file:
   - .lando/.env
 
 # Tested with Lando version
-version: v3.0.0-rrc.5
+version: v3.0.7
