@@ -14,6 +14,7 @@ For additional instructions, please see the [Silta documentation](https://github
 ### [Setup](https://docs.lando.dev/basics/installation.html)
 
 1. Install the latest [Lando](https://github.com/lando/lando/releases) and read the [documentation](https://docs.lando.dev/).
+   - Optional. Install [Docker Desktop for Mac on Edge](https://docs.docker.com/docker-for-mac/edge-release-notes/) for [Mutagen-based file synchronization](https://docs.docker.com/docker-for-mac/mutagen/) (see more [here](https://github.com/lando/lando/issues/2354)).
 2. Update your project name and other Lando [Drupal 9 recipe](https://docs.lando.dev/config/drupal9.html)'s parameters at `.lando.yml`.
 3. Run `lando start`.
 

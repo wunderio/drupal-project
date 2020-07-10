@@ -39,6 +39,7 @@ tooling:
 
 services:
   appserver:
+    app_mount: delegated
     build:
       - composer install
     overrides:
