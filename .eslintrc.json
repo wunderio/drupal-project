@@ -5,6 +5,7 @@
     "plugin:prettier/recommended"
   ],
   "plugins": ["prettier"],
+  "root": true,
   "env": {
     "es6": true,
     "browser": true
