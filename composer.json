@@ -23,7 +23,7 @@
         "drupal/core-recommended": "^9.0",
         "drupal/simplei": "^1.2",
         "drush/drush": "^10.0",
-        "vlucas/phpdotenv": "^4.0",
+        "vlucas/phpdotenv": "^5.0",
         "webflo/drupal-finder": "^1.2"
     },
     "require-dev": {
