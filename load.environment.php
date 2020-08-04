@@ -17,4 +17,4 @@ use Dotenv\Dotenv;
  * in the $_ENV and $_SERVER super-globals: "$username = $_ENV['USERNAME'];".
  */
 $dotenv = Dotenv::createImmutable(__DIR__);
-$dotenv->load();
+$dotenv->safeLoad();
