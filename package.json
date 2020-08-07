@@ -13,7 +13,7 @@
     "build": "echo 'No build command specified in package.json'",
     "lint": "npm run lint:js && npm run lint:css",
     "lint:js": "eslint --no-eslintrc --config .eslintrc.json --cache --no-error-on-unmatched-pattern './web/themes/custom/' './web/modules/custom/'",
-    "lint:css": "stylelint --allow-empty-input './web/themes/custom**/*.{css,scss,sass}' './web/modules/custom**/*.{css,scss,sass}'",
+    "lint:css": "stylelint --allow-empty-input './web/themes/custom**/*.{css,scss,sass}' './web/modules/custom**/*.{css,scss,sass}'"
   },
   "dependencies": {},
   "devDependencies": {
