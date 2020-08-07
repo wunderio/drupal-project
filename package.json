@@ -11,7 +11,7 @@
   "license": "MIT",
   "scripts": {
     "build": "echo 'No build command specified in package.json'",
-    "lint:js": "eslint --no-eslintrc --config .eslintrc.json --cache './web/themes/custom/' './web/modules/custom/'",
+    "lint:js": "eslint --no-eslintrc --config .eslintrc.json --cache --no-error-on-unmatched-pattern './web/themes/custom/' './web/modules/custom/'",
     "lint:css": "stylelint \"./web/**/*.css\""
   },
   "dependencies": {},
