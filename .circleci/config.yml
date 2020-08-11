@@ -12,6 +12,11 @@ workflows:
           post-validation:
             - run: echo "You can add additional validation here!"
 
+      - silta/analyze:
+          name: analyze
+          context: analyze
+          sources: web
+
       - silta/drupal-build-deploy: &build-deploy
           name: build-deploy
           codebase-build:
