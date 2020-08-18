@@ -11,7 +11,8 @@ parameters:
       run_on: ['web/modules/custom', 'web/themes/custom', 'web/sites']
     phpcs:
       standard: ['phpcs.xml']
-    phpstan_check_deprecation: ~
+    phpstan_check_deprecation:
+      run_on: ['web/modules/custom', 'web/themes/custom']
     ecs:
       run_on: ['web/modules/custom', 'web/themes/custom', 'web/sites']
     yaml_lint: ~
