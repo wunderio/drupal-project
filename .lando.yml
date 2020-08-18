@@ -12,7 +12,7 @@ tooling:
   grumphp:
     description: Runs grumphp commands
     cmd:
-      - appserver: cd /app && ./vendor/bin/grumphp
+      - appserver: ./vendor/bin/grumphp
   npm:
     description: Runs npm commands
     service: node
