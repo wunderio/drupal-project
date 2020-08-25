@@ -11,7 +11,10 @@
 use Dotenv\Dotenv;
 
 /**
- * Load any .env file. See /.env.example.
+ * Load any .env file.
+ *
+ * See /.env.example. All of the defined variables are available
+ * in the $_ENV and $_SERVER super-globals: "$username = $_ENV['USERNAME'];".
  */
 $dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->safeLoad();
