@@ -2,7 +2,7 @@
 
 This project template is an opinionated fork of the popular [Drupal-composer template](https://github.com/drupal-composer/drupal-project), configured to automatically deploy code to a [Kubernetes](https://kubernetes.io/) cluster using [CircleCI](https://circleci.com/). Everything that works with the Drupal-composer project template will work with this repository, so we won't duplicate the documentation here.
 
-## Usage (for new client projects)
+## Getting started
 
 - Click "[Use this template](https://github.com/wunderio/drupal-project/generate)" to generate a new project
     - Select correct owner
