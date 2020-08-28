@@ -2,10 +2,17 @@
 
 This project template is an opinionated fork of the popular [Drupal-composer template](https://github.com/drupal-composer/drupal-project), configured to automatically deploy code to a [Kubernetes](https://kubernetes.io/) cluster using [CircleCI](https://circleci.com/). Everything that works with the Drupal-composer project template will work with this repository, so we won't duplicate the documentation here.
 
-## Usage
+## Usage (for new client projects)
 
-- Copy this repository and push it to our organization.
-- Log in to CircleCI using your Github account and add the new project.
+- Click "[Use this template](https://github.com/wunderio/drupal-project/generate)" to generate a new project
+    - Select correct owner
+    - Name the project as `client-COUNTRYCODE-CLIENT-PROJECT`
+    - Make the repository private (unless the project is public)
+- Clone project and modify project details
+    - `composer.json` name
+    - `silta/silta.yml`
+        - See [values](https://github.com/wunderio/charts/blob/master/drupal/values.yaml) options to override.
+- Log in to CircleCI using your Github account and add the new project using existing config.
 
 For additional instructions, please see the [Silta documentation](https://github.com/wunderio/silta).
 
