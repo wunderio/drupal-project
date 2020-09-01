@@ -45,7 +45,7 @@ For additional instructions, please see the [Silta documentation](https://github
 
 ### Testing
 
-The [PHPUnit](https://phpunit.de/) test framework is predefined in this project. Use `lando phpunit` to run PHPUnit commands. Change `phpunit.xml` as needed and commit it to the GIT. See more at [web/core/tests/README.md](web/core/tests/README.md).
+The [PHPUnit](https://phpunit.de/) test framework is predefined in this project. Use `lando phpunit` to run the PHPUnit commands. `phpunit.xml` is copied over from `web/core/phpunit.xml.dist` during the initial build, change it as needed and commit to the GIT. See more at [web/core/tests/README.md](web/core/tests/README.md).
 
 #### Core testing examples
 
