@@ -16,6 +16,9 @@ tooling:
   npm:
     description: Runs npm commands
     service: node
+  phpunit:
+    service: appserver
+    cmd: "php /app/vendor/bin/phpunit -c /app/phpunit.xml"
   xdebug-on:
     service: appserver
     description: Enables xdebug for nginx
@@ -41,19 +44,19 @@ services:
   appserver:
     build:
       - composer install
+    run_as_root:
+      - /app/.lando/phpunit.sh
     overrides:
       environment:
         HASH_SALT: notsosecurehash
-  # chrome:
-  #   type: compose
-  #   services:
-  #     image: selenium/standalone-chrome
-  #     user: root
-  #     ports:
-  #       - "4444:4444"
-  #     volumes:
-  #       - /dev/shm:/dev/shm
-  #     command: /opt/bin/entry_point.sh
+        SIMPLETEST_BASE_URL: "http://appserver_nginx"
+        SIMPLETEST_DB: "sqlite://localhost/tmp/db.sqlite"
+        MINK_DRIVER_ARGS_WEBDRIVER: '["chrome", {"browserName":"chrome","chromeOptions":{"args":["--disable-gpu","--headless"]}}, "http://chrome:9515"]'
+  chrome:
+    type: compose
+    services:
+      image: drupalci/webdriver-chromedriver:production
+      command: chromedriver --log-path=/tmp/chromedriver.log --verbose --whitelisted-ips=
   # elasticsearch:
   #   type: compose
   #   meUser: elasticsearch

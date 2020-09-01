@@ -44,3 +44,15 @@ For additional instructions, please see the [Silta documentation](https://github
 
 - [Updating Drupal core](https://www.drupal.org/docs/8/update/update-core-via-composer).
 - [Altering scaffold files](https://www.drupal.org/docs/develop/using-composer/using-drupals-composer-scaffold#toc_4) (`robots.txt`, `.htaccess` etc.).
+
+### Testing
+
+The [PHPUnit](https://phpunit.de/) test framework is predefined in this project. Use `lando phpunit` to run PHPUnit commands. Change `phpunit.xml` as needed and commit it to the GIT. See more at [web/core/tests/README.md](web/core/tests/README.md).
+
+#### Core testing examples
+
+Following examples are taken from <https://agile.coop/blog/drupal-phpunit-tests-lando/>:
+
+- Functional (browser) test: `lando phpunit web/core/modules/color/tests/src/Functional/ColorConfigSchemaTest.php`
+- JavaScript test: `lando phpunit web/core/modules/action/tests/src/FunctionalJavascript/ActionFormAjaxTest.php`
+- Kernel test: `lando phpunit web/core/modules/help/tests/src/Kernel/HelpEmptyPageTest.php`
