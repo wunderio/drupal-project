@@ -2,7 +2,7 @@ name: silta
 recipe: drupal9
 
 config:
-  php: "7.3"
+  php: "7.4"
   via: nginx
   webroot: web
   database: "mariadb:10.3"
