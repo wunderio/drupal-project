@@ -19,6 +19,7 @@
         "php": ">=7.3",
         "composer/installers": "^1.8",
         "cweagans/composer-patches": "^1.6",
+        "drupal/admin_toolbar": "^2.0",
         "drupal/core-composer-scaffold": "^9.0",
         "drupal/core-recommended": "^9.0",
         "drupal/simplei": "^1.2",
