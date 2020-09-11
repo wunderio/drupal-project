@@ -25,7 +25,8 @@
         "drupal/simplei": "^1.2",
         "drush/drush": "^10.0",
         "vlucas/phpdotenv": "^5.0",
-        "webflo/drupal-finder": "^1.2"
+        "webflo/drupal-finder": "^1.2",
+        "wunderio/drupal-ping": "^1.0"
     },
     "require-dev": {
         "drupal/core-dev": "^9.0",
@@ -77,6 +78,9 @@
         },
         "composer-exit-on-patch-failure": true,
         "patches": {
+        },
+        "dropin-paths": {
+            "web/": ["type:web-dropin"]
         }
     }
 }
