@@ -22,7 +22,7 @@ workflows:
           codebase-build:
             - silta/drupal-composer-install
             - silta/npm-install-build
-          context: global_nonprod
+          context: silta_dev
           filters:
             branches:
               ignore: production
