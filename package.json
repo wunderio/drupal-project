@@ -1,7 +1,33 @@
 {
-  "dependencies": {},
-  "devDependencies": {},
+  "name": "wunder-d8-starter",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [
+    "Drupal 8",
+    "Eslint",
+    "Stylelint"
+  ],
+  "author": "Wunder",
+  "license": "MIT",
   "scripts": {
-    "build": "echo 'No build command specified in package.json'"
+    "build": "echo 'No build command specified in package.json'",
+    "lint": "npm run lint:js && npm run lint:css",
+    "lint:js": "eslint --no-error-on-unmatched-pattern './web/themes/custom/' './web/modules/custom/'",
+    "lint:css": "stylelint --allow-empty-input './web/themes/custom/**/*.{css,scss,sass}' './web/modules/custom/**/*.{css,scss,sass}'"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-jsx-a11y": "^6.3.1",
+    "eslint-plugin-prettier": "^3.1.2",
+    "eslint-plugin-react": "^7.20.6",
+    "prettier": "1.19.1",
+    "stylelint": "^13.2.0",
+    "stylelint-config-prettier": "^7.0.0",
+    "stylelint-config-standard": "^20.0.0",
+    "stylelint-prettier": "^1.1.2"
   }
 }
