@@ -56,6 +56,9 @@ services:
   #   type: elasticsearch:7
   #   portforward: 9200
   #   mem: 1050m
+  #   overrides:
+  #     environment:
+  #       JAVA_HOME: /opt/bitnami/java
   #   run_as_root:
   #     - |
   #       /bin/sh -c "
