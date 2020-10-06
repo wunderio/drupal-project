@@ -1,9 +1,9 @@
 {
-  "name": "wunder-d8-starter",
+  "name": "wunderio-drupal-project",
   "version": "1.0.0",
   "description": "",
   "keywords": [
-    "Drupal 8",
+    "Drupal",
     "Eslint",
     "Stylelint"
   ],
