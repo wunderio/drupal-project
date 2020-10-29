@@ -13,11 +13,6 @@ referenceData:
 backup:
   enabled: true
 
-# Uncomment these lines to disable basic auth protection.
-#nginx:
-# basicauth:
-#   enabled: false
-
 php:
   # Reserve more resources for our PHP containerss.
   resources:
@@ -33,6 +28,9 @@ nginx:
     requests:
       cpu: 50m
       memory: 50M
+# Uncomment these lines to disable basic auth protection.
+# basicauth:
+#   enabled: false
 
 # Connect to an externally hosted database.
 #  env:
