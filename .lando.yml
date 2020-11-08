@@ -67,6 +67,9 @@ services:
   #       - "9300:9300"
   #     volumes:
   #       - ./.lando/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+  #       - data_volume:/usr/share/elasticsearch/data
+  #   volumes:
+  #     data_volume:
   #   run_as_root:
   #     # Install `analysis-icu` plugin after ES service boots up
   #     - elasticsearch-plugin install analysis-icu
