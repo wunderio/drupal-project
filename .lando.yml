@@ -44,6 +44,7 @@ services:
     overrides:
       environment:
         HASH_SALT: notsosecurehash
+        ENVIRONMENT_NAME: local
   # chrome:
   #   type: compose
   #   services:
