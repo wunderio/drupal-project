@@ -23,6 +23,9 @@
     <!-- exclude minified files -->
     <exclude-pattern>*.min.*</exclude-pattern>
 
+    <!-- exclude JavaScript files -->
+    <exclude-pattern>*.js</exclude-pattern>
+    
     <!-- exclude third-party node modules -->
     <exclude-pattern>node_modules/</exclude-pattern>
 

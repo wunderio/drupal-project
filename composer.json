@@ -1,6 +1,6 @@
 {
     "name": "wunderio/drupal-project",
-    "description": "Project template for Drupal 8 projects with composer",
+    "description": "Wunder's template for Drupal 9 projects.",
     "type": "project",
     "license": "GPL-2.0-or-later",
     "authors": [
@@ -16,21 +16,23 @@
         }
     ],
     "require": {
-        "php": ">=7.0.8",
-        "composer/installers": "^1.2",
-        "cweagans/composer-patches": "^1.6.5",
-        "drupal/config_installer": "~1.7",
-        "drupal/core-composer-scaffold": "^8.8.0",
-        "drupal/core-recommended": "^8.8.0",
-        "drupal/simplei": "^1.0",
-        "drupal/warden": "^1.2",
-        "drush/drush": "^9.7.1 || ^10.0.0",
-        "vlucas/phpdotenv": "^4.0",
-        "webflo/drupal-finder": "^1.0.0"
+        "php": ">=7.3",
+        "composer/installers": "^1.8",
+        "cweagans/composer-patches": "^1.6",
+        "drupal/admin_toolbar": "^2.0",
+        "drupal/core-composer-scaffold": "^9.0",
+        "drupal/core-recommended": "^9.0",
+        "drupal/monolog": "^2.0",
+        "drupal/simplei": "^1.2",
+        "drupal/warden": "^3.0",
+        "drush/drush": "^10.0",
+        "vlucas/phpdotenv": "^5.0",
+        "webflo/drupal-finder": "^1.2",
+        "wunderio/drupal-ping": "^1.0"
     },
     "require-dev": {
-        "drupal/core-dev": "^8.8.0",
-        "wunderio/code-quality": "^1.0.3",
+        "drupal/core-dev": "^9.0",
+        "wunderio/code-quality": "^1.0",
         "zaporylie/composer-drupal-optimizations": "^1.1"
     },
     "conflict": {
@@ -49,7 +51,6 @@
         "files": ["load.environment.php"]
     },
     "scripts": {
-        "drupal-scaffold": "DrupalComposer\\DrupalScaffold\\Plugin::scaffold",
         "pre-install-cmd": [
             "DrupalProject\\composer\\ScriptHandler::checkComposerVersion"
         ],
@@ -66,7 +67,7 @@
     "extra": {
         "drupal-scaffold": {
             "locations": {
-                "web-root": "web/"
+                "web-root": "./web"
             }
         },
         "installer-paths": {
@@ -79,6 +80,9 @@
         },
         "composer-exit-on-patch-failure": true,
         "patches": {
+        },
+        "dropin-paths": {
+            "web/": ["type:web-dropin"]
         }
     }
 }

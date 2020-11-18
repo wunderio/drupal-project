@@ -15,4 +15,4 @@
 
 local:
   root: ${env.LANDO_WEBROOT}
-  uri: https://${env.LANDO_APP_PROJECT}.${env.LANDO_DOMAIN}
+  uri: https://${env.LANDO_APP_NAME}.${env.LANDO_DOMAIN}

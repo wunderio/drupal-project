@@ -2,10 +2,17 @@
 
 This project template is an opinionated fork of the popular [Drupal-composer template](https://github.com/drupal-composer/drupal-project), configured to automatically deploy code to a [Kubernetes](https://kubernetes.io/) cluster using [CircleCI](https://circleci.com/). Everything that works with the Drupal-composer project template will work with this repository, so we won't duplicate the documentation here.
 
-## Usage
+## Getting started
 
-- Copy this repository and push it to our organization.
-- Log in to CircleCI using your Github account and add the new project.
+- Click "[Use this template](https://github.com/wunderio/drupal-project/generate)" to generate a new project
+    - Select correct owner
+    - Name the project as `client-COUNTRYCODE-CLIENT-PROJECT`
+    - Make the repository private (unless the project is public)
+- Clone project and modify project details
+    - `composer.json` name
+    - `silta/silta.yml`
+        - See [values](https://github.com/wunderio/charts/blob/master/drupal/values.yaml) options to override.
+- Log in to CircleCI using your Github account and add the new project using existing config.
 
 For additional instructions, please see the [Silta documentation](https://github.com/wunderio/silta).
 
@@ -14,7 +21,7 @@ For additional instructions, please see the [Silta documentation](https://github
 ### [Setup](https://docs.lando.dev/basics/installation.html)
 
 1. Install the latest [Lando](https://github.com/lando/lando/releases) and read the [documentation](https://docs.lando.dev/).
-2. Update your project name and other Lando [Drupal 8 recipe](https://docs.lando.dev/config/drupal8.html)'s parameters at `.lando.yml`.
+2. Update your project name and other Lando [Drupal 9 recipe](https://docs.lando.dev/config/drupal9.html)'s parameters at `.lando.yml`.
 3. Run `lando start`.
 
 ### [Services](https://docs.lando.dev/config/services.html)
