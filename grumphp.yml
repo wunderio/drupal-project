@@ -1,4 +1,4 @@
-parameters:
+grumphp:
   stop_on_failure: true
   ascii:
     failed: ~
@@ -11,7 +11,7 @@ parameters:
       run_on: ['web/modules/custom', 'web/themes/custom', 'web/sites']
     phpcs:
       standard: ['phpcs.xml']
-    phpstan_check_deprecation:
+    php_stan:
       run_on: ['web/modules/custom', 'web/themes/custom']
     ecs:
       run_on: ['web/modules/custom', 'web/themes/custom', 'web/sites']
@@ -23,6 +23,6 @@ parameters:
     - Wunderio\GrumPHP\Task\CheckFilePermissions\CheckFilePermissionsExtensionLoader
     - Wunderio\GrumPHP\Task\Ecs\EcsExtensionLoader
     - Wunderio\GrumPHP\Task\Phpcs\PhpcsExtensionLoader
-    - Wunderio\GrumPHP\Task\PhpstanCheckDeprecation\PhpstanCheckDeprecationExtensionLoader
+    - Wunderio\GrumPHP\Task\PhpStan\PhpStanExtensionLoader
     - Wunderio\GrumPHP\Task\YamlLint\YamlLintExtensionLoader
     - Wunderio\GrumPHP\Task\JsonLint\JsonLintExtensionLoader

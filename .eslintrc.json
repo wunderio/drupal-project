@@ -15,7 +15,7 @@
     "Drupal": true
   },
   "rules": {
-    "strict": 0,
+    "strict": "off",
     "prettier/prettier": "error"
   }
 }
