@@ -1,11 +1,56 @@
 <?php
 
+/**
+ * @file
+ * Drupal site-specific configuration file.
+ */
+
+// Database settings, overridden per environment.
+$databases = [];
+$databases['default']['default'] = [
+  'database' => $_ENV['DB_NAME_DRUPAL'],
+  'username' => $_ENV['DB_USER_DRUPAL'],
+  'password' => $_ENV['DB_PASS_DRUPAL'],
+  'prefix' => '',
+  'host' => $_ENV['DB_HOST_DRUPAL'],
+  'port' => '3306',
+  'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',
+  'driver' => 'mysql',
+];
+
+// Salt for one-time login links, cancel links, form tokens, etc.
+$settings['hash_salt'] = $_ENV['HASH_SALT'];
+
+// Environment-specific settings.
+$env = $_ENV['ENVIRONMENT_NAME'];
+switch ($env) {
+  case 'production':
+    $settings['simple_environment_indicator'] = '#9E005D Production';
+    // Warden settings.
+    $config['warden.settings']['warden_token'] = $_ENV['WARDEN_TOKEN'];
+    break;
+
+  case 'master':
+    $settings['simple_environment_indicator'] = '#5B37BF Stage';
+    break;
+
+  case 'local':
+    $settings['simple_environment_indicator'] = '#2F2942 Local';
+    // Skip file system permissions hardening.
+    $settings['skip_permissions_hardening'] = TRUE;
+    // Skip trusted host pattern.
+    $settings['trusted_host_patterns'] = ['.*'];
+    break;
+
+  default:
+    $settings['simple_environment_indicator'] = '#2F2942 Test';
+    break;
+}
+
 // Location of the site configuration files.
 $settings['config_sync_directory'] = '../config/sync';
 
-/**
- * Load services definition file.
- */
+// Load services definition file.
 $settings['container_yamls'][] = $app_root . '/' . $site_path . '/services.yml';
 
 /**
@@ -35,16 +80,7 @@ if (file_exists($app_root . '/' . $site_path . '/settings.local.php')) {
   include $app_root . '/' . $site_path . '/settings.local.php';
 }
 
-/**
- * Lando configuration overrides.
- */
-if (getenv('LANDO_INFO') && file_exists($app_root . '/' . $site_path . '/settings.lando.php')) {
-  include $app_root . '/' . $site_path . '/settings.lando.php';
-}
-
-/**
- * Silta cluster configuration overrides.
- */
-if (getenv('SILTA_CLUSTER') && file_exists($app_root . '/' . $site_path . '/settings.silta.php')) {
+// Silta cluster configuration overrides.
+if ($_ENV['SILTA_CLUSTER'] && file_exists($app_root . '/' . $site_path . '/settings.silta.php')) {
   include $app_root . '/' . $site_path . '/settings.silta.php';
 }
