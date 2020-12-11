@@ -26,3 +26,5 @@ grumphp:
     - Wunderio\GrumPHP\Task\PhpStan\PhpStanExtensionLoader
     - Wunderio\GrumPHP\Task\YamlLint\YamlLintExtensionLoader
     - Wunderio\GrumPHP\Task\JsonLint\JsonLintExtensionLoader
+  git_hook_variables:
+    EXEC_GRUMPHP_COMMAND: lando php
