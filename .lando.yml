@@ -44,6 +44,11 @@ services:
     overrides:
       environment:
         HASH_SALT: notsosecurehash
+        ENVIRONMENT_NAME: local
+        DB_NAME_DRUPAL: drupal9
+        DB_USER_DRUPAL: drupal9
+        DB_PASS_DRUPAL: drupal9
+        DB_HOST_DRUPAL: database
   # chrome:
   #   type: compose
   #   services:
@@ -105,4 +110,4 @@ env_file:
   - .lando/.env
 
 # Tested with Lando version
-version: v3.0.9
+version: v3.0.21
