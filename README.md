@@ -4,15 +4,14 @@ This project template is an opinionated fork of the popular [Drupal-composer tem
 
 ## Getting started
 
-- Click "[Use this template](https://github.com/wunderio/drupal-project/generate)" to generate a new project
-    - Select correct owner
-    - Name the project as `client-COUNTRYCODE-CLIENT-PROJECT`
-    - Make the repository private (unless the project is public)
-- Clone project and modify project details
-    - `composer.json` name
-    - `silta/silta.yml`
-        - See [values](https://github.com/wunderio/charts/blob/master/drupal/values.yaml) options to override.
-- Log in to CircleCI using your Github account and add the new project using existing config.
+- Click "[Use this template](https://github.com/wunderio/drupal-project/generate)" to generate a new project,
+  - select the correct owner,
+  - name the project as `client-COUNTRYCODE-CLIENT-PROJECT`,
+  - make the repository private (unless the project is public).
+- Clone the new project locally and modify it's details:
+  - `composer.json` name,
+  - `silta/silta.yml` [values](https://github.com/wunderio/charts/blob/master/drupal/values.yaml).
+- Log in to [CircleCI](https://app.circleci.com/) using your Github account and add the new project using existing config.
 
 For additional instructions, please see the [Silta documentation](https://github.com/wunderio/silta).
 
