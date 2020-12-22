@@ -72,12 +72,11 @@ services:
   #       - elasticsearch_data:/bitnami/elasticsearch/data
   #   volumes:
   #     elasticsearch_data:
-  #   run_as_root:
-  #     # Install `analysis-icu` plugin after ES service boots up
-  #     - elasticsearch-plugin install analysis-icu
   #   overrides:
   #     environment:
-  #       ES_JAVA_OPTS: -Xms512m -Xmx512m
+  #       ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+  #       # Install plugins.
+  #       ELASTICSEARCH_PLUGINS: "analysis-icu"
   # kibana:
   #   type: compose
   #   services:
@@ -89,7 +88,7 @@ services:
   #     command: /app-entrypoint.sh /run.sh
   #   overrides:
   #     environment:
-  #       KIBANA_ELASTICSEARCH_URL: http://elasticsearch:9200
+  #       KIBANA_ELASTICSEARCH_URL: "http://elasticsearch:9200"
   mailhog:
     type: mailhog
     hogfrom:

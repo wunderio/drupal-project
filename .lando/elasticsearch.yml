@@ -1,17 +1,14 @@
-http:
-  port: 9200
-path:
-  data: /bitnami/elasticsearch/data
-transport:
-  tcp:
-    port: 9300
-network:
-  host: 172.18.0.4
-  publish_host: 172.18.0.4
-  bind_host: 0.0.0.0
-node:
-  master: true
-  data: true
-  ingest: false
 discovery:
   type: single-node
+  zen:
+    minimum_master_nodes: 1
+network:
+  host: 0.0.0.0
+node:
+  master: true
+  ingest: true
+  data: true
+path:
+  data: /bitnami/elasticsearch/data
+plugin:
+  mandatory: analysis-icu
