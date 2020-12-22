@@ -61,8 +61,6 @@ services:
   #     command: /opt/bin/entry_point.sh
   # elasticsearch:
   #   type: compose
-  #   ssl: true
-  #   sslExpose: false
   #   services:
   #     image: bitnami/elasticsearch:7
   #     command: /opt/bitnami/scripts/elasticsearch/entrypoint.sh /opt/bitnami/scripts/elasticsearch/run.sh
