@@ -26,8 +26,8 @@ For additional instructions, please see the [Silta documentation](https://github
 ### [Services](https://docs.lando.dev/config/services.html)
 
 - `chrome` - uses [selenium/standalone-chrome](https://hub.docker.com/r/selenium/standalone-chrome/) image, uncomment the service definition at `.lando.yml` to enable.
-- `elasticsearch` - uses [blacktop/elasticsearch:7](https://github.com/blacktop/docker-elasticsearch-alpine) image. Uncomment the service and proxy definitions at `.lando.yml` to enable. You can change default ES settings at `.lando/elasticsearch.yml`.
-- `kibana`  - uses [blacktop/kibana:7](https://github.com/blacktop/docker-kibana-alpine) image, uncomment the service and proxy definitions at `.lando.yml` to enable.
+- `elasticsearch` - available at <http://localhost:9200>. Uses [bitnami/elasticsearch:7](https://github.com/bitnami/bitnami-docker-elasticsearch) image, uncomment the service definition at `.lando.yml` to enable. ES settings file: `.lando/elasticsearch.yml`.
+- `kibana`  - available at <http://localhost:5601>. Uses [bitnami/kibana:7](https://github.com/bitnami/bitnami-docker-kibana) image, uncomment the service definition at `.lando.yml` to enable.
 - `mailhog` - uses Lando [MailHog service](https://docs.lando.dev/config/mailhog.html).
 - `node` - uses Lando [Node service](https://docs.lando.dev/config/node.html).
 
