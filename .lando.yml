@@ -60,31 +60,38 @@ services:
   #       - /dev/shm:/dev/shm
   #     command: /opt/bin/entry_point.sh
   # elasticsearch:
-  #   type: elasticsearch:7
-  #   portforward: 9200
-  #   mem: 1050m
+  #   type: compose
+  #   ssl: true
+  #   sslExpose: false
+  #   services:
+  #     image: bitnami/elasticsearch:7
+  #     command: /opt/bitnami/scripts/elasticsearch/entrypoint.sh /opt/bitnami/scripts/elasticsearch/run.sh
+  #     ports:
+  #       - "9200:9200"
+  #       - "9300:9300"
+  #     volumes:
+  #       - ./.lando/elasticsearch.yml:/opt/bitnami/elasticsearch/config/elasticsearch.yml
+  #       - elasticsearch_data:/bitnami/elasticsearch/data
+  #   volumes:
+  #     elasticsearch_data:
+  #   run_as_root:
+  #     # Install `analysis-icu` plugin after ES service boots up
+  #     - elasticsearch-plugin install analysis-icu
   #   overrides:
   #     environment:
-  #       JAVA_HOME: /opt/bitnami/java
-  #   run_as_root:
-  #     - |
-  #       /bin/sh -c "
-  #       if [ ! -d '/opt/bitnami/elasticsearch/plugins/analysis-icu' ]; then
-  #         elasticsearch-plugin install analysis-icu
-  #       fi
-  #       "
+  #       ES_JAVA_OPTS: -Xms512m -Xmx512m
   # kibana:
   #   type: compose
-  #   meUser: kibana
   #   services:
   #     image: bitnami/kibana:7
   #     ports:
   #       - "5601:5601"
   #     depends_on:
   #       - elasticsearch
-  #     command: kibana
-  #     volumes:
-  #       - .lando/kibana.yml:/opt/bitnami/kibana/config/kibana.yml
+  #     command: /app-entrypoint.sh /run.sh
+  #   overrides:
+  #     environment:
+  #       KIBANA_ELASTICSEARCH_URL: http://elasticsearch:9200
   mailhog:
     type: mailhog
     hogfrom:
@@ -95,10 +102,6 @@ services:
       - npm install
 
 proxy:
-  # elasticsearch:
-  #   - elasticsearch-silta.lndo.site:9200
-  # kibana:
-  #   - kibana-silta.lndo.site:5601
   mailhog:
     - mail-silta.lndo.site
 
@@ -110,4 +113,4 @@ env_file:
   - .lando/.env
 
 # Tested with Lando version
-version: v3.0.21
+version: v3.0.23
