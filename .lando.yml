@@ -7,6 +7,8 @@ config:
   webroot: web
   database: mariadb:10.3
   xdebug: false
+  config:
+    php: .lando/php.ini
 
 tooling:
   grumphp:
@@ -49,6 +51,10 @@ services:
         DB_USER_DRUPAL: drupal9
         DB_PASS_DRUPAL: drupal9
         DB_HOST_DRUPAL: database
+        # Support debugging with XDEBUG 3.
+        XDEBUG_MODE:
+        # Support debugging Drush with XDEBUG 3.
+        PHP_IDE_CONFIG: "serverName=appserver"
   # chrome:
   #   type: compose
   #   services:
