@@ -3,12 +3,18 @@ version: 2.1
 orbs:
   silta: silta/silta@0.1
 
+executors:
+  cicd73:
+    docker:
+      - image: eu.gcr.io/silta-images/cicd:circleci-php7.3-node12-composer1-v0.1
+
 workflows:
   version: 2
   commit:
     jobs:
       - silta/drupal-validate:
           name: validate
+          executor: cicd73
           post-validation:
             - run: echo "You can add additional validation here!"
 
@@ -19,6 +25,7 @@ workflows:
 
       - silta/drupal-build-deploy: &build-deploy
           name: build-deploy
+          executor: cicd73
           codebase-build:
             - silta/drupal-composer-install
             - silta/npm-install-build
