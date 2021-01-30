@@ -7,6 +7,8 @@ config:
   webroot: web
   database: mariadb:10.3
   xdebug: false
+  config:
+    php: .lando/php.ini
 
 tooling:
   grumphp:
@@ -16,15 +18,10 @@ tooling:
   npm:
     description: Runs npm commands
     service: node
-  xdebug-on:
-    service: appserver
-    description: Enables xdebug for nginx
-    cmd: docker-php-ext-enable xdebug && pkill -o -USR2 php-fpm
-    user: root
-  xdebug-off:
-    service: appserver
-    description: Disables xdebug for nginx
-    cmd: rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && pkill -o -USR2 php-fpm
+  xdebug:
+    description: Loads Xdebug in the mode defined in the .lando/php.ini file. Run `lando xdebug off` to turn Xdebug off.
+    cmd:
+      - appserver: /app/.lando/xdebug.sh
     user: root
   xdebug-profiler-on:
     service: appserver
@@ -49,6 +46,10 @@ services:
         DB_USER_DRUPAL: drupal9
         DB_PASS_DRUPAL: drupal9
         DB_HOST_DRUPAL: database
+        # Support debugging with XDEBUG 3.
+        XDEBUG_MODE:
+        # Support debugging Drush with XDEBUG 3.
+        PHP_IDE_CONFIG: "serverName=appserver"
   # chrome:
   #   type: compose
   #   services:
