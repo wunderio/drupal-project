@@ -23,16 +23,6 @@ tooling:
     cmd:
       - appserver: /app/.lando/xdebug.sh
     user: root
-  xdebug-profiler-on:
-    service: appserver
-    description: Enable xdebug profiler.
-    cmd: echo "xdebug.profiler_enable = 1\\nxdebug.profiler_output_dir = /app" >> /usr/local/etc/php/conf.d/xxx-lando-default.ini && pkill -o -USR2 php-fpm
-    user: root
-  xdebug-profiler-off:
-    service: appserver
-    description: Disable xdebug profiler.
-    cmd: pkill -o -USR2 php-fpm && cp /usr/local/etc/php/conf.d/xxx-lando-default.ini /tmp/lando.ini && sed -i '/xdebug\.profiler/d' /tmp/lando.ini && cp /tmp/lando.ini /usr/local/etc/php/conf.d/xxx-lando-default.ini
-    user: root
 
 services:
   appserver:
