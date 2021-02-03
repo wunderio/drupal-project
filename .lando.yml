@@ -6,7 +6,7 @@ config:
   via: nginx
   webroot: web
   database: mariadb:10.3
-  xdebug: false
+  xdebug: off
   config:
     php: .lando/php.ini
 
@@ -19,7 +19,7 @@ tooling:
     description: Runs npm commands
     service: node
   xdebug:
-    description: Loads Xdebug in the mode defined in the .lando/php.ini file. Run `lando xdebug off` to turn Xdebug off.
+    description: Loads Xdebug in the selected mode
     cmd:
       - appserver: /app/.lando/xdebug.sh
     user: root
