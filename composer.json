@@ -17,7 +17,7 @@
     "require": {
         "composer/installers": "^1.9",
         "cweagans/composer-patches": "^1.7",
-        "drupal/admin_toolbar": "^2.4",
+        "drupal/admin_toolbar": "^3.0",
         "drupal/core-composer-scaffold": "^9.1",
         "drupal/core-recommended": "^9.1",
         "drupal/monolog": "^2.0@beta",
