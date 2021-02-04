@@ -6,7 +6,7 @@ config:
   via: nginx
   webroot: web
   database: mariadb:10.3
-  xdebug: false
+  xdebug: off
   config:
     php: .lando/php.ini
 
@@ -19,19 +19,9 @@ tooling:
     description: Runs npm commands
     service: node
   xdebug:
-    description: Loads Xdebug in the mode defined in the .lando/php.ini file. Run `lando xdebug off` to turn Xdebug off.
+    description: Loads Xdebug in the selected mode
     cmd:
       - appserver: /app/.lando/xdebug.sh
-    user: root
-  xdebug-profiler-on:
-    service: appserver
-    description: Enable xdebug profiler.
-    cmd: echo "xdebug.profiler_enable = 1\\nxdebug.profiler_output_dir = /app" >> /usr/local/etc/php/conf.d/xxx-lando-default.ini && pkill -o -USR2 php-fpm
-    user: root
-  xdebug-profiler-off:
-    service: appserver
-    description: Disable xdebug profiler.
-    cmd: pkill -o -USR2 php-fpm && cp /usr/local/etc/php/conf.d/xxx-lando-default.ini /tmp/lando.ini && sed -i '/xdebug\.profiler/d' /tmp/lando.ini && cp /tmp/lando.ini /usr/local/etc/php/conf.d/xxx-lando-default.ini
     user: root
 
 services:

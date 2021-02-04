@@ -36,8 +36,7 @@ For additional instructions, please see the [Silta documentation](https://github
 - `lando` - tools / commands overview.
 - `lando grumphp <commands>` - run [GrumPHP](https://github.com/phpro/grumphp) code quality checks. Modified or new files are checked on git commit, see more at `lando grumphp -h` or [wunderio/code-quality](https://github.com/wunderio/code-quality).
 - `lando npm <commands>` - run [npm](https://www.npmjs.com/) commands.
-- `lando xdebug` - enable [Xdebug](https://xdebug.org/) in the mode defined in the `.lando/php.ini` file (defaults to `debug`). Run `lando xdebug off` to turn Xdebug off.
-- `lando xdebug-profiler-on`, `lando xdebug-profiler-off` - enable/disable the [Xdebug profiler](https://xdebug.org/docs/profiler). This requires `lando xdebug` to be executed first.
+- `lando xdebug <mode>` - load [Xdebug](https://xdebug.org/) in the selected [mode(s)](https://xdebug.org/docs/all_settings#mode).
 
 ### Drupal development hints
 

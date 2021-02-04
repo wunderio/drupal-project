@@ -1,12 +1,13 @@
 #!/bin/bash
 
 if [ "$#" -ne 1 ]; then
-  docker-php-ext-enable xdebug
-  pkill -o -USR2 php-fpm
-  echo "Xdebug is loaded in the mode defined in the .lando/php.ini file."
+  echo "Xdebug has been turned off, please use the following syntax: 'lando xdebug <mode>'."
   echo "Valid modes: https://xdebug.org/docs/all_settings#mode."
-else
-  rm -rf /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+  echo xdebug.mode = off > /usr/local/etc/php/conf.d/zzz-lando-xdebug.ini
   pkill -o -USR2 php-fpm
-  echo "Xdebug is turned off."
+else
+  mode="$1"
+  echo xdebug.mode = "$mode" > /usr/local/etc/php/conf.d/zzz-lando-xdebug.ini
+  pkill -o -USR2 php-fpm
+  echo "Xdebug is loaded in "$mode" mode."
 fi
