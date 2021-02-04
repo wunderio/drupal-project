@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ "$#" -ne 1 ]; then
-  echo "Xdebuf has been turned off, please use the following syntax: 'lando xdebug <mode>'."
+  echo "Xdebug has been turned off, please use the following syntax: 'lando xdebug <mode>'."
   echo "Valid modes: https://xdebug.org/docs/all_settings#mode."
   echo xdebug.mode = off > /usr/local/etc/php/conf.d/zzz-lando-xdebug.ini
   pkill -o -USR2 php-fpm
