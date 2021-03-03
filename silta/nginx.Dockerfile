@@ -1,5 +1,5 @@
-# Dockerfile for building nginx.
-FROM wunderio/drupal-nginx:v0.1
+# Dockerfile for the Nginx container.
+FROM eu.gcr.io/silta-images/nginx:latest
 
 COPY . /app/web
 
