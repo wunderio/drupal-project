@@ -10,5 +10,10 @@ PHPUNIT_CONFIG=/app/phpunit.xml
 if [ ! -f "$PHPUNIT_CONFIG" ]; then
     cd /app
     cp -n web/core/phpunit.xml.dist phpunit.xml
-    sed -i 's|tests\/bootstrap\.php|/app/web/core/tests/bootstrap.php|g' phpunit.xml
+    sed -i 's|tests\/bootstrap\.php|./web/core/tests/bootstrap.php|g' phpunit.xml
+    sed -i 's|\.\/tests\/|./web/core/tests/|g' phpunit.xml
+    sed -i 's|directory>\.\/|directory>./web/core/|g' phpunit.xml
+    sed -i 's|directory>\.\.\/|directory>./web/core/|g' phpunit.xml
+    vendor/bin/phpunit --migrate-configuration
+    rm phpunit.xml.bak
 fi
