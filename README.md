@@ -44,14 +44,14 @@ For additional instructions, please see the [Silta documentation](https://github
 - [Updating Drupal core](https://www.drupal.org/docs/8/update/update-core-via-composer).
 - [Altering scaffold files](https://www.drupal.org/docs/develop/using-composer/using-drupals-composer-scaffold#toc_4) (`robots.txt`, `.htaccess` etc.).
 
-### Testing
+### Running tests
 
-The [PHPUnit](https://phpunit.de/) test framework is predefined in this project. Use `lando phpunit` to run the PHPUnit commands. `phpunit.xml` is copied over from `web/core/phpunit.xml.dist` during the initial build, change it as needed and commit to the GIT. See more at [web/core/tests/README.md](web/core/tests/README.md).
+The [PHPUnit](https://phpunit.de/) test framework is predefined in this project. `phpunit.xml` settings file is copied from `web/core/phpunit.xml.dist` during the initial build and modified by `.lando/phpunit.sh`, change it as needed and commit to the GIT. See more at [web/core/tests/README.md](web/core/tests/README.md).
 
-#### Core testing examples
+#### Testing examples
 
-Following examples are taken from <https://agile.coop/blog/drupal-phpunit-tests-lando/>:
+Use `lando phpunit` to run the PHPUnit commands.
 
-- Functional (browser) test: `lando phpunit web/core/modules/color/tests/src/Functional/ColorConfigSchemaTest.php`
-- JavaScript test: `lando phpunit web/core/modules/action/tests/src/FunctionalJavascript/ActionFormAjaxTest.php`
-- Kernel test: `lando phpunit web/core/modules/help/tests/src/Kernel/HelpEmptyPageTest.php`
+- run one test class: `lando phpunit path/to/your/class/file.php`,
+- list groups: `lando phpunit --list-groups`,
+- run all the tests in a particular group: `lando phpunit --group Groupname`.
