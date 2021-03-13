@@ -14,6 +14,8 @@ if [ ! -f "$PHPUNIT_CONFIG" ]; then
     sed -i 's|\.\/tests\/|./web/core/tests/|g' phpunit.xml
     sed -i 's|directory>\.\/|directory>./web/core/|g' phpunit.xml
     sed -i 's|directory>\.\.\/|directory>./web/core/|g' phpunit.xml
+    sed -i 's|<env name="SIMPLETEST_BASE_URL" value=""\/>|<env name="SIMPLETEST_BASE_URL" value="http://appserver_nginx" force="true"/>|g' phpunit.xml
+    sed -i 's|<env name="SIMPLETEST_DB" value=""\/>|<env name="SIMPLETEST_DB" value="sqlite://localhost/tmp/db.sqlite"/>|g' phpunit.xml
     vendor/bin/phpunit --migrate-configuration
     rm phpunit.xml.bak
 fi
