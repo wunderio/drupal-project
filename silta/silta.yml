@@ -3,3 +3,6 @@
 #
 # See https://github.com/wunderio/charts/blob/master/drupal/values.yaml
 # for all possible options.
+
+php:
+  drupalCoreVersion: "9"
