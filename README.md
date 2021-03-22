@@ -13,6 +13,10 @@ This project template is an opinionated fork of the popular [Drupal-composer tem
   - `silta/silta.yml` [values](https://github.com/wunderio/charts/blob/master/drupal/values.yaml).
 - Log in to [CircleCI](https://app.circleci.com/) using your Github account and add the new project using existing config.
 
+Silta injects it's own Drupal 9 settings file automatically when `drupalCoreVersion: "9"` is
+defined in [silta.yml](https://github.com/wunderio/drupal-project/blob/master/silta/silta.yml).
+See `wunderio/charts` [settings.silta.php](https://github.com/wunderio/charts/blob/master/drupal/files/settings.silta.php) file for the details.
+
 For additional instructions, please see the [Silta documentation](https://github.com/wunderio/silta).
 
 ## Local development

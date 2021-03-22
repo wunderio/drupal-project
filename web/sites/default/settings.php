@@ -79,3 +79,10 @@ $settings['file_scan_ignore_directories'] = [
 if (file_exists($app_root . '/' . $site_path . '/settings.local.php')) {
   include $app_root . '/' . $site_path . '/settings.local.php';
 }
+
+ /**
+ * Silta injects it's own Drupal 9 settings file automatically when `drupalCoreVersion: "9"` is
+ * defined in https://github.com/wunderio/drupal-project/blob/master/silta/silta.yml.
+ * @see https://github.com/wunderio/charts/blob/master/drupal/files/settings.silta.php
+ * file for the details.
+ */
