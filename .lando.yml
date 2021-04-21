@@ -76,7 +76,7 @@ services:
   #       - "5601:5601"
   #     depends_on:
   #       - elasticsearch
-  #     command: /app-entrypoint.sh /run.sh
+  #     command: /opt/bitnami/scripts/kibana/entrypoint.sh /opt/bitnami/scripts/kibana/run.sh
   #   overrides:
   #     environment:
   #       KIBANA_ELASTICSEARCH_URL: "http://elasticsearch:9200"
@@ -101,4 +101,4 @@ env_file:
   - .lando/.env
 
 # Tested with Lando version
-version: v3.0.23
+version: v3.1.0
