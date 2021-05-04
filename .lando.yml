@@ -71,6 +71,10 @@ services:
   #   services:
   #     image: "bitnami/kibana:7.12.0"
   #     command: "/opt/bitnami/scripts/kibana/entrypoint.sh /opt/bitnami/scripts/kibana/run.sh"
+  #     volumes:
+  #       - kibana_data:/bitnami/kibana
+  #   volumes:
+  #     kibana_data:
   mailhog:
     type: mailhog
     hogfrom:
