@@ -15,7 +15,7 @@ grumphp:
     php_stan:
       run_on: ['web/modules/custom', 'web/themes/custom']
     ecs:
-      run_on: ['web/modules/custom', 'web/themes/custom', 'web/sites']
+      run_on: ['web/modules/custom', 'web/themes/custom']
     yaml_lint: ~
     json_lint: ~
   extensions:
