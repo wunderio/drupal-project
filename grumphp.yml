@@ -1,5 +1,6 @@
 grumphp:
   stop_on_failure: true
+  process_timeout: 300
   ascii:
     failed: ~
     succeeded: ~
