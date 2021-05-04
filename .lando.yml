@@ -51,35 +51,24 @@ services:
   #       - /dev/shm:/dev/shm
   #     command: /opt/bin/entry_point.sh
   # elasticsearch:
-  #   type: compose
-  #   services:
-  #     image: bitnami/elasticsearch:7
-  #     command: /opt/bitnami/scripts/elasticsearch/entrypoint.sh /opt/bitnami/scripts/elasticsearch/run.sh
-  #     ports:
-  #       - "9200:9200"
-  #       - "9300:9300"
-  #     volumes:
-  #       - ./.lando/elasticsearch.yml:/opt/bitnami/elasticsearch/config/elasticsearch.yml
-  #       - elasticsearch_data:/bitnami/elasticsearch/data
-  #   volumes:
-  #     elasticsearch_data:
+  #   type: elasticsearch:7.12.0
+  #   # Replace `true` with `9200` for proxy http://localhost:9200.
+  #   portforward: true
   #   overrides:
   #     environment:
-  #       ES_JAVA_OPTS: "-Xms512m -Xmx512m"
-  #       # Install plugins.
-  #       ELASTICSEARCH_PLUGINS: "analysis-icu"
+  #       ELASTICSEARCH_CLUSTER_NAME: 'wunder'
+  #       ELASTICSEARCH_NODE_NAME: 'silta'
+  #       ELASTICSEARCH_PLUGINS: 'analysis-icu'
+  #     volumes:
+  #       # Extend the default configuration with custom settings like
+  #       # allowing CORS requests at `.lando/my_elasticsearch.yml`.
+  #       # @see: https://github.com/bitnami/bitnami-docker-elasticsearch#configuration-file.
+  #       - ./.lando/my_elasticsearch.yml:/opt/bitnami/elasticsearch/config/my_elasticsearch.yml
   # kibana:
   #   type: compose
   #   services:
-  #     image: bitnami/kibana:7
-  #     ports:
-  #       - "5601:5601"
-  #     depends_on:
-  #       - elasticsearch
-  #     command: /opt/bitnami/scripts/kibana/entrypoint.sh /opt/bitnami/scripts/kibana/run.sh
-  #   overrides:
-  #     environment:
-  #       KIBANA_ELASTICSEARCH_URL: "http://elasticsearch:9200"
+  #     image: bitnami/kibana:7.12.0
+  #     command: '/opt/bitnami/scripts/kibana/entrypoint.sh /opt/bitnami/scripts/kibana/run.sh'
   mailhog:
     type: mailhog
     hogfrom:
@@ -92,6 +81,8 @@ services:
 proxy:
   mailhog:
     - mail-silta.lndo.site
+  kibana:
+    - kibana-silta.lndo.site:5601
 
 events:
   post-db-import:
