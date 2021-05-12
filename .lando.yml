@@ -2,24 +2,24 @@ name: silta
 recipe: drupal9
 
 config:
-  php: '7.3'
+  php: "7.3"
   via: nginx
   webroot: web
-  database: mariadb:10.3
+  database: "mariadb:10.3"
   xdebug: off
   config:
     php: .lando/php.ini
 
 tooling:
   grumphp:
-    description: Runs grumphp commands
+    description: "Runs grumphp commands"
     cmd:
       - appserver: ./vendor/bin/grumphp
   npm:
-    description: Runs npm commands
+    description: "Runs npm commands"
     service: node
   xdebug:
-    description: Loads Xdebug in the selected mode
+    description: "Loads Xdebug in the selected mode"
     cmd:
       - appserver: /app/.lando/xdebug.sh
     user: root
@@ -27,7 +27,7 @@ tooling:
 services:
   appserver:
     build:
-      - composer install
+      - "composer install"
     overrides:
       environment:
         HASH_SALT: notsosecurehash
@@ -39,7 +39,7 @@ services:
         # Support debugging with XDEBUG 3.
         XDEBUG_MODE:
         # Support debugging Drush with XDEBUG 3.
-        PHP_IDE_CONFIG: "serverName=appserver"
+        PHP_IDE_CONFIG: serverName=appserver
   # chrome:
   #   type: compose
   #   services:
@@ -51,35 +51,26 @@ services:
   #       - /dev/shm:/dev/shm
   #     command: /opt/bin/entry_point.sh
   # elasticsearch:
-  #   type: compose
-  #   services:
-  #     image: bitnami/elasticsearch:7
-  #     command: /opt/bitnami/scripts/elasticsearch/entrypoint.sh /opt/bitnami/scripts/elasticsearch/run.sh
-  #     ports:
-  #       - "9200:9200"
-  #       - "9300:9300"
-  #     volumes:
-  #       - ./.lando/elasticsearch.yml:/opt/bitnami/elasticsearch/config/elasticsearch.yml
-  #       - elasticsearch_data:/bitnami/elasticsearch/data
-  #   volumes:
-  #     elasticsearch_data:
+  #   type: "elasticsearch:7.12.0"
+  #   # Replace `true` with `9200` for proxy http://localhost:9200.
+  #   portforward: true
   #   overrides:
   #     environment:
-  #       ES_JAVA_OPTS: "-Xms512m -Xmx512m"
-  #       # Install plugins.
-  #       ELASTICSEARCH_PLUGINS: "analysis-icu"
+  #       ELASTICSEARCH_HEAP_SIZE: 1024m
+  #       # Comma, semi-colon or space separated list of plugins to install at initialization.
+  #       ELASTICSEARCH_PLUGINS: analysis-icu
+  #     volumes:
+  #       # Extend the default configuration with custom settings like
+  #       # allowing CORS requests at `.lando/my_elasticsearch.yml`.
+  #       # @see: https://github.com/bitnami/bitnami-docker-elasticsearch#configuration-file.
+  #       - "./.lando/my_elasticsearch.yml:/opt/bitnami/elasticsearch/config/my_elasticsearch.yml"
   # kibana:
   #   type: compose
+  #   ssl: true
+  #   sslExpose: false
   #   services:
-  #     image: bitnami/kibana:7
-  #     ports:
-  #       - "5601:5601"
-  #     depends_on:
-  #       - elasticsearch
-  #     command: /opt/bitnami/scripts/kibana/entrypoint.sh /opt/bitnami/scripts/kibana/run.sh
-  #   overrides:
-  #     environment:
-  #       KIBANA_ELASTICSEARCH_URL: "http://elasticsearch:9200"
+  #     image: "bitnami/kibana:7.12.0"
+  #     command: "/opt/bitnami/scripts/kibana/entrypoint.sh /opt/bitnami/scripts/kibana/run.sh"
   mailhog:
     type: mailhog
     hogfrom:
@@ -87,18 +78,20 @@ services:
   node:
     type: node
     build:
-      - npm install
+      - "npm install"
 
 proxy:
   mailhog:
     - mail-silta.lndo.site
+  kibana:
+    - "kibana-silta.lndo.site:5601"
 
 events:
   post-db-import:
-    - appserver: cd $LANDO_WEBROOT && drush cache:rebuild -y && drush @local user:login
+    - appserver: "cd $LANDO_WEBROOT && drush cache:rebuild -y && drush @local user:login"
 
 env_file:
   - .lando/.env
 
 # Tested with Lando version
-version: v3.1.0
+version: v3.1.2

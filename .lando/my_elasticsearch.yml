@@ -1,0 +1,8 @@
+# Extend the default configuration with custom settings like allowing CORS requests.
+# @see: https://github.com/bitnami/bitnami-docker-elasticsearch#configuration-file.
+
+# Allow CORS requests.
+# http:
+#   cors:
+#     enabled: true
+#     allow-origin: "*"
