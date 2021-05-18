@@ -76,15 +76,15 @@ services:
     hogfrom:
       - appserver
   node:
-    type: node
+    type: "node:12"
     build:
       - "npm install"
 
 proxy:
   mailhog:
     - mail-silta.lndo.site
-  kibana:
-    - "kibana-silta.lndo.site:5601"
+  # kibana:
+  #   - "kibana-silta.lndo.site:5601"
 
 events:
   post-db-import:
@@ -94,4 +94,4 @@ env_file:
   - .lando/.env
 
 # Tested with Lando version
-version: v3.1.2
+version: v3.1.4
