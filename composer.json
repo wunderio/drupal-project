@@ -39,7 +39,10 @@
     "prefer-stable": true,
     "config": {
         "sort-packages": true,
-        "discard-changes": true
+        "discard-changes": true,
+        "platform": {
+            "php": "7.3"
+        }
     },
     "autoload": {
         "classmap": [
