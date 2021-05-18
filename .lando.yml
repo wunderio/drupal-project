@@ -83,8 +83,8 @@ services:
 proxy:
   mailhog:
     - mail-silta.lndo.site
-  kibana:
-    - "kibana-silta.lndo.site:5601"
+  # kibana:
+  #   - "kibana-silta.lndo.site:5601"
 
 events:
   post-db-import:
