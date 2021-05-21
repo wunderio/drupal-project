@@ -21,7 +21,7 @@ tooling:
   phpunit:
     description: Runs PHPUnit commands
     cmd:
-      - appserver: "php /app/vendor/bin/phpunit -c /app/phpunit.xml"
+      - appserver: "php /app/vendor/bin/phpunit -c /app/phpunit.xml --testdox"
   xdebug:
     description: "Loads Xdebug in the selected mode"
     cmd:
