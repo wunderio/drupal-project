@@ -52,13 +52,10 @@
       <directory>./web/modules/custom/*/tests/src/Unit</directory>
     </testsuite>
     <testsuite name="kernel">
-      <directory>./web/modules/custom/*/tests/src/Kernel</directory>
     </testsuite>
     <testsuite name="functional">
-      <directory>./web/modules/custom/*/tests/src/Functional</directory>
     </testsuite>
     <testsuite name="functional-javascript">
-      <directory>./web/modules/custom/*/tests/src/FunctionalJavascript</directory>
     </testsuite>
     <testsuite name="build">
     </testsuite>

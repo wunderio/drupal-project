@@ -18,6 +18,8 @@ grumphp:
       run_on: ['web/modules/custom', 'web/themes/custom']
     yaml_lint: ~
     json_lint: ~
+    phpunit:
+      config_file: /app/phpunit.grumphp.xml
   extensions:
     - Wunderio\GrumPHP\Task\PhpCompatibility\PhpCompatibilityExtensionLoader
     - Wunderio\GrumPHP\Task\PhpCheckSyntax\PhpCheckSyntaxExtensionLoader
