@@ -22,6 +22,10 @@ tooling:
     description: Runs PHPUnit commands
     cmd:
       - appserver: "php /app/vendor/bin/phpunit -c /app/phpunit.xml --testdox"
+  regenerate-phpunit-config:
+    description: "Regenerates fresh PHPUnit configuration."
+    cmd:
+      - appserver: /app/.lando/phpunit.sh
   xdebug:
     description: "Loads Xdebug in the selected mode"
     cmd:
@@ -32,8 +36,6 @@ services:
   appserver:
     build:
       - "composer install"
-    run_as_root:
-      - /app/.lando/phpunit.sh
     overrides:
       environment:
         HASH_SALT: notsosecurehash
