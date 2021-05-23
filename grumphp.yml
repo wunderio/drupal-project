@@ -18,8 +18,10 @@ grumphp:
       run_on: ['web/modules/custom', 'web/themes/custom']
     yaml_lint: ~
     json_lint: ~
-    phpunit:
-      testsuite: unit
+# Enable after there are tests in web/modules/custom.
+# PHPUnit will fail with 0 tests.
+#    phpunit:
+#      testsuite: unit
   extensions:
     - Wunderio\GrumPHP\Task\PhpCompatibility\PhpCompatibilityExtensionLoader
     - Wunderio\GrumPHP\Task\PhpCheckSyntax\PhpCheckSyntaxExtensionLoader
