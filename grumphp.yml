@@ -19,7 +19,7 @@ grumphp:
     yaml_lint: ~
     json_lint: ~
     phpunit:
-      config_file: phpunit.grumphp.xml
+      testsuite: unit
   extensions:
     - Wunderio\GrumPHP\Task\PhpCompatibility\PhpCompatibilityExtensionLoader
     - Wunderio\GrumPHP\Task\PhpCheckSyntax\PhpCheckSyntaxExtensionLoader
