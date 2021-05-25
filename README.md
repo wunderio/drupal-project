@@ -46,7 +46,7 @@ For additional instructions, please see the [Silta documentation](https://github
 
 ### Running tests
 
-The [PHPUnit](https://phpunit.de/) test framework is predefined in this project. `phpunit.xml` settings file is copied from `web/core/phpunit.xml.dist` during the initial build and modified by `.lando/phpunit.sh`, change it as needed and commit to the GIT. See more at [web/core/tests/README.md](web/core/tests/README.md).
+The [PHPUnit](https://phpunit.de/) test framework is predefined in this project, see `phpunit.xml` for details. Also, there is a minified `web/modules/custom/phpunit_example` module included from [examples module](https://www.drupal.org/project/examples) for learning purposes.
 
 #### Testing examples
 
