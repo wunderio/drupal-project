@@ -12,6 +12,7 @@ grumphp:
       run_on: ['web/modules/custom', 'web/themes/custom', 'web/sites']
     phpcs:
       standard: ['phpcs.xml']
+      run_on: ['web/modules/custom', 'web/themes/custom']
     php_stan:
       run_on: ['web/modules/custom', 'web/themes/custom']
     ecs:
