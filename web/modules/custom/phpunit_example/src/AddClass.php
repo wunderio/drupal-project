@@ -12,12 +12,12 @@ class AddClass {
   /**
    * A simple addition method with validity checking.
    *
-   * @param int|float $a
+   * @param mixed $a
    *   A number to add.
-   * @param int|float $b
+   * @param mixed $b
    *   Another number to add.
    *
-   * @return int|float
+   * @return mixed
    *   The sum of $a and $b.
    *
    * @throws \InvalidArgumentException
