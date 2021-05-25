@@ -20,6 +20,7 @@ workflows:
 
       - silta/analyze:
           name: analyze
+          executor: cicd74
           context: analyze
           sources: web
 
