@@ -15,6 +15,7 @@
         }
     ],
     "require": {
+        "php": ">=7.4",
         "composer/installers": "^1.9",
         "cweagans/composer-patches": "^1.7",
         "drupal/admin_toolbar": "^3.0",
@@ -24,7 +25,6 @@
         "drupal/simplei": "^1.2",
         "drupal/warden": "^3.0@RC",
         "drush/drush": "^10.3",
-        "php": ">=7.4",
         "vlucas/phpdotenv": "^5.2",
         "webflo/drupal-finder": "^1.2",
         "wunderio/drupal-ping": "^1.0"
