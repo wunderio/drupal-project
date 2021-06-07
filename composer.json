@@ -24,12 +24,14 @@
         "drupal/simplei": "^1.2",
         "drupal/warden": "^3.0@RC",
         "drush/drush": "^10.3",
+        "php": ">=7.4",
         "vlucas/phpdotenv": "^5.2",
         "webflo/drupal-finder": "^1.2",
         "wunderio/drupal-ping": "^1.0"
     },
     "require-dev": {
         "drupal/core-dev": "^9.1",
+        "phpspec/prophecy-phpunit": "^2.0",
         "wunderio/code-quality": "^2.0"
     },
     "conflict": {
@@ -39,10 +41,7 @@
     "prefer-stable": true,
     "config": {
         "sort-packages": true,
-        "discard-changes": true,
-        "platform": {
-            "php": "7.3"
-        }
+        "discard-changes": true
     },
     "autoload": {
         "classmap": [

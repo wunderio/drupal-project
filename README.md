@@ -36,9 +36,22 @@ For additional instructions, please see the [Silta documentation](https://github
 - `lando` - tools / commands overview.
 - `lando grumphp <commands>` - run [GrumPHP](https://github.com/phpro/grumphp) code quality checks. Modified or new files are checked on git commit, see more at `lando grumphp -h` or [wunderio/code-quality](https://github.com/wunderio/code-quality).
 - `lando npm <commands>` - run [npm](https://www.npmjs.com/) commands.
+- `lando phpunit <commands>` - run [PHPUnit](https://phpunit.de/) commands.
 - `lando xdebug <mode>` - load [Xdebug](https://xdebug.org/) in the selected [mode(s)](https://xdebug.org/docs/all_settings#mode).
 
 ### Drupal development hints
 
 - [Updating Drupal core](https://www.drupal.org/docs/8/update/update-core-via-composer).
 - [Altering scaffold files](https://www.drupal.org/docs/develop/using-composer/using-drupals-composer-scaffold#toc_4) (`robots.txt`, `.htaccess` etc.).
+
+### Running tests
+
+The [PHPUnit](https://phpunit.de/) test framework is predefined in this project, see `phpunit.xml` for details. Also, there is a minified `web/modules/custom/phpunit_example` module included from [examples module](https://www.drupal.org/project/examples) for learning purposes.
+
+#### Testing examples
+
+Use `lando phpunit` to run the PHPUnit commands.
+
+- run one test class: `lando phpunit path/to/your/class/file.php`,
+- list groups: `lando phpunit --list-groups`,
+- run all the tests in a particular group: `lando phpunit --group Groupname`.

@@ -2,7 +2,7 @@ name: silta
 recipe: drupal9
 
 config:
-  php: "7.3"
+  php: "7.4"
   via: nginx
   webroot: web
   database: "mariadb:10.3"
@@ -18,6 +18,15 @@ tooling:
   npm:
     description: "Runs npm commands"
     service: node
+  phpunit:
+    description: Runs PHPUnit commands
+    user: www-data
+    cmd:
+      - appserver: "php /app/vendor/bin/phpunit -c /app/phpunit.xml --testdox"
+  regenerate-phpunit-config:
+    description: "Regenerates fresh PHPUnit configuration."
+    cmd:
+      - appserver: /app/.lando/phpunit.sh
   xdebug:
     description: "Loads Xdebug in the selected mode"
     cmd:
@@ -38,18 +47,14 @@ services:
         DB_HOST_DRUPAL: database
         # Support debugging with XDEBUG 3.
         XDEBUG_MODE:
-        # Support debugging Drush with XDEBUG 3.
         PHP_IDE_CONFIG: serverName=appserver
-  # chrome:
-  #   type: compose
-  #   services:
-  #     image: selenium/standalone-chrome
-  #     user: root
-  #     ports:
-  #       - "4444:4444"
-  #     volumes:
-  #       - /dev/shm:/dev/shm
-  #     command: /opt/bin/entry_point.sh
+        # PHPUnit settings. @see: .lando/phpunit.sh
+        MINK_DRIVER_ARGS_WEBDRIVER: '["chrome", {"browserName":"chrome","chromeOptions":{"args":["--disable-gpu","--headless"]}}, "http://chrome:9515"]'
+  chrome:
+    type: compose
+    services:
+      image: drupalci/webdriver-chromedriver:production
+      command: chromedriver --log-path=/tmp/chromedriver.log --verbose --whitelisted-ips=
   # elasticsearch:
   #   type: "elasticsearch:7.12.0"
   #   # Replace `true` with `9200` for proxy http://localhost:9200.

@@ -12,17 +12,18 @@ grumphp:
       run_on: ['web/modules/custom', 'web/themes/custom', 'web/sites']
     phpcs:
       standard: ['phpcs.xml']
-    php_stan:
       run_on: ['web/modules/custom', 'web/themes/custom']
-    ecs:
+    php_stan:
       run_on: ['web/modules/custom', 'web/themes/custom']
     yaml_lint: ~
     json_lint: ~
+    # PHPUnit will fail with 0 tests.
+    phpunit:
+      testsuite: unit
   extensions:
     - Wunderio\GrumPHP\Task\PhpCompatibility\PhpCompatibilityExtensionLoader
     - Wunderio\GrumPHP\Task\PhpCheckSyntax\PhpCheckSyntaxExtensionLoader
     - Wunderio\GrumPHP\Task\CheckFilePermissions\CheckFilePermissionsExtensionLoader
-    - Wunderio\GrumPHP\Task\Ecs\EcsExtensionLoader
     - Wunderio\GrumPHP\Task\Phpcs\PhpcsExtensionLoader
     - Wunderio\GrumPHP\Task\PhpStan\PhpStanExtensionLoader
     - Wunderio\GrumPHP\Task\YamlLint\YamlLintExtensionLoader
