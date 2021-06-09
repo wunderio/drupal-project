@@ -1,31 +1,30 @@
 # Edit or remove this file as needed.
 # Docs at https://github.com/drush-ops/drush/blob/master/examples/example.site.yml
-
-#prod:
-#  host: prod.domain.com
-#  user: www-admin
-#  root: /path/to/drupal
-#  uri: http://www.example.com
-#
-#stage:
-#  host: stage.domain.com
-#  user: www-admin
-#  root: /path/to/drupal
-#  uri: http://stage.example.com
-
 local:
   root: ${env.LANDO_WEBROOT}
   uri: https://${env.LANDO_APP_NAME}.${env.LANDO_DOMAIN}
 
-#
-# For Silta environments, you can use this wildcard alias.
-# Replace [repo-name] with the name of your repository, and leave out the square brackets.
-# Usage: drush @branch-name status
-#'*':
-#  uri: https://${env-name}.[repo-name].silta.wdr.io
-#  root: /app/web
-#  host: ${env-name}-shell.[repo-name]
-#  user: www-admin
+current:
+  host: ${ENVIRONMENT}-shell.${REPOSITORY}
+  ssh:
+    options: -J www-admin@ssh.dev.wdr.io
+  user: www-admin
+  root: /app/web
+  uri: https://${ENVIRONMENT}.${PROJECT}.dev.wdr.io
+
+master:
+  host: master-shell.${REPOSITORY}
+  ssh:
+    options: -J www-admin@ssh.dev.wdr.io
+  user: www-admin
+  root: /app/web
+  uri: https://master.${PROJECT}.dev.wdr.io
+
+#prod:
+#  host: production-shell.client-PROJECTNAME
 #  ssh:
-#    options: '-J www-admin@ssh.silta.wdr.io'
+#    options: -J www-admin@ssh.finland.wdr.io
+#  user: www-admin
+#  root: /app/web
+#  uri: https://www.domain.com
 
