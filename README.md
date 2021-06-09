@@ -23,6 +23,8 @@ For additional instructions, please see the [Silta documentation](https://github
 * Silta Production: `drush @prod st`
   * NB! Uncomment and edit `drush/sites/self.site.yml`production values
 
+Note drush installation is required on host machine to use silta aliases.
+
 ## Local development
 
 ### [Setup](https://docs.lando.dev/basics/installation.html)
