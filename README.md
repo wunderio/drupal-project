@@ -15,6 +15,14 @@ This project template is an opinionated fork of the popular [Drupal-composer tem
 
 For additional instructions, please see the [Silta documentation](https://github.com/wunderio/silta).
 
+## Drush aliases
+
+* Lando: `lando drush @local st`
+* Silta branch deployment `drush @current st`
+* Silta Master: `drush @master st`
+* Silta Production: `drush @prod st`
+  * NB! Uncomment and edit `drush/sites/self.site.yml`production values
+
 ## Local development
 
 ### [Setup](https://docs.lando.dev/basics/installation.html)
