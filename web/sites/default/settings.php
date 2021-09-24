@@ -21,32 +21,6 @@ $databases['default']['default'] = [
 // Salt for one-time login links, cancel links, form tokens, etc.
 $settings['hash_salt'] = $_ENV['HASH_SALT'];
 
-// Environment-specific settings.
-$env = $_ENV['ENVIRONMENT_NAME'];
-switch ($env) {
-  case 'production':
-    $settings['simple_environment_indicator'] = '#9E005D Production';
-    // Warden settings.
-    $config['warden.settings']['warden_token'] = $_ENV['WARDEN_TOKEN'];
-    break;
-
-  case 'master':
-    $settings['simple_environment_indicator'] = '#5B37BF Stage';
-    break;
-
-  case 'local':
-    $settings['simple_environment_indicator'] = '#2F2942 Local';
-    // Skip file system permissions hardening.
-    $settings['skip_permissions_hardening'] = TRUE;
-    // Skip trusted host pattern.
-    $settings['trusted_host_patterns'] = ['.*'];
-    break;
-
-  default:
-    $settings['simple_environment_indicator'] = '#2F2942 Test';
-    break;
-}
-
 // Location of the site configuration files.
 $settings['config_sync_directory'] = '../config/sync';
 
@@ -67,6 +41,41 @@ $settings['file_scan_ignore_directories'] = [
   'node_modules',
   'bower_components',
 ];
+
+// Environment-specific settings.
+$env = $_ENV['ENVIRONMENT_NAME'];
+switch ($env) {
+  case 'production':
+    $settings['simple_environment_indicator'] = 'DarkRed Production';
+    // Warden settings.
+    $config['warden.settings']['warden_token'] = $_ENV['WARDEN_TOKEN'];
+    break;
+
+  case 'master':
+    $settings['simple_environment_indicator'] = 'DarkBlue Stage';
+    break;
+
+  case 'local':
+  case 'lando':
+    $settings['simple_environment_indicator'] = 'DarkGreen Local';
+    // Skip file system permissions hardening.
+    $settings['skip_permissions_hardening'] = TRUE;
+    // Skip trusted host pattern.
+    $settings['trusted_host_patterns'] = ['.*'];
+    // Debug mode on lando.
+    $settings['container_yamls'][] = DRUPAL_ROOT . '/sites/development.services.yml';
+    $config['system.performance']['css']['preprocess'] = FALSE;
+    $config['system.performance']['js']['preprocess'] = FALSE;
+    $settings['cache']['bins']['render'] = 'cache.backend.null';
+    $settings['cache']['bins']['dynamic_page_cache'] = 'cache.backend.null';
+    $settings['cache']['bins']['page'] = 'cache.backend.null';
+    $settings['extension_discovery_scan_tests'] = FALSE;
+    break;
+
+  default:
+    $settings['simple_environment_indicator'] = '#2F2942 Test';
+    break;
+}
 
 /**
  * Load local development override configuration, if available.
