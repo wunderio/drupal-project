@@ -56,6 +56,7 @@ switch ($env) {
     break;
 
   case 'local':
+  case 'lando':
     $settings['simple_environment_indicator'] = 'DarkGreen Local';
     // Skip file system permissions hardening.
     $settings['skip_permissions_hardening'] = TRUE;
