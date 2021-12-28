@@ -103,6 +103,9 @@
         },
         "composer-exit-on-patch-failure": true,
         "patches": {
+            "drupal/warden": {
+                "https://www.drupal.org/project/warden/issues/3024254": "https://git.drupalcode.org/project/warden/-/commit/b28f9cf2b9acdd21ed3584bf5276b39f11f1cb49.patch"
+            }
         },
         "dropin-paths": {
             "web/": ["type:web-dropin"]
