@@ -86,7 +86,7 @@ services:
     hogfrom:
       - appserver
   node:
-    type: "node:12"
+    type: node
     build:
       - "npm install"
 
@@ -104,4 +104,4 @@ env_file:
   - .lando/.env
 
 # Tested with Lando version
-version: v3.3.1
+version: v3.6.0
