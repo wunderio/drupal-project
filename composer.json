@@ -24,7 +24,7 @@
         "drupal/monolog": "^2.0@beta",
         "drupal/simplei": "^1.2",
         "drupal/warden": "^3.0@RC",
-        "drush/drush": "^10.3",
+        "drush/drush": "^11.0",
         "vlucas/phpdotenv": "^5.2",
         "webflo/drupal-finder": "^1.2",
         "wunderio/drupal-ping": "^1.0"
