@@ -61,7 +61,7 @@ services:
       image: drupalci/webdriver-chromedriver:production
       command: chromedriver --log-path=/tmp/chromedriver.log --verbose --whitelisted-ips=
   # elasticsearch:
-  #   type: "elasticsearch:7.12.0"
+  #   type: "elasticsearch:7.16.2"
   #   # Replace `true` with `9200` for proxy http://localhost:9200.
   #   portforward: true
   #   overrides:
@@ -79,7 +79,7 @@ services:
   #   ssl: true
   #   sslExpose: false
   #   services:
-  #     image: "bitnami/kibana:7.12.0"
+  #     image: "bitnami/kibana:7.16.2"
   #     command: "/opt/bitnami/scripts/kibana/entrypoint.sh /opt/bitnami/scripts/kibana/run.sh"
   mailhog:
     type: mailhog
@@ -104,4 +104,4 @@ env_file:
   - .lando/.env
 
 # Tested with Lando version
-version: v3.6.0
+version: v3.6.1
