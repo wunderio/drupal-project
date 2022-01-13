@@ -70,6 +70,8 @@ services:
   #       # Allow CORS requests.
   #       http.cors.enabled: "true"
   #       http.cors.allow-origin: "*"
+  #       # Enable Xpack security.
+  #       xpack.security.enabled: "true"
   #       # Comma, semi-colon or space separated list of plugins to install at initialization.
   #       ELASTICSEARCH_PLUGINS: analysis-icu
   # kibana:
