@@ -5,8 +5,8 @@ namespace Drush\Commands;
 use Consolidation\AnnotatedCommand\AnnotationData;
 use Consolidation\SiteAlias\SiteAliasManagerAwareInterface;
 use Consolidation\SiteAlias\SiteAliasManagerAwareTrait;
-use Drush\Internal\Config\Yaml\Yaml;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Class SiltaAliasAlterCommands.
