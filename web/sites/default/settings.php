@@ -51,7 +51,7 @@ switch ($env) {
     $config['warden.settings']['warden_token'] = $_ENV['WARDEN_TOKEN'];
     break;
 
-  case 'master':
+  case 'main':
     $settings['simple_environment_indicator'] = 'DarkBlue Stage';
     break;
 
