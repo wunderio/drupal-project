@@ -1,4 +1,4 @@
-name: silta
+name: drupal-project
 recipe: drupal9
 
 config:
@@ -34,17 +34,22 @@ tooling:
     user: root
 
 services:
+  database:
+    # User random static high port for database connection.
+    portforward: 34567
   appserver:
+    # Install dependencies when building lando.
     build:
       - "composer install"
     overrides:
       environment:
         HASH_SALT: notsosecurehash
-        ENVIRONMENT_NAME: local
+        ENVIRONMENT_NAME: lando
         DB_NAME_DRUPAL: drupal9
         DB_USER_DRUPAL: drupal9
         DB_PASS_DRUPAL: drupal9
         DB_HOST_DRUPAL: database
+        DRUSH_OPTIONS_URI: https://drupal-project.lndo.site
         # Support debugging with XDEBUG 3.
         XDEBUG_MODE:
         PHP_IDE_CONFIG: serverName=appserver
@@ -56,40 +61,40 @@ services:
       image: drupalci/webdriver-chromedriver:production
       command: chromedriver --log-path=/tmp/chromedriver.log --verbose --whitelisted-ips=
   # elasticsearch:
-  #   type: "elasticsearch:7.12.0"
+  #   type: "elasticsearch:7.16.2"
   #   # Replace `true` with `9200` for proxy http://localhost:9200.
   #   portforward: true
   #   overrides:
   #     environment:
   #       ELASTICSEARCH_HEAP_SIZE: 1024m
+  #       # Allow CORS requests.
+  #       http.cors.enabled: "true"
+  #       http.cors.allow-origin: "*"
+  #       # Enable Xpack security.
+  #       xpack.security.enabled: "true"
   #       # Comma, semi-colon or space separated list of plugins to install at initialization.
   #       ELASTICSEARCH_PLUGINS: analysis-icu
-  #     volumes:
-  #       # Extend the default configuration with custom settings like
-  #       # allowing CORS requests at `.lando/my_elasticsearch.yml`.
-  #       # @see: https://github.com/bitnami/bitnami-docker-elasticsearch#configuration-file.
-  #       - "./.lando/my_elasticsearch.yml:/opt/bitnami/elasticsearch/config/my_elasticsearch.yml"
   # kibana:
   #   type: compose
   #   ssl: true
   #   sslExpose: false
   #   services:
-  #     image: "bitnami/kibana:7.12.0"
+  #     image: "bitnami/kibana:7.16.2"
   #     command: "/opt/bitnami/scripts/kibana/entrypoint.sh /opt/bitnami/scripts/kibana/run.sh"
   mailhog:
     type: mailhog
     hogfrom:
       - appserver
   node:
-    type: "node:12"
+    type: node
     build:
       - "npm install"
 
 proxy:
   mailhog:
-    - mail-silta.lndo.site
+    - mail.lndo.site
   # kibana:
-  #   - "kibana-silta.lndo.site:5601"
+  #   - "kibana.lndo.site:5601"
 
 events:
   post-db-import:
@@ -99,4 +104,4 @@ env_file:
   - .lando/.env
 
 # Tested with Lando version
-version: v3.1.4
+version: v3.6.1
