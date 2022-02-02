@@ -18,19 +18,19 @@
         "php": ">=7.4",
         "composer/installers": "^2.0",
         "cweagans/composer-patches": "^1.7",
-        "drupal/admin_toolbar": "^3.0",
-        "drupal/core-composer-scaffold": "^9.2",
-        "drupal/core-recommended": "^9.2",
-        "drupal/monolog": "^2.0@beta",
+        "drupal/admin_toolbar": "^3.1",
+        "drupal/core-composer-scaffold": "^9.3",
+        "drupal/core-recommended": "^9.3",
+        "drupal/monolog": "^2.0",
         "drupal/simplei": "^1.2",
         "drupal/warden": "^3.0@RC",
-        "drush/drush": "^10.3",
-        "vlucas/phpdotenv": "^5.2",
+        "drush/drush": "^11.0",
+        "vlucas/phpdotenv": "^5.4",
         "webflo/drupal-finder": "^1.2",
         "wunderio/drupal-ping": "^1.0"
     },
     "require-dev": {
-        "drupal/core-dev": "^9.1",
+        "drupal/core-dev": "^9.3",
         "phpspec/prophecy-phpunit": "^2.0",
         "wunderio/code-quality": "^2.0"
     },
@@ -103,9 +103,6 @@
         },
         "composer-exit-on-patch-failure": true,
         "patches": {
-            "drupal/core": {
-                "https://www.drupal.org/project/drupal/issues/3259744": "https://www.drupal.org/files/issues/2022-02-02/3259744-16.patch"
-            },
             "drupal/warden": {
                 "https://www.drupal.org/project/warden/issues/3024254": "https://git.drupalcode.org/project/warden/-/commit/b28f9cf2b9acdd21ed3584bf5276b39f11f1cb49.patch"
             }
