@@ -12,13 +12,13 @@ current:
   root: /app/web
   uri: https://${ENVIRONMENT}.${PROJECT}.dev.wdr.io
 
-master:
-  host: master-shell.${REPOSITORY}
+main:
+  host: main-shell.${REPOSITORY}
   ssh:
     options: -J www-admin@ssh.dev.wdr.io
   user: www-admin
   root: /app/web
-  uri: https://master.${PROJECT}.dev.wdr.io
+  uri: https://main.${PROJECT}.dev.wdr.io
 
 #prod:
 #  host: production-shell.client-PROJECTNAME

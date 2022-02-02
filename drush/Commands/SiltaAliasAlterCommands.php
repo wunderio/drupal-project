@@ -34,7 +34,7 @@ class SiltaAliasAlterCommands extends DrushCommands implements SiteAliasManagerA
     public function alter(InputInterface $input, AnnotationData $annotationData) {
         $self = $this->siteAliasManager()->getSelf();
 
-        $aliases_to_alter = ['@self.current', '@self.master'];
+        $aliases_to_alter = ['@self.current', '@self.main'];
 
         if (in_array($self->name(), $aliases_to_alter)) {
             // Get branch name we're currently on.
