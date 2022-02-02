@@ -103,6 +103,9 @@
         },
         "composer-exit-on-patch-failure": true,
         "patches": {
+            "drupal/core": {
+                "https://www.drupal.org/project/drupal/issues/3259744": "https://www.drupal.org/files/issues/2022-02-02/3259744-16.patch"
+            },
             "drupal/warden": {
                 "https://www.drupal.org/project/warden/issues/3024254": "https://git.drupalcode.org/project/warden/-/commit/b28f9cf2b9acdd21ed3584bf5276b39f11f1cb49.patch"
             }
