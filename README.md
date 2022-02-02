@@ -15,7 +15,19 @@ This project template is an opinionated fork of the popular [Drupal-composer tem
 
 For additional instructions, please see the [Silta documentation](https://github.com/wunderio/silta).
 
-## Local development
+## Main environment
+
+- URL: <https://main.drupal-project.dev.wdr.io>
+- Drush alias: `drush @main st`
+- SSH: `ssh www-admin@main-shell.drupal-project -J www-admin@ssh.dev.wdr.io`
+
+Drush alias for **current** Silta feature branch deployment is `drush @current st`.
+
+## Local environment
+
+- URL: <https://drupal-project.lndo.site>
+- Drush alias: `lando drush @local st`
+- SSH: `lando ssh (-s <service>)`
 
 ### [Setup](https://docs.lando.dev/basics/installation.html)
 
