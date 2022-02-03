@@ -6,7 +6,7 @@ orbs:
 executors:
   cicd80:
     docker:
-      - image: eu.gcr.io/silta-images/cicd:circleci-php8.0-node14-composer2-v0.1
+      - image: eu.gcr.io/silta-images/cicd:circleci-php8.0-node16-composer2-v0.1
 
 workflows:
   version: 2

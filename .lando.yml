@@ -86,7 +86,7 @@ services:
     hogfrom:
       - appserver
   node:
-    type: node
+    type: "node:16"
     build:
       - "npm install"
 
