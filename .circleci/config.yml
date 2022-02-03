@@ -4,9 +4,9 @@ orbs:
   silta: silta/silta@0.1
 
 executors:
-  cicd74:
+  cicd80:
     docker:
-      - image: eu.gcr.io/silta-images/cicd:circleci-php7.4-node14-composer2-v0.1
+      - image: eu.gcr.io/silta-images/cicd:circleci-php8.0-node14-composer2-v0.1
 
 workflows:
   version: 2
@@ -14,7 +14,7 @@ workflows:
     jobs:
       - silta/drupal-validate:
           name: validate
-          executor: cicd74
+          executor: cicd80
           post-validation:
             - run: echo "You can add additional validation here!"
 
@@ -25,14 +25,14 @@ workflows:
 
       - silta/drupal-build-deploy: &build-deploy
           name: build-deploy
-          executor: cicd74
+          executor: cicd80
           codebase-build:
             - silta/drupal-composer-install
             - silta/npm-install-build
           context: silta_dev
           filters:
             branches:
-              ignore: 
+              ignore:
                 - production
                 - /dependabot\/.*/
 
