@@ -2,7 +2,7 @@ name: drupal-project
 recipe: drupal9
 
 config:
-  php: "7.4"
+  php: "8.0"
   via: nginx
   webroot: web
   database: "mariadb:10.3"
@@ -86,7 +86,7 @@ services:
     hogfrom:
       - appserver
   node:
-    type: node
+    type: "node:16"
     build:
       - "npm install"
 
