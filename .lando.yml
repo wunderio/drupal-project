@@ -61,26 +61,36 @@ services:
       image: drupalci/webdriver-chromedriver:production
       command: chromedriver --log-path=/tmp/chromedriver.log --verbose --whitelisted-ips=
   # elasticsearch:
-  #   type: "elasticsearch:7.16.2"
-  #   # Replace `true` with `9200` for proxy http://localhost:9200.
-  #   portforward: true
-  #   overrides:
+  #   type: compose
+  #   services:
+  #     image: "docker.elastic.co/elasticsearch/elasticsearch:7.17.0"
+  #     command: "/bin/tini -- /usr/local/bin/docker-entrypoint.sh eswrapper"
+  #     user: elasticsearch
   #     environment:
-  #       ELASTICSEARCH_HEAP_SIZE: 1024m
-  #       # Allow CORS requests.
+  #       ES_JAVA_OPTS: "-Xms1g -Xmx1g"
+  #       discovery.type: "single-node"
+  #       bootstrap.memory_lock: "true"
   #       http.cors.enabled: "true"
   #       http.cors.allow-origin: "*"
-  #       # Enable Xpack security.
-  #       xpack.security.enabled: "true"
-  #       # Comma, semi-colon or space separated list of plugins to install at initialization.
-  #       ELASTICSEARCH_PLUGINS: analysis-icu
+  #     ulimits:
+  #       memlock:
+  #         soft: "-1"
+  #         hard: "-1"
+  #     ports:
+  #       - "9200:9200"
+  #     volumes:
+  #       - esdata:/usr/share/elasticsearch/data
+  #   volumes:
+  #     esdata:
+  #       driver: local
   # kibana:
   #   type: compose
-  #   ssl: true
-  #   sslExpose: false
   #   services:
-  #     image: "bitnami/kibana:7.16.2"
-  #     command: "/opt/bitnami/scripts/kibana/entrypoint.sh /opt/bitnami/scripts/kibana/run.sh"
+  #     image: "docker.elastic.co/kibana/kibana:7.17.0"
+  #     command: "/bin/tini -- /usr/local/bin/kibana-docker"
+  #     user: kibana
+  #     ports:
+  #       - "5601:5601"
   mailhog:
     type: mailhog
     hogfrom:
@@ -93,8 +103,10 @@ services:
 proxy:
   mailhog:
     - mail.lndo.site
+  # elasticsearch:
+  #   - elasticsearch.lndo.site:9200
   # kibana:
-  #   - "kibana.lndo.site:5601"
+  #   - kibana.lndo.site:5601
 
 events:
   post-db-import:
