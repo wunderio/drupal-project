@@ -80,6 +80,7 @@ services:
   #       - "9200:9200"
   #     volumes:
   #       - esdata:/usr/share/elasticsearch/data
+  #       - ./.lando/elasticsearch-plugins.yml:/usr/share/elasticsearch/config/elasticsearch-plugins.yml
   #   volumes:
   #     esdata:
   #       driver: local
