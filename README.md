@@ -25,7 +25,10 @@ Drush alias for **current** Silta feature branch deployment is `drush @current s
 
 ## Local environment
 
-- URL: <https://drupal-project.lndo.site>
+- Appserver: <https://drupal-project.lndo.site>
+- Elasticsearch: <http://localhost:9200>, <http://elasticsearch.lndo.site>
+- Kibana: <http://localhost:5601>, <http://kibana.lndo.site>
+- Mailhog: <http://mail.lndo.site>
 - Drush alias: `lando drush @local st`
 - SSH: `lando ssh (-s <service>)`
 
@@ -38,8 +41,8 @@ Drush alias for **current** Silta feature branch deployment is `drush @current s
 ### [Services](https://docs.lando.dev/config/services.html)
 
 - `chrome` - uses [selenium/standalone-chrome](https://hub.docker.com/r/selenium/standalone-chrome/) image, uncomment the service definition at `.lando.yml` to enable.
-- `elasticsearch` - uses Lando [Elasticsearch service](https://docs.lando.dev/config/elasticsearch.html), uncomment the service definition at `.lando.yml` to enable.
-- `kibana`  - available at <https://kibana-silta.lndo.site>. Uses [bitnami/kibana](https://github.com/bitnami/bitnami-docker-kibana) image, uncomment the service definition at `.lando.yml` to enable.
+- `elasticsearch` - uses official [Elasticsearch image](https://hub.docker.com/r/elastic/elasticsearch), uncomment the service definition at `.lando.yml` to enable. Requires [at least 4GiB of memory](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html). Use `.lando/elasticsearch-plugins.yml` for plugins management.
+- `kibana`  - uses official [Kibana image](https://hub.docker.com/r/elastic/kibana), uncomment the service definition at `.lando.yml` to enable.
 - `mailhog` - uses Lando [MailHog service](https://docs.lando.dev/config/mailhog.html).
 - `node` - uses Lando [Node service](https://docs.lando.dev/config/node.html).
 
