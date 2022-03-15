@@ -82,7 +82,7 @@ services:
   #     volumes:
   #       - esdata:/usr/share/elasticsearch/data
   #   build_as_root:
-  #     - elasticsearch-plugin install analysis-icu
+  #     - elasticsearch-plugin install analysis-icu analysis-ukrainian
   #   volumes:
   #     esdata:
   #       driver: local
