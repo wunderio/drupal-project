@@ -41,7 +41,7 @@ Drush alias for **current** Silta feature branch deployment is `drush @current s
 ### [Services](https://docs.lando.dev/config/services.html)
 
 - `chrome` - uses [selenium/standalone-chrome](https://hub.docker.com/r/selenium/standalone-chrome/) image, uncomment the service definition at `.lando.yml` to enable.
-- `elasticsearch` - uses official [Elasticsearch image](https://hub.docker.com/r/elastic/elasticsearch), uncomment the service definition at `.lando.yml` to enable. Requires [at least 4GiB of memory](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html). Use `.lando/elasticsearch-plugins.yml` for plugins management.
+- `elasticsearch` - uses official [Elasticsearch image](https://hub.docker.com/r/elastic/elasticsearch), uncomment the service definition at `.lando.yml` to enable. Requires [at least 4GiB of memory](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html).
 - `kibana`  - uses official [Kibana image](https://hub.docker.com/r/elastic/kibana), uncomment the service definition at `.lando.yml` to enable.
 - `mailhog` - uses Lando [MailHog service](https://docs.lando.dev/config/mailhog.html).
 - `node` - uses Lando [Node service](https://docs.lando.dev/config/node.html).

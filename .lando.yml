@@ -67,7 +67,7 @@ services:
   #     command: "/bin/tini -- /usr/local/bin/docker-entrypoint.sh eswrapper"
   #     user: elasticsearch
   #     environment:
-  #       ES_JAVA_OPTS: "-Xms1g -Xmx1g"
+  #       ES_JAVA_OPTS: "-Xms512m -Xmx512m"
   #       discovery.type: "single-node"
   #       bootstrap.memory_lock: "true"
   #       # Allow CORS requests.
@@ -81,7 +81,9 @@ services:
   #       - "9200:9200"
   #     volumes:
   #       - esdata:/usr/share/elasticsearch/data
-  #       - ./.lando/elasticsearch-plugins.yml:/usr/share/elasticsearch/config/elasticsearch-plugins.yml
+  #   # Install ES plugins.
+  #   build_as_root:
+  #     - elasticsearch-plugin install analysis-icu analysis-ukrainian
   #   volumes:
   #     esdata:
   #       driver: local

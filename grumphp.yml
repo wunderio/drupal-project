@@ -1,3 +1,5 @@
+parameters:
+  grumphp.run_on_paths: ['web/modules/custom', 'web/themes/custom']
 grumphp:
   stop_on_failure: true
   process_timeout: 300
@@ -6,16 +8,16 @@ grumphp:
     succeeded: ~
   tasks:
     php_compatibility:
-      run_on: ['web/modules/custom', 'web/themes/custom', 'web/sites']
+      run_on: '%grumphp.run_on_paths%'
       testVersion: '8.0'
     check_file_permissions: ~
     php_check_syntax:
-      run_on: ['web/modules/custom', 'web/themes/custom', 'web/sites']
+      run_on: '%grumphp.run_on_paths%'
     phpcs:
       standard: ['phpcs.xml']
-      run_on: ['web/modules/custom', 'web/themes/custom']
+      run_on: '%grumphp.run_on_paths%'
     php_stan:
-      run_on: ['web/modules/custom', 'web/themes/custom']
+      run_on: '%grumphp.run_on_paths%'
     yaml_lint: ~
     json_lint: ~
     # PHPUnit will fail with 0 tests.

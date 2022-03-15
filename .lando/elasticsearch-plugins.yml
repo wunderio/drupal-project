@@ -1,3 +1,0 @@
-# https://www.elastic.co/guide/en/elasticsearch/plugins/current/manage-plugins-using-configuration-file.html
-plugins:
-  - id: analysis-icu
