@@ -1,6 +1,6 @@
 parameters:
 	# See: https://phpstan.org/config-reference#rule-level
-	level: 2
+	level: 5
 	customRulesetUsed: true
 	reportUnmatchedIgnoredErrors: false
 	# Ignore phpstan-drupal extension's rules.
