@@ -22,13 +22,13 @@
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-import": "^2.20.1",
     "eslint-plugin-jsx-a11y": "^6.3.1",
-    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.21.5",
-    "eslint-plugin-yml": "^0.13.0",
-    "prettier": "2.5.1",
+    "eslint-plugin-yml": "^0.14.0",
+    "prettier": "2.6.2",
     "stylelint": "^14.3.0",
-    "stylelint-config-prettier": "^8.0.2",
-    "stylelint-config-standard": "^24.0.0",
-    "stylelint-prettier": "^1.1.2"
+    "stylelint-config-prettier": "^9.0.3",
+    "stylelint-config-standard": "^25.0.0",
+    "stylelint-prettier": "^2.0.0"
   }
 }
