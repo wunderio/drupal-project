@@ -64,14 +64,14 @@ class AddClassTest extends UnitTestCase {
    * pseudocode:
    *
    * @code
-   * array( valueForExpected, valueForA, valueForB )
+   * [ valueForExpected, valueForA, valueForB ]
    * @endcode
    *
    * It would then wrap this up in a higher-level array, so that PHPUnit can
    * loop through them, like this pseudocode:
    *
    * @code
-   * return array( array(first, set), array (next, set) );
+   * return [ [first, set], [next, set] ];
    * @endcode
    *
    * This test has a better methodology than testAdd(), because it can easily
