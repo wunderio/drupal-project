@@ -2,7 +2,7 @@
 # Enable autoscaling for production.
 autoscaling:
   enabled: true
-  minReplicas: 1
+  minReplicas: 2
   maxReplicas: 5
 
 # Don't delay the production deployment process to create the reference data.
@@ -19,7 +19,9 @@ php:
     requests:
       cpu: 200m
       memory: 256M
-
+    limits:
+      cpu: 500m
+      memory: 512M
   # Don't show errors in production.
   errorLevel: "hide"
 
@@ -28,6 +30,9 @@ nginx:
     requests:
       cpu: 50m
       memory: 50M
+    limits:
+      cpu: 100m
+      memory: 150M
 # Uncomment these lines to disable basic auth protection.
 # basicauth:
 #   enabled: false
@@ -38,6 +43,17 @@ mariadb:
       # Database storage disk space allocation
       # Request assistance from ops team after changing this on existing deployment.
       size: 5Gi
+    resources:
+      requests:
+        cpu: 250m
+        memory: 500M
+      limits:
+        cpu: 1000m
+        memory: 750M
+
+# Consider enabling memcached service
+# memcached:
+#   enabled: true
 
 # Connect to an externally hosted database.
 #  env:
