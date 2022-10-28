@@ -23,6 +23,9 @@ grumphp:
     # PHPUnit will fail with 0 tests.
     phpunit:
       testsuite: unit
+    eslint:
+      bin: 'node_modules/.bin/eslint'
+      config: 'web/core/.eslintrc.passing.json'
   extensions:
     - Wunderio\GrumPHP\Task\PhpCompatibility\PhpCompatibilityExtensionLoader
     - Wunderio\GrumPHP\Task\PhpCheckSyntax\PhpCheckSyntaxExtensionLoader

@@ -39,6 +39,10 @@ services:
     # User random static high port for database connection.
     portforward: 34567
   appserver:
+    build_as_root:
+      # To be able to run ESLint with GrumPHP, we need Node.js on appserver.
+      - "apt-get update"
+      - "apt-get install -y nodejs"
     # Install dependencies when building lando.
     build:
       - "composer install"
