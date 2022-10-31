@@ -2,6 +2,7 @@ name: drupal-project
 recipe: drupal9
 
 config:
+  # Also update custom image under appserver when updating PHP verson.
   php: "8.0"
   via: nginx
   webroot: web
@@ -39,14 +40,14 @@ services:
     # User random static high port for database connection.
     portforward: 34567
   appserver:
-    build_as_root:
-      # To be able to run ESLint with GrumPHP, we need Node.js on appserver.
-      - "apt-get update"
-      - "apt-get install -y nodejs"
     # Install dependencies when building lando.
     build:
       - "composer install"
     overrides:
+      # Use extended image that adds Node.js.
+      # This is needed for ESLint.
+      # Custom image Github page: https://github.com/wunderio/lando/blob/main/images/php8.0-fpm/Dockerfile
+      image: hkirsman/php8.0-fpm-4:latest
       environment:
         HASH_SALT: notsosecurehash
         ENVIRONMENT_NAME: lando
