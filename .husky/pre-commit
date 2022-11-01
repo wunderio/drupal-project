@@ -3,7 +3,7 @@
 
 if [ "$LANDO"=ON ]
 then
-  lando npm test
+  lando npm run pre-commit
 else
-  npm test
+  npm run pre-commit
 fi
