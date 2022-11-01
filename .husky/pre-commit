@@ -1,4 +1,9 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-npm test
+if [ "$LANDO"=ON ]
+then
+  lando npm test
+else
+  npm test
+fi
