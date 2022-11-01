@@ -13,18 +13,21 @@
     "build": "echo 'No build command specified in package.json'",
     "lint": "npm run lint:js && npm run lint:css",
     "lint:js": "eslint --no-error-on-unmatched-pattern './web/themes/custom/' './web/modules/custom/'",
-    "lint:css": "stylelint --allow-empty-input './web/themes/custom/**/*.{css,scss,sass}' './web/modules/custom/**/*.{css,scss,sass}'"
+    "lint:css": "stylelint --allow-empty-input './web/themes/custom/**/*.{css,scss,sass}' './web/modules/custom/**/*.{css,scss,sass}'",
+    "prepare": "husky install",
+    "test": "npx eslint --config=web/core/.eslintrc.passing.json './web/modules/custom/'"
   },
-  "dependencies": {},
   "devDependencies": {
     "eslint": "^8.8.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-jquery": "^1.5.1",
     "eslint-plugin-jsx-a11y": "^6.3.1",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-yml": "^1.0.0",
+    "husky": "^8.0.1",
     "prettier": "2.7.0",
     "stylelint": "^14.3.0",
     "stylelint-config-prettier": "^9.0.3",

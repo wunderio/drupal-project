@@ -19,6 +19,9 @@ tooling:
   npm:
     description: "Runs npm commands"
     service: node
+  npx:
+    description: "Runs npx commands"
+    service: node
   phpunit:
     description: Runs PHPUnit commands
     user: www-data
