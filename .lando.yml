@@ -47,7 +47,7 @@ services:
       # Use extended image that adds Node.js.
       # This is needed for ESLint.
       # Custom image Github page: https://github.com/wunderio/lando/blob/main/images/php8.0-fpm/Dockerfile
-      image: hkirsman/php8.0-fpm-4:latest
+      image: hkirsman/php8.0-fpm:latest
       environment:
         HASH_SALT: notsosecurehash
         ENVIRONMENT_NAME: lando
