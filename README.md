@@ -35,7 +35,7 @@ Drush alias for **current** Silta feature branch deployment is `drush @current s
 ### [Setup](https://docs.lando.dev/basics/installation.html)
 
 1. Install the latest [Lando](https://github.com/lando/lando/releases) and read the [documentation](https://docs.lando.dev/).
-2. Update your project name and other Lando [Drupal 9 recipe](https://docs.lando.dev/config/drupal9.html)'s parameters at `.lando.yml`.
+2. Update your project name and other Lando [Drupal 10 recipe](https://docs.lando.dev/config/drupal9.html)'s parameters at `.lando.yml`.
 3. Run `lando start`.
 
 ### [Services](https://docs.lando.dev/config/services.html)
