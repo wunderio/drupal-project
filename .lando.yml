@@ -1,8 +1,8 @@
 name: drupal-project
-recipe: drupal9
+recipe: drupal10
 
 config:
-  php: "8.0"
+  php: "8.1"
   via: nginx
   webroot: web
   database: "mariadb:10.3"
@@ -16,6 +16,10 @@ tooling:
     description: "Runs grumphp commands"
     cmd:
       - appserver: ./vendor/bin/grumphp
+  composer:
+    description: "Runs Composer commands"
+    cmd:
+      - appserver: /usr/local/bin/composer
   npm:
     description: "Runs npm commands"
     service: node
@@ -39,6 +43,7 @@ services:
     # User random static high port for database connection.
     portforward: 34567
   appserver:
+    composer_version: 2
     # Install dependencies when building lando.
     build:
       - "composer install"

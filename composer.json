@@ -1,6 +1,6 @@
 {
     "name": "wunderio/drupal-project",
-    "description": "Wunder's template for Drupal 9 projects.",
+    "description": "Wunder's template for Drupal 10 projects.",
     "type": "project",
     "license": "GPL-2.0-or-later",
     "homepage": "https://www.drupal.org/project/drupal",
@@ -15,24 +15,16 @@
         }
     ],
     "require": {
-        "php": ">=7.4",
         "composer/installers": "^2.0",
         "cweagans/composer-patches": "^1.7",
-        "drupal/admin_toolbar": "^3.1",
-        "drupal/core-composer-scaffold": "^9.3",
-        "drupal/core-recommended": "^9.3",
-        "drupal/monolog": "^2.0",
-        "drupal/simplei": "^1.2",
-        "drupal/warden": "^3.0@RC",
+        "drupal/core-composer-scaffold": "^10.0.1",
+        "drupal/core-recommended": "^10.0.1",
         "drush/drush": "^11.0",
-        "vlucas/phpdotenv": "^5.4",
-        "webflo/drupal-finder": "^1.2",
-        "wunderio/drupal-ping": "^2.3"
+        "twig/twig": "^3.5",
+        "vlucas/phpdotenv": "^5.5"
     },
     "require-dev": {
-        "drupal/core-dev": "^9.3",
-        "phpspec/prophecy-phpunit": "^2.0",
-        "wunderio/code-quality": "^2.1"
+        "wunderio/code-quality": "^2.2"
     },
     "conflict": {
         "drupal/drupal": "*"
@@ -46,8 +38,8 @@
             "composer/installers": true,
             "cweagans/composer-patches": true,
             "drupal/core-composer-scaffold": true,
-            "koodimonni/composer-dropin-installer": true,
             "dealerdirect/phpcodesniffer-composer-installer": true,
+            "koodimonni/composer-dropin-installer": true,
             "phpro/grumphp": true
         }
     },
