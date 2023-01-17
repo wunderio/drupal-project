@@ -24,6 +24,7 @@
         "vlucas/phpdotenv": "^5.5"
     },
     "require-dev": {
+        "drupal/core-dev": "^10.0.1",
         "wunderio/code-quality": "^2.2"
     },
     "conflict": {
@@ -40,7 +41,8 @@
             "drupal/core-composer-scaffold": true,
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "koodimonni/composer-dropin-installer": true,
-            "phpro/grumphp": true
+            "phpro/grumphp": true,
+            "phpstan/extension-installer": true
         }
     },
     "autoload": {
