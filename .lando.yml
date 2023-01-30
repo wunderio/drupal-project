@@ -1,8 +1,8 @@
 name: drupal-project
-recipe: drupal9
+recipe: drupal10
 
 config:
-  php: "8.0"
+  php: "8.1"
   via: nginx
   webroot: web
   database: "mariadb:10.3"
@@ -46,9 +46,9 @@ services:
       environment:
         HASH_SALT: notsosecurehash
         ENVIRONMENT_NAME: lando
-        DB_NAME_DRUPAL: drupal9
-        DB_USER_DRUPAL: drupal9
-        DB_PASS_DRUPAL: drupal9
+        DB_NAME_DRUPAL: drupal10
+        DB_USER_DRUPAL: drupal10
+        DB_PASS_DRUPAL: drupal10
         DB_HOST_DRUPAL: database
         DRUSH_OPTIONS_URI: https://drupal-project.lndo.site
         # Support debugging with XDEBUG 3.
@@ -121,4 +121,4 @@ env_file:
   - .lando/.env
 
 # Tested with Lando version
-version: v3.6.1
+version: v3.11.0

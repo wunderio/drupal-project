@@ -32,21 +32,21 @@ Drush alias for **current** Silta feature branch deployment is `drush @current s
 - Drush alias: `lando drush @local st`
 - SSH: `lando ssh (-s <service>)`
 
-### [Setup](https://docs.lando.dev/basics/installation.html)
+### [Setup](https://docs.lando.dev/getting-started/installation.html)
 
 1. Install the latest [Lando](https://github.com/lando/lando/releases) and read the [documentation](https://docs.lando.dev/).
-2. Update your project name and other Lando [Drupal 9 recipe](https://docs.lando.dev/config/drupal9.html)'s parameters at `.lando.yml`.
+2. Update your project name and other Lando [Drupal 10 recipe](https://docs.lando.dev/drupal/)'s parameters at `.lando.yml`.
 3. Run `lando start`.
 
-### [Services](https://docs.lando.dev/config/services.html)
+### [Services](https://docs.lando.dev/core/v3/services.html)
 
 - `chrome` - uses [selenium/standalone-chrome](https://hub.docker.com/r/selenium/standalone-chrome/) image, uncomment the service definition at `.lando.yml` to enable.
 - `elasticsearch` - uses official [Elasticsearch image](https://hub.docker.com/r/elastic/elasticsearch), uncomment the service definition at `.lando.yml` to enable. Requires [at least 4GiB of memory](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html).
 - `kibana`  - uses official [Kibana image](https://hub.docker.com/r/elastic/kibana), uncomment the service definition at `.lando.yml` to enable.
-- `mailhog` - uses Lando [MailHog service](https://docs.lando.dev/config/mailhog.html).
-- `node` - uses Lando [Node service](https://docs.lando.dev/config/node.html).
+- `mailhog` - uses Lando [MailHog service](https://docs.lando.dev/mailhog/).
+- `node` - uses Lando [Node service](https://docs.lando.dev/node/).
 
-### [Tools](https://docs.lando.dev/config/tooling.html)
+### [Tools](https://docs.lando.dev/core/v3/tooling.html)
 
 - `lando` - tools / commands overview.
 - `lando grumphp <commands>` - run [GrumPHP](https://github.com/phpro/grumphp) code quality checks. Modified or new files are checked on git commit, see more at `lando grumphp -h` or [wunderio/code-quality](https://github.com/wunderio/code-quality).
@@ -56,7 +56,7 @@ Drush alias for **current** Silta feature branch deployment is `drush @current s
 
 ### Drupal development hints
 
-- [Updating Drupal core](https://www.drupal.org/docs/8/update/update-core-via-composer).
+- [Updating Drupal core](https://www.drupal.org/docs/updating-drupal/updating-drupal-core-via-composer).
 - [Altering scaffold files](https://www.drupal.org/docs/develop/using-composer/using-drupals-composer-scaffold#toc_4) (`robots.txt`, `.htaccess` etc.).
 
 ### Running tests
