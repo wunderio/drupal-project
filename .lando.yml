@@ -6,7 +6,6 @@ config:
   via: nginx
   webroot: web
   database: "mariadb:10.3"
-  composer_version: 2
   xdebug: off
   config:
     php: .lando/php.ini
