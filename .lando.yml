@@ -15,7 +15,7 @@ tooling:
   composer:
     description: "Runs Composer commands"
     cmd:
-      - appserver: ./vendor/bin/composer
+      - appserver: /usr/local/bin/composer
   grumphp:
     description: "Runs grumphp commands"
     cmd:
