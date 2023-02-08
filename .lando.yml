@@ -11,6 +11,10 @@ config:
     php: .lando/php.ini
 
 tooling:
+  composer:
+    description: "Runs Composer commands"
+    cmd:
+      - appserver: ./vendor/bin/composer
   grumphp:
     description: "Runs grumphp commands"
     cmd:
@@ -19,7 +23,7 @@ tooling:
     description: "Runs npm commands"
     service: node
   phpunit:
-    description: Runs PHPUnit commands
+    description: "Runs PHPUnit commands"
     user: www-data
     cmd:
       - appserver: "php /app/vendor/bin/phpunit -c /app/phpunit.xml --testdox"
