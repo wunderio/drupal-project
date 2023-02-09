@@ -11,3 +11,17 @@ php:
 referenceData:
   # The name of the environment from which reference data will be copied.
   referenceEnvironment: 'main'
+
+# Configure Google Filestore volume for files storage.
+mounts:
+  public-files:
+    enabled: true
+    storage: 10G
+    mountPath: /app/web/sites/default/files
+    storageClassName: nfs-shared
+  private-files:
+    # Private files setup is disabled by default.
+    enabled: false
+    storage: 1G
+    mountPath: /app/private
+    storageClassName: nfs-shared
