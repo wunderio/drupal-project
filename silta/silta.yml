@@ -14,10 +14,10 @@ referenceData:
 
 # Configure Google Filestore volume for files storage.
 mounts:
-  public-files:
+  public-files-filestore:
     enabled: true
     storage: 10G
-    mountPath: /app/web/sites/default/files
+    mountPath: /app/web/sites/default/files-new
     storageClassName: nfs-shared
   private-files:
     enabled: true
