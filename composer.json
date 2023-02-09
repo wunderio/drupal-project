@@ -1,6 +1,6 @@
 {
     "name": "wunderio/drupal-project",
-    "description": "Wunder's template for Drupal 9 projects.",
+    "description": "Wunder's template for Drupal 10 projects.",
     "type": "project",
     "license": "GPL-2.0-or-later",
     "homepage": "https://www.drupal.org/project/drupal",
@@ -15,41 +15,41 @@
         }
     ],
     "require": {
-        "php": ">=7.4",
-        "composer/installers": "^2.0",
+        "php": ">=8.1",
+        "composer/installers": "^2.1",
         "cweagans/composer-patches": "^1.7",
-        "drupal/admin_toolbar": "^3.1",
-        "drupal/core-composer-scaffold": "^9.3",
-        "drupal/core-recommended": "^9.3",
-        "drupal/monolog": "^2.0",
-        "drupal/simplei": "^1.2",
-        "drupal/warden": "^3.0@RC",
-        "drush/drush": "^11.0",
+        "drupal/admin_toolbar": "^3.3",
+        "drupal/core-composer-scaffold": "^10.0",
+        "drupal/core-recommended": "^10.0",
+        "drupal/monolog": "^3.0@beta",
+        "drupal/simplei": "^2.0@beta",
+        "drush/drush": "^11.4",
         "vlucas/phpdotenv": "^5.4",
         "webflo/drupal-finder": "^1.2",
-        "wunderio/drupal-ping": "^2.3"
+        "wunderio/drupal-ping": "^2.4"
     },
     "require-dev": {
-        "drupal/core-dev": "^9.3",
-        "phpspec/prophecy-phpunit": "^2.0",
-        "wunderio/code-quality": "^2.1"
+        "drupal/core-dev": "^10.0",
+        "wunderio/code-quality": "^2.2"
     },
     "conflict": {
         "drupal/drupal": "*"
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "prefer-stable": true,
     "config": {
-        "sort-packages": true,
-        "discard-changes": true,
         "allow-plugins": {
             "composer/installers": true,
             "cweagans/composer-patches": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true,
             "drupal/core-composer-scaffold": true,
             "koodimonni/composer-dropin-installer": true,
-            "dealerdirect/phpcodesniffer-composer-installer": true,
-            "phpro/grumphp": true
-        }
+            "phpro/grumphp": true,
+            "phpstan/extension-installer": true
+        },
+        "discard-changes": true,
+        "process-timeout": 0,
+        "sort-packages": true
     },
     "autoload": {
         "classmap": [
@@ -58,12 +58,6 @@
         "files": ["load.environment.php"]
     },
     "scripts": {
-        "pre-install-cmd": [
-            "DrupalProject\\composer\\ScriptHandler::checkComposerVersion"
-        ],
-        "pre-update-cmd": [
-            "DrupalProject\\composer\\ScriptHandler::checkComposerVersion"
-        ],
         "post-install-cmd": [
             "DrupalProject\\composer\\ScriptHandler::createRequiredFiles"
         ],
@@ -110,11 +104,7 @@
             ]
         },
         "composer-exit-on-patch-failure": true,
-        "patches": {
-            "drupal/warden": {
-                "https://www.drupal.org/project/warden/issues/3024254": "https://git.drupalcode.org/project/warden/-/commit/b28f9cf2b9acdd21ed3584bf5276b39f11f1cb49.patch"
-            }
-        },
+        "patches": {},
         "dropin-paths": {
             "web/": [
                 "type:web-dropin",
