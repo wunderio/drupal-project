@@ -20,8 +20,7 @@ mounts:
     mountPath: /app/web/sites/default/files
     storageClassName: nfs-shared
   private-files:
-    # Private files setup is disabled by default.
-    enabled: false
+    enabled: true
     storage: 1G
     mountPath: /app/private
     storageClassName: nfs-shared
