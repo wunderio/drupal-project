@@ -19,6 +19,7 @@
         "composer/installers": "^2.1",
         "cweagans/composer-patches": "^1.7",
         "drupal/admin_toolbar": "^3.3",
+        "drupal/config_split": "^2.0@RC",
         "drupal/core-composer-scaffold": "^10.0",
         "drupal/core-recommended": "^10.0",
         "drupal/monolog": "^3.0@beta",
@@ -26,7 +27,8 @@
         "drush/drush": "^11.4",
         "vlucas/phpdotenv": "^5.4",
         "webflo/drupal-finder": "^1.2",
-        "wunderio/drupal-ping": "^2.4"
+        "wunderio/drupal-ping": "^2.4",
+        "wunderio/updates_log": "^2"
     },
     "require-dev": {
         "drupal/core-dev": "^10.0",
