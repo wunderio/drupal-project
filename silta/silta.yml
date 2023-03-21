@@ -24,3 +24,8 @@ mounts:
     storage: 1G
     mountPath: /app/private
     storageClassName: nfs-shared
+
+varnish:
+  # See https://github.com/wunderio/silta/blob/master/docs/silta-examples.md#using-varnish
+  # to configure varnish for Your site correctly.
+  enabled: true
