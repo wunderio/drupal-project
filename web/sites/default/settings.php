@@ -42,17 +42,28 @@ $settings['file_scan_ignore_directories'] = [
   'bower_components',
 ];
 
+// $settings['updates_log_site'] = 'my-project-name';
+// In Silta it is set by default as github repo name.
+
+// $settings['updates_log_env'] = getenv('ENVIRONMENT_NAME');
+// In Silta it is set by default as ENVIRONMENT_NAME
+
+// $settings['updates_log_disabled'] = TRUE;
+// In case config_split is missing.
+
 // Environment-specific settings.
 $env = $_ENV['ENVIRONMENT_NAME'];
 switch ($env) {
   case 'production':
     $settings['simple_environment_indicator'] = 'DarkRed Production';
-    // Warden settings.
-    $config['warden.settings']['warden_token'] = $_ENV['WARDEN_TOKEN'];
+    // $settings['updates_log_disabled'] = FALSE;
+    // In case config_split is missing.
     break;
 
   case 'main':
     $settings['simple_environment_indicator'] = 'DarkBlue Stage';
+    // $settings['updates_log_disabled'] = FALSE;
+    // In case config_split is missing.
     break;
 
   case 'local':
