@@ -71,6 +71,9 @@ varnish:
     requests:
       cpu: 25m
       memory: 32Mi
+    limits:
+      cpu: 250m
+      memory: 1024Mi
   # See https://varnish-cache.org/docs/6.6/users-guide/storage-backends.html
   # Disc allocated storage.
   storageBackend: 'file,/var/lib/varnish/varnish_storage.bin,512M'
