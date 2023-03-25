@@ -39,9 +39,6 @@ tooling:
     user: root
 
 services:
-  database:
-    # User random static high port for database connection.
-    portforward: 34567
   appserver:
     # Install dependencies when building lando.
     build:
@@ -65,6 +62,10 @@ services:
     services:
       image: drupalci/webdriver-chromedriver:production
       command: chromedriver --log-path=/tmp/chromedriver.log --verbose --whitelisted-ips=
+  # Use random static high port for database connection.
+  # @see: https://docs.lando.dev/guides/external-access.html
+  # database:
+  #   portforward: 34567
   # elasticsearch:
   #   type: compose
   #   services:
