@@ -5,7 +5,7 @@
  * Drupal site-specific configuration file.
  */
 
- // Cache backend.
+// Cache backend.
 define('CACHE_BACKEND', 'cache.backend.null');
 
 // Database settings, overridden per environment.
