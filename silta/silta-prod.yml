@@ -64,3 +64,16 @@ mariadb:
 # Disable the built-in database when using an external database.
 #mariadb:
 #  enabled: false
+
+varnish:
+  enabled: true
+  resources:
+    requests:
+      cpu: 50m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+  # See https://varnish-cache.org/docs/6.6/users-guide/storage-backends.html
+  # Disc allocated storage.
+  storageBackend: 'file,/var/lib/varnish/varnish_storage.bin,512M'
