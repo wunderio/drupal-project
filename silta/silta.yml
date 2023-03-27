@@ -12,13 +12,6 @@ referenceData:
   # The name of the environment from which reference data will be copied.
   referenceEnvironment: 'main'
 
-mariadb:
-  master:
-    config: |-
-      [mysqld]
-      # @see: https://www.drupal.org/docs/getting-started/system-requirements/setting-the-mysql-transaction-isolation-level
-      transaction_isolation="READ-COMMITTED"
-
 # Configure Google Filestore volume for files storage.
 mounts:
   public-files:
