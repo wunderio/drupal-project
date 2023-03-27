@@ -15,9 +15,9 @@ referenceData:
 mariadb:
   master:
     config: |-
-        [mysqld]
-        # @see: https://www.drupal.org/docs/getting-started/system-requirements/setting-the-mysql-transaction-isolation-level
-        transaction_isolation="READ-COMMITTED"
+      [mysqld]
+      # @see: https://www.drupal.org/docs/getting-started/system-requirements/setting-the-mysql-transaction-isolation-level
+      transaction_isolation="READ-COMMITTED"
 
 # Configure Google Filestore volume for files storage.
 mounts:

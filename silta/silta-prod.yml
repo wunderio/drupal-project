@@ -51,9 +51,9 @@ mariadb:
         cpu: 1000m
         memory: 750M
     config: |-
-        [mysqld]
-        # @see: https://www.drupal.org/docs/getting-started/system-requirements/setting-the-mysql-transaction-isolation-level
-        transaction_isolation="READ-COMMITTED"
+      [mysqld]
+      # @see: https://www.drupal.org/docs/getting-started/system-requirements/setting-the-mysql-transaction-isolation-level
+      transaction_isolation="READ-COMMITTED"
 
 # Consider enabling memcached service
 # memcached:
