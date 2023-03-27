@@ -44,6 +44,10 @@ services:
     # Install dependencies when building lando.
     build:
       - "composer install"
+    # Uncomment this if you need to edit files inside the container
+    #build_as_root:
+    #  - apt update -y
+    #  - apt install vim -y
     overrides:
       environment:
         HASH_SALT: notsosecurehash
