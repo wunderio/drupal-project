@@ -122,6 +122,10 @@ services:
   #   type: "varnish:6"
   #   backends:
   #     - appserver_nginx
+  #   ssl: true
+  #   overrides:
+  #     environment:
+  #       ADMIN_PORT: ':6082'
 
 proxy:
   mailhog:
@@ -131,7 +135,7 @@ proxy:
   # kibana:
   #   - kibana.lndo.site:5601
   # varnish:
-  #   - varnish.drupal-project.lndo.site:6082
+  #   - varnish.drupal-project.lndo.site
 
 events:
   post-db-import:
