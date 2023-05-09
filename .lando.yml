@@ -11,6 +11,7 @@ config:
   config:
     php: .lando/php.ini
     database: .lando/my.cnf
+    vcl: .lando/varnish.vcl
 
 tooling:
   composer:
