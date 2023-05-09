@@ -117,10 +117,10 @@ services:
     type: "node:16"
     build:
       - "npm install"
-  varnish:
-    type: "varnish:6"
-    backends:
-      - appserver_nginx
+  # varnish:
+  #   type: "varnish:6"
+  #   backends:
+  #     - appserver_nginx
 
 proxy:
   mailhog:
@@ -129,8 +129,8 @@ proxy:
   #   - elasticsearch.lndo.site:9200
   # kibana:
   #   - kibana.lndo.site:5601
-  varnish:
-    - varnish.drupal-project.lndo.site:6082
+  # varnish:
+  #   - varnish.drupal-project.lndo.site:6082
 
 events:
   post-db-import:
