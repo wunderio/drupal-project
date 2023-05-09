@@ -125,7 +125,7 @@ services:
   #   ssl: true
   #   overrides:
   #     environment:
-  #       ADMIN_PORT: ':6082'
+  #       ADMIN_PORT: ":6082"
 
 proxy:
   mailhog:
