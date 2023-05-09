@@ -118,7 +118,7 @@ services:
     build:
       - "npm install"
   varnish:
-    type: varnish
+    type: "varnish:6"
     backends:
       - appserver_nginx
 
