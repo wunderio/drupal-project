@@ -45,6 +45,7 @@ Drush alias for **current** Silta feature branch deployment is `drush @current s
 - `kibana`  - uses official [Kibana image](https://hub.docker.com/r/elastic/kibana), uncomment the service definition at `.lando.yml` to enable.
 - `mailhog` - uses Lando [MailHog service](https://docs.lando.dev/mailhog/).
 - `node` - uses Lando [Node service](https://docs.lando.dev/node/).
+- `varnish` - uses Lando [Varnish service](https://docs.lando.dev/varnish/), uncomment the service definition at `.lando.yml` to enable.
 
 ### [Tools](https://docs.lando.dev/core/v3/tooling.html)
 
