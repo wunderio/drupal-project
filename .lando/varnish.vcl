@@ -9,3 +9,4 @@ sub vcl_deliver {
   } else {
     set resp.http.X-W-Cache = "MISS";
   }
+}
