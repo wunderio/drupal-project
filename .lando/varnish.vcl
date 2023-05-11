@@ -4,8 +4,10 @@
 sub vcl_deliver {
   # Called before a cached object is delivered to the client.
 
-  if (obj.hits > 0) { # Add debug header to see if it's a HIT/MISS and the number of hits, disable when not needed
+  # Add debug header to see if it's a HIT/MISS and the number of hits, disable when not needed.
+  if (obj.hits > 0) {
     set resp.http.X-W-Cache = "HIT";
+    set resp.http.X-W-Cache-Hits = obj.hits;
   } else {
     set resp.http.X-W-Cache = "MISS";
   }
