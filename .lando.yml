@@ -11,7 +11,6 @@ config:
   config:
     php: .lando/php.ini
     database: .lando/my.cnf
-    vcl: .lando/varnish.vcl
 
 tooling:
   composer:
@@ -122,6 +121,8 @@ services:
   #   type: "varnish:6"
   #   backends:
   #     - appserver_nginx
+  #   config:
+  #     vcl: .lando/varnish.vcl
   #   ssl: true
   #   overrides:
   #     environment:
