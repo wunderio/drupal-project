@@ -127,6 +127,7 @@ services:
   #   overrides:
   #     environment:
   #       ADMIN_PORT: ":6082"
+  #       VARNISH_ALLOW_UNRESTRICTED_PURGE: "true"
 
 proxy:
   mailhog:
