@@ -1,0 +1,9 @@
+blacklist:
+  - 4xx-response
+  - 'config:core.extension'
+  - extensions
+  - 'config:purge'
+  - theme_registry
+  - 'config:field.storage'
+  - route_match
+  - routes
