@@ -3,6 +3,8 @@ type: profile
 description: 'Install with commonly used features pre-configured.'
 core_version_requirement: ^10
 install:
+  - admin_toolbar
+  - admin_toolbar_tools
   - automated_cron
   - block
   - block_content
