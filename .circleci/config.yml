@@ -34,6 +34,32 @@ workflows:
               ignore:
                 - production
                 - /dependabot\/.*/
+                - /feature\/slt-825/
+
+      - silta/drupal-build-deploy:
+          <<: *build-deploy
+          name: build-deploy-dev-charts
+          # Use development version of drupal chart
+          chart_name: "./charts/drupal"
+          chart_repository: ""
+          codebase-build:
+            - silta/drupal-composer-install
+            - silta/npm-install-build
+            - run:
+                name: Download charts from github repository
+                command: |
+                  rm -rf ./charts
+                  git clone --branch develop git@github.com:wunderio/charts.git
+            - run:
+                name: Add helm repositories and build local chart
+                command: |
+                  helm repo add elastic https://helm.elastic.co
+                  helm repo add codecentric https://codecentric.github.io/helm-charts
+                  helm repo add percona https://percona.github.io/percona-helm-charts/
+                  helm dependency build ./charts/drupal
+          filters:
+            branches:
+              only: /feature\/slt-825/
 
       - silta/drupal-build-deploy:
           # Extend the build-deploy configuration for the production environment.
