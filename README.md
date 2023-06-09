@@ -63,7 +63,8 @@ Drush alias for **current** Silta feature branch deployment is `drush @current s
 - [Altering scaffold files](https://www.drupal.org/docs/develop/using-composer/using-drupals-composer-scaffold#toc_4) (`robots.txt`, `.htaccess` etc.).
 
 ### Varnish and Purge configuration
-- Enable Varnish by uncommenting Lando Varnish configuration in `.lando.yml`: (`services` → `varnish` and `proxy` → `varnish`) and run `lando rebuild -y`.
+
+- Enable [Varnish](https://varnish-cache.org) by uncommenting Lando Varnish configuration in `.lando.yml`: (`services` → `varnish` and `proxy` → `varnish`) and run `lando rebuild -y`.
 - Purge and Varnish Purge settings configuration is set in the `basic` installation profile that can be installed via `lando drush si basic -y`. This configuration should work out of the box.
 - For sites that have already been installed:
   - Install Purge and related modules: `lando drush en purge purge_drush purge_processor_lateruntime purge_queuer_coretags purge_tokens purge_ui varnish_purger varnish_purge_tags -y`.
