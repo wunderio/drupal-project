@@ -33,6 +33,10 @@ tooling:
     description: "Regenerates fresh PHPUnit configuration."
     cmd:
       - appserver: /app/.lando/phpunit.sh
+  varnishadm:
+    description: "Runs varnishadm commands"
+    service: varnish
+    user: root
   xdebug:
     description: "Loads Xdebug in the selected mode"
     cmd:
