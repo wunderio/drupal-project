@@ -29,6 +29,7 @@ Drush alias for **current** Silta feature branch deployment is `drush @current s
 - Elasticsearch: <http://localhost:9200>, <http://elasticsearch.lndo.site>
 - Kibana: <http://localhost:5601>, <http://kibana.lndo.site>
 - Mailhog: <http://mail.lndo.site>
+- Varnish: <https://varnish.drupal-project.lndo.site>
 - Drush alias: `lando drush @local st`
 - SSH: `lando ssh (-s <service>)`
 
@@ -53,12 +54,32 @@ Drush alias for **current** Silta feature branch deployment is `drush @current s
 - `lando grumphp <commands>` - run [GrumPHP](https://github.com/phpro/grumphp) code quality checks. Modified or new files are checked on git commit, see more at `lando grumphp -h` or [wunderio/code-quality](https://github.com/wunderio/code-quality).
 - `lando npm <commands>` - run [npm](https://www.npmjs.com/) commands.
 - `lando phpunit <commands>` - run [PHPUnit](https://phpunit.de/) commands.
+- `lando varnishadm <commands>` - run [varnishadm](https://varnish-cache.org/docs/6.0/reference/varnishadm.html) commands.
 - `lando xdebug <mode>` - load [Xdebug](https://xdebug.org/) in the selected [mode(s)](https://xdebug.org/docs/all_settings#mode).
 
 ### Drupal development hints
 
 - [Updating Drupal core](https://www.drupal.org/docs/updating-drupal/updating-drupal-core-via-composer).
 - [Altering scaffold files](https://www.drupal.org/docs/develop/using-composer/using-drupals-composer-scaffold#toc_4) (`robots.txt`, `.htaccess` etc.).
+
+### Varnish and Purge configuration
+
+- Enable [Varnish](https://varnish-cache.org) by uncommenting Lando Varnish configuration in `.lando.yml`: (`services` → `varnish` and `proxy` → `varnish`) and run `lando rebuild -y`.
+- Purge and Varnish Purge settings configuration is set in the `basic` installation profile that can be installed via `lando drush si basic -y`. This configuration should work out of the box.
+- For sites that have already been installed:
+  - Install Purge and related modules: `lando drush en purge purge_drush purge_processor_lateruntime purge_queuer_coretags purge_tokens purge_ui varnish_purger varnish_purge_tags -y`.
+  - Make sure that a value is set for **Browser and proxy cache maximum age** at `admin/config/development/performance` to make Varnish act on pages.
+  - Navigate to Purge administration page (`/admin/config/development/performance/purge`), click "Add purger" → "Varnish Purger" and configure it:
+    - Name: "Varnish Purger"
+    - Headers: `Cache-Tags`: `[invalidation:expression]`
+    - Save
+  - Export the created configuration: `lando drush cex -y`.
+  - Note the ID on the created `varnish_purger.settings.<PURGER_ID>.yml` file.
+  - Open `web/sites/default/settings.php`, find all the `varnish_purger.settings.f94540554c` values and replace the ID with the one from the newly exported configuration.
+  - Run `lando drush cr`.
+  - Varnish should now be available in its own host and purged when content is updated.
+
+Note: Default Purge setup is using `purge_processor_lateruntime` module that'll empty the queue on page requests. This should work well enough for most sites that need immediate clearing of purge queues when content is being saved.
 
 ### Running tests
 

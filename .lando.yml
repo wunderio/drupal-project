@@ -33,6 +33,10 @@ tooling:
     description: "Regenerates fresh PHPUnit configuration."
     cmd:
       - appserver: /app/.lando/phpunit.sh
+  varnishadm:
+    description: "Runs varnishadm commands"
+    service: varnish
+    user: root
   xdebug:
     description: "Loads Xdebug in the selected mode"
     cmd:
@@ -60,6 +64,7 @@ services:
         DB_PASS_DRUPAL: drupal10
         DB_HOST_DRUPAL: database
         DRUSH_OPTIONS_URI: https://drupal-project.lndo.site
+        VARNISH_ADMIN_HOST: varnish
         # Support debugging with XDEBUG 3.
         XDEBUG_MODE:
         PHP_IDE_CONFIG: serverName=appserver
@@ -127,6 +132,7 @@ services:
   #   overrides:
   #     environment:
   #       ADMIN_PORT: ":6082"
+  #       VARNISH_ALLOW_UNRESTRICTED_PURGE: "true"
 
 proxy:
   mailhog:

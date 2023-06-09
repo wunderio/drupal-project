@@ -45,6 +45,12 @@ $settings['file_scan_ignore_directories'] = [
   'bower_components',
 ];
 
+// Varnish Purge configuration.
+if (getenv('VARNISH_ADMIN_HOST')) {
+  $config['varnish_purger.settings.f94540554c']['hostname'] = trim(getenv('VARNISH_ADMIN_HOST'));
+  $config['varnish_purger.settings.f94540554c']['port'] = '80';
+}
+
 // Environment-specific settings.
 $env = $_ENV['ENVIRONMENT_NAME'];
 switch ($env) {
@@ -65,7 +71,8 @@ switch ($env) {
     $settings['skip_permissions_hardening'] = TRUE;
     // Skip trusted host pattern.
     $settings['trusted_host_patterns'] = ['.*'];
-    // Debug mode on lando.
+
+    // Debug mode on Lando, disable all caching.
     $settings['container_yamls'][] = DRUPAL_ROOT . '/sites/development.services.yml';
     $config['system.performance']['css']['preprocess'] = FALSE;
     $config['system.performance']['js']['preprocess'] = FALSE;
@@ -73,7 +80,7 @@ switch ($env) {
     $settings['cache']['bins']['dynamic_page_cache'] = CACHE_BACKEND;
     $settings['cache']['bins']['page'] = CACHE_BACKEND;
     $settings['extension_discovery_scan_tests'] = FALSE;
-    break;
+  break;
 
   default:
     $settings['simple_environment_indicator'] = '#2F2942 Test';

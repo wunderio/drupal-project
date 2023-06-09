@@ -1,34 +1,53 @@
 name: Basic
 type: profile
 description: 'Install with commonly used features pre-configured.'
-version: 9
-core_version_requirement: ^9
+core_version_requirement: ^10
 install:
+  - admin_toolbar
   - admin_toolbar_tools
-  - node
+  - automated_cron
   - block
+  - block_content
   - breakpoint
-  - ckeditor
+  - ckeditor5
+  - comment
   - config
   - contextual
-  - menu_link_content
   - datetime
-  - editor
-  - image
-  - menu_ui
-  - options
-  - path
-  - page_cache
-  - dynamic_page_cache
-  - big_pipe
-  - taxonomy
   - dblog
-  - toolbar
+  - dynamic_page_cache
+  - editor
+  - field
   - field_ui
   - file
-  - views
+  - filter
+  - help
+  - image
+  - link
+  - menu_link_content
+  - menu_ui
+  - mysql
+  - node
+  - options
+  - page_cache
+  - path
+  - path_alias
+  - purge
+  - purge_drush
+  - purge_processor_lateruntime
+  - purge_queuer_coretags
+  - purge_tokens
+  - purge_ui
+  - system
+  - taxonomy
+  - text
+  - toolbar
+  - update
+  - user
+  - varnish_purge_tags
+  - varnish_purger
   - views_ui
-  - simplei
+  - views
 themes:
-  - bartik
-  - seven
+  - claro
+  - olivero

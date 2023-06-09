@@ -1,6 +1,6 @@
-uuid: ''
-name: ''
-mail: ''
+langcode: en
+name: 'Drush Site-Install'
+mail: admin@example.com
 slogan: ''
 page:
   403: ''
@@ -8,5 +8,4 @@ page:
   front: /node
 admin_compact_mode: false
 weight_select_max: 100
-langcode: en
 default_langcode: en
