@@ -133,6 +133,16 @@ services:
   #     environment:
   #       ADMIN_PORT: ":6082"
   #       VARNISH_ALLOW_UNRESTRICTED_PURGE: "true"
+  # adminer:
+  #   type: compose
+  #   meUser: adminer
+  #   services:
+  #     image: adminer:latest
+  #     depends_on:
+  #       - database
+  #     command: "php -S [::]:8080 -t /var/www/html"
+  #     volumes:
+  #       - ./.lando/adminer.php:/var/www/html/index.php
 
 proxy:
   mailhog:
@@ -143,6 +153,8 @@ proxy:
   #   - kibana.lndo.site:5601
   # varnish:
   #   - varnish.drupal-project.lndo.site
+  # adminer:
+  #   - adminer.drupal-project.lndo.site:8080
 
 events:
   post-db-import:
@@ -152,4 +164,4 @@ env_file:
   - .lando/.env
 
 # Tested with Lando version
-version: v3.11.0
+version: v3.18.0
