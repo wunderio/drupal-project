@@ -46,7 +46,7 @@ $settings['file_scan_ignore_directories'] = [
 ];
 
 // Varnish Purge configuration.
-if (getenv('SILTA_CLUSTER') && getenv('VARNISH_ADMIN_HOST')) {
+if (getenv('VARNISH_ADMIN_HOST')) {
   $config['varnish_purger.settings.f94540554c']['hostname'] = trim(getenv('VARNISH_ADMIN_HOST'));
   $config['varnish_purger.settings.f94540554c']['port'] = '80';
 }
@@ -80,10 +80,6 @@ switch ($env) {
     $settings['cache']['bins']['dynamic_page_cache'] = CACHE_BACKEND;
     $settings['cache']['bins']['page'] = CACHE_BACKEND;
     $settings['extension_discovery_scan_tests'] = FALSE;
-
-    // Varnish purger.
-    $config['varnish_purger.settings.f94540554c']['hostname'] = 'varnish';
-    $config['varnish_purger.settings.f94540554c']['port'] = '80';
   break;
 
   default:

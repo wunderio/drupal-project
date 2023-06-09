@@ -60,6 +60,7 @@ services:
         DB_PASS_DRUPAL: drupal10
         DB_HOST_DRUPAL: database
         DRUSH_OPTIONS_URI: https://drupal-project.lndo.site
+        VARNISH_ADMIN_HOST: varnish
         # Support debugging with XDEBUG 3.
         XDEBUG_MODE:
         PHP_IDE_CONFIG: serverName=appserver
