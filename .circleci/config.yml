@@ -36,10 +36,9 @@ workflows:
                 - /dependabot\/.*/
                 - /feature\/slt-825/
 
-      - silta/drupal-build-deploy:
+      - silta/drupal-build-deploy-dev-charts:
           <<: *build-deploy
           name: build-deploy-dev-charts
-          use_dev_chart: true
           filters:
             branches:
               only: /feature\/slt-825/
