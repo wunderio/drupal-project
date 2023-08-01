@@ -6,6 +6,12 @@
 
 [Add link to feature environment]
 
+Get a login link for admin:
+
+[Copy the string from CircleCI build report below]
+
+    ssh www-admin@BRANCH_NAME-shell.PROJECT_NAME -J www-admin@ssh.dev.wdr.io "drush uli"
+
 ## Changes proposed in this PR:
 
 [Explain what was done and why. You can also add screenshots here if it helps.]
