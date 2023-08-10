@@ -24,6 +24,9 @@ $databases['default']['default'] = [
 // Salt for one-time login links, cancel links, form tokens, etc.
 $settings['hash_salt'] = $_ENV['HASH_SALT'];
 
+// Public files path.
+$settings['file_public_path']  = 'sites/default/files';
+
 // Location of the site configuration files.
 $settings['config_sync_directory'] = '../config/sync';
 
