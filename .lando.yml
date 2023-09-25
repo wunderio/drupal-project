@@ -44,6 +44,13 @@ tooling:
     user: root
 
 services:
+  # adminer:
+  #   type: compose
+  #   services:
+  #     image: dehy/adminer
+  #     command: /bin/s6-svscan /etc/services.d
+  #   run_as_root:
+  #     - /app/.lando/adminer.sh
   appserver:
     # Install dependencies when building lando.
     build:
@@ -133,18 +140,10 @@ services:
   #     environment:
   #       ADMIN_PORT: ":6082"
   #       VARNISH_ALLOW_UNRESTRICTED_PURGE: "true"
-  # adminer:
-  #   type: compose
-  #   meUser: adminer
-  #   services:
-  #     image: adminer:latest
-  #     depends_on:
-  #       - database
-  #     command: "php -S [::]:8080 -t /var/www/html"
-  #     volumes:
-  #       - ./.lando/adminer.php:/var/www/html/index.php
 
 proxy:
+  # adminer:
+  #   - adminer.drupal-project.lndo.site
   mailhog:
     - mail.lndo.site
   # elasticsearch:
@@ -153,8 +152,6 @@ proxy:
   #   - kibana.lndo.site:5601
   # varnish:
   #   - varnish.drupal-project.lndo.site
-  # adminer:
-  #   - adminer.drupal-project.lndo.site:8080
 
 events:
   post-db-import:
