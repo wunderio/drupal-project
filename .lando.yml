@@ -44,13 +44,13 @@ tooling:
     user: root
 
 services:
-  # adminer:
-  #   type: compose
-  #   services:
-  #     image: dehy/adminer
-  #     command: /bin/s6-svscan /etc/services.d
-  #   run_as_root:
-  #     - /app/.lando/adminer.sh
+  adminer:
+    type: compose
+    services:
+      image: dehy/adminer
+      command: /bin/s6-svscan /etc/services.d
+    run_as_root:
+      - /app/.lando/adminer.sh
   appserver:
     # Install dependencies when building lando.
     build:
@@ -142,8 +142,8 @@ services:
   #       VARNISH_ALLOW_UNRESTRICTED_PURGE: "true"
 
 proxy:
-  # adminer:
-  #   - adminer.drupal-project.lndo.site
+  adminer:
+    - adminer.drupal-project.lndo.site
   mailhog:
     - mail.lndo.site
   # elasticsearch:
