@@ -66,10 +66,6 @@ services:
       environment:
         HASH_SALT: notsosecurehash
         ENVIRONMENT_NAME: lando
-        DB_NAME_DRUPAL: drupal10
-        DB_USER_DRUPAL: drupal10
-        DB_PASS_DRUPAL: drupal10
-        DB_HOST_DRUPAL: database
         DRUSH_OPTIONS_URI: https://drupal-project.lndo.site
         VARNISH_ADMIN_HOST: varnish
         # Support debugging with XDEBUG 3.

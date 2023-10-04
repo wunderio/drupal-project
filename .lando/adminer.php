@@ -14,7 +14,7 @@ function adminer_object()
     public function credentials()
     {
       // Server, username and password for connecting to database.
-      return array('database', 'drupal10', 'drupal10');
+      return array(getenv('DB_HOST_DRUPAL'), getenv('DB_USER_DRUPAL'), getenv('DB_PASS_DRUPAL'));
     }
 
     public function login($login, $password)
