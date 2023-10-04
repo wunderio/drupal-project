@@ -23,6 +23,15 @@ function adminer_object()
       return true;
     }
 
+    /**
+     * Replace login form with autologin (where login form would submit).
+     *
+     * Also preselect Drupal database.
+     */
+    function loginForm() {
+      echo '<meta http-equiv="refresh" content="0;url=/?username=&db=' . getenv('DB_NAME_DRUPAL') . '">';
+    }
+
   }
 
   return new AutoLogin;
