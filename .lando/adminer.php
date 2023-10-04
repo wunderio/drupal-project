@@ -11,6 +11,13 @@ function adminer_object()
   class AutoLogin extends Adminer
   {
 
+    /**
+     * Overwrite link to landing page of Adminer app instead of its homepage.
+     */
+    function name() {
+      return '<a href="' . '/?username=&db=' . getenv('DB_NAME_DRUPAL') . '" id="h1">Adminer</a>';
+    }
+
     public function credentials()
     {
       // Server, username and password for connecting to database.
@@ -24,12 +31,33 @@ function adminer_object()
     }
 
     /**
-     * Replace login form with autologin (where login form would submit).
-     *
-     * Also preselect Drupal database.
+     * Make the original login auto login and preselct database.
      */
     function loginForm() {
-      echo '<meta http-equiv="refresh" content="0;url=/?username=&db=' . getenv('DB_NAME_DRUPAL') . '">';
+      ob_start();
+      Adminer::loginForm();
+      $original_form = ob_get_clean();
+
+      // Preselect Drupal 10 db.
+      $original_form = str_replace('name="auth[db]" value=""', 'name="auth[db]" value="' . getenv('DB_NAME_DRUPAL') . '"', $original_form);
+
+      // Add id attribute to the submit button to target it with js in next
+      // section.
+      $submit_button_id = 'adminer-login-submit-button';
+      echo str_replace("type='submit'", "type='submit' id='{$submit_button_id}'", $original_form);
+
+      // Add js to autosubmit the form.
+      echo '<script' . nonce(). '>';
+      echo 'document.addEventListener("DOMContentLoaded", function() {';
+      echo "var submit_button = document.getElementById('{$submit_button_id}');";
+
+      // Check if the submit button is found.
+      echo 'if (submit_button) {';
+      // Trigger a click event on the submit button to submit the form';
+      echo 'submit_button.click();';
+      echo '}';
+      echo '});';
+      echo '</script>';
     }
 
   }
