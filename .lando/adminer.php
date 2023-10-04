@@ -12,7 +12,10 @@ function adminer_object()
   {
 
     /**
-     * Overwrite link to landing page of Adminer app instead of its homepage.
+     * Overwrite top left 'logo' link to landing page of Adminer app.
+     *
+     * By default, it would open link to Adminer home page. Let's also preselect
+     * Drupal 10 db.
      */
     function name() {
       return '<a href="' . '/?username=&db=' . getenv('DB_NAME_DRUPAL') . '" id="h1">Adminer</a>';
