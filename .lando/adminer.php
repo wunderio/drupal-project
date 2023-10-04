@@ -18,12 +18,18 @@ function adminer_object()
       return '<a href="' . '/?username=&db=' . getenv('DB_NAME_DRUPAL') . '" id="h1">Adminer</a>';
     }
 
+    /**
+     * Overwrite the connection parameters.
+     */
     public function credentials()
     {
       // Server, username and password for connecting to database.
       return array(getenv('DB_HOST_DRUPAL'), getenv('DB_USER_DRUPAL'), getenv('DB_PASS_DRUPAL'));
     }
 
+    /**
+     * Overwrite the user authorization.
+     */
     public function login($login, $password)
     {
       // Don't validate credentials submitted via form.
@@ -31,7 +37,7 @@ function adminer_object()
     }
 
     /**
-     * Make the original login auto login and preselct database.
+     * Adjust the original form to autologin and preselect Drupal database.
      */
     function loginForm() {
       ob_start();
