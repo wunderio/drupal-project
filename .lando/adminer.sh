@@ -1,8 +1,8 @@
 #!/bin/sh
 set -exu
 
-# Copy custom adminer.php from .lando folder to webroot.
-cp -f /app/.lando/adminer.php /var/www/html/adminer.php
+# Link custom adminer.php from .lando folder to webroot.
+ln -sf /app/.lando/adminer.php /var/www/html/
 
 # Copy & rename versioned Adminer library file.
 cd /var/www/html
