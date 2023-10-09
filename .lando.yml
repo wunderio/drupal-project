@@ -44,6 +44,13 @@ tooling:
     user: root
 
 services:
+  adminer:
+    type: compose
+    services:
+      image: dehy/adminer
+      command: /bin/s6-svscan /etc/services.d
+    run_as_root:
+      - /app/.lando/adminer.sh
   appserver:
     # Install dependencies when building lando.
     build:
@@ -59,10 +66,6 @@ services:
       environment:
         HASH_SALT: notsosecurehash
         ENVIRONMENT_NAME: lando
-        DB_NAME_DRUPAL: drupal10
-        DB_USER_DRUPAL: drupal10
-        DB_PASS_DRUPAL: drupal10
-        DB_HOST_DRUPAL: database
         DRUSH_OPTIONS_URI: https://drupal-project.lndo.site
         VARNISH_ADMIN_HOST: varnish
         # Support debugging with XDEBUG 3.
@@ -135,6 +138,8 @@ services:
   #       VARNISH_ALLOW_UNRESTRICTED_PURGE: "true"
 
 proxy:
+  adminer:
+    - adminer.drupal-project.lndo.site
   mailhog:
     - mail.lndo.site
   # elasticsearch:
@@ -152,4 +157,4 @@ env_file:
   - .lando/.env
 
 # Tested with Lando version
-version: v3.11.0
+version: v3.18.0

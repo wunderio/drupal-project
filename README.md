@@ -8,7 +8,7 @@ This project template is an opinionated fork of the popular [Drupal-composer tem
   - select the correct owner,
   - name the project as `client-COUNTRYCODE-CLIENT-PROJECT`,
   - make the repository private (unless the project is public).
-- Clone the new project locally and modify it's details:
+- Clone the new project locally and modify its details:
   - `composer.json` name,
   - `silta/silta.yml` [values](https://github.com/wunderio/charts/blob/master/drupal/values.yaml).
 - Log in to [CircleCI](https://app.circleci.com/) using your Github account and add the new project using existing config.
@@ -21,11 +21,12 @@ For additional instructions, please see the [Silta documentation](https://github
 - Drush alias: `drush @main st`
 - SSH: `ssh www-admin@main-shell.drupal-project -J www-admin@ssh.dev.wdr.io`
 
-Drush alias for **current** Silta feature branch deployment is `drush @current st`.
+Drush alias for the **current** Silta feature branch deployment is `drush @current st`.
 
 ## Local environment
 
 - Appserver: <https://drupal-project.lndo.site>
+- Adminer: <http://adminer.drupal-project.lndo.site>
 - Elasticsearch: <http://localhost:9200>, <http://elasticsearch.lndo.site>
 - Kibana: <http://localhost:5601>, <http://kibana.lndo.site>
 - Mailhog: <http://mail.lndo.site>
@@ -41,6 +42,7 @@ Drush alias for **current** Silta feature branch deployment is `drush @current s
 
 ### [Services](https://docs.lando.dev/core/v3/services.html)
 
+- `adminer` - uses [Adminer database management tool](https://github.com/dehy/docker-adminer).
 - `chrome` - uses [selenium/standalone-chrome](https://hub.docker.com/r/selenium/standalone-chrome/) image, uncomment the service definition at `.lando.yml` to enable.
 - `elasticsearch` - uses official [Elasticsearch image](https://hub.docker.com/r/elastic/elasticsearch), uncomment the service definition at `.lando.yml` to enable. Requires [at least 4GiB of memory](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html).
 - `kibana`  - uses official [Kibana image](https://hub.docker.com/r/elastic/kibana), uncomment the service definition at `.lando.yml` to enable.
