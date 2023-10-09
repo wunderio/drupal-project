@@ -8,7 +8,7 @@ This project template is an opinionated fork of the popular [Drupal-composer tem
   - select the correct owner,
   - name the project as `client-COUNTRYCODE-CLIENT-PROJECT`,
   - make the repository private (unless the project is public).
-- Clone the new project locally and modify it's details:
+- Clone the new project locally and modify its details:
   - `composer.json` name,
   - `silta/silta.yml` [values](https://github.com/wunderio/charts/blob/master/drupal/values.yaml).
 - Log in to [CircleCI](https://app.circleci.com/) using your Github account and add the new project using existing config.
@@ -21,7 +21,7 @@ For additional instructions, please see the [Silta documentation](https://github
 - Drush alias: `drush @main st`
 - SSH: `ssh www-admin@main-shell.drupal-project -J www-admin@ssh.dev.wdr.io`
 
-Drush alias for **current** Silta feature branch deployment is `drush @current st`.
+Drush alias for the **current** Silta feature branch deployment is `drush @current st`.
 
 ## Local environment
 
