@@ -45,7 +45,7 @@ tooling:
 
 services:
   adminer:
-    type: compose
+    type: lando
     services:
       image: dehy/adminer
       command: /bin/s6-svscan /etc/services.d
@@ -74,7 +74,7 @@ services:
         # PHPUnit settings. @see: .lando/phpunit.sh
         MINK_DRIVER_ARGS_WEBDRIVER: '["chrome", {"browserName":"chrome","chromeOptions":{"args":["--disable-gpu","--headless"]}}, "http://chrome:9515"]'
   chrome:
-    type: compose
+    type: lando
     services:
       image: drupalci/webdriver-chromedriver:production
       command: chromedriver --log-path=/tmp/chromedriver.log --verbose --whitelisted-ips=
@@ -83,7 +83,7 @@ services:
   # database:
   #   portforward: 34567
   # elasticsearch:
-  #   type: compose
+  #   type: lando
   #   services:
   #     image: "docker.elastic.co/elasticsearch/elasticsearch:7.17.0"
   #     command: "/bin/tini -- /usr/local/bin/docker-entrypoint.sh eswrapper"
@@ -110,7 +110,7 @@ services:
   #     esdata:
   #       driver: local
   # kibana:
-  #   type: compose
+  #   type: lando
   #   services:
   #     image: "docker.elastic.co/kibana/kibana:7.17.0"
   #     command: "/bin/tini -- /usr/local/bin/kibana-docker"
@@ -157,4 +157,4 @@ env_file:
   - .lando/.env
 
 # Tested with Lando version
-version: v3.18.0
+version: v3.20.4
