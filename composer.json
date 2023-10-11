@@ -27,7 +27,6 @@
         "drupal/varnish_purge": "^2.2",
         "drush/drush": "^11.4",
         "vlucas/phpdotenv": "^5.4",
-        "webflo/drupal-finder": "^1.2",
         "wunderio/drupal-ping": "^2.4"
     },
     "require-dev": {
@@ -54,18 +53,7 @@
         "sort-packages": true
     },
     "autoload": {
-        "classmap": [
-            "scripts/composer/ScriptHandler.php"
-        ],
         "files": ["load.environment.php"]
-    },
-    "scripts": {
-        "post-install-cmd": [
-            "DrupalProject\\composer\\ScriptHandler::createRequiredFiles"
-        ],
-        "post-update-cmd": [
-            "DrupalProject\\composer\\ScriptHandler::createRequiredFiles"
-        ]
     },
     "extra": {
         "drupal-scaffold": {
