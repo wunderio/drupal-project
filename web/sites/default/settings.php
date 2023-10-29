@@ -5,9 +5,6 @@
  * Drupal site-specific configuration file.
  */
 
-// Cache backend.
-define('CACHE_BACKEND', 'cache.backend.null');
-
 // Database settings, overridden per environment.
 $databases = [];
 $databases['default']['default'] = [
@@ -75,15 +72,16 @@ switch ($env) {
     // Skip trusted host pattern.
     $settings['trusted_host_patterns'] = ['.*'];
 
-    // Debug mode on Lando, disable all caching.
+    // Enable debug mode in local environment, disable caching.
+    // @see https://www.drupal.org/node/2598914.
     $settings['container_yamls'][] = DRUPAL_ROOT . '/sites/development.services.yml';
     $config['system.performance']['css']['preprocess'] = FALSE;
     $config['system.performance']['js']['preprocess'] = FALSE;
-    $settings['cache']['bins']['render'] = CACHE_BACKEND;
-    $settings['cache']['bins']['dynamic_page_cache'] = CACHE_BACKEND;
-    $settings['cache']['bins']['page'] = CACHE_BACKEND;
+    $settings['cache']['bins']['render'] = 'cache.backend.null';
+    $settings['cache']['bins']['dynamic_page_cache'] = 'cache.backend.null';
+    $settings['cache']['bins']['page'] = 'cache.backend.null';
     $settings['extension_discovery_scan_tests'] = FALSE;
-  break;
+    break;
 
   default:
     $settings['simple_environment_indicator'] = '#2F2942 Test';
