@@ -155,6 +155,8 @@ events:
 
 env_file:
   - .lando/.env
+  # uncomment when you need a personal .env file which is not committed to the repository
+  # - .env
 
 # Tested with Lando version
 version: v3.20.4
