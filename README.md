@@ -58,6 +58,7 @@ Drush alias for the **current** Silta feature branch deployment is `drush @curre
 - `lando phpunit <commands>` - run [PHPUnit](https://phpunit.de/) commands.
 - `lando varnishadm <commands>` - run [varnishadm](https://varnish-cache.org/docs/6.0/reference/varnishadm.html) commands.
 - `lando xdebug <mode>` - load [Xdebug](https://xdebug.org/) in the selected [mode(s)](https://xdebug.org/docs/all_settings#mode).
+  - Check that the `phpinfo()` has XDebug section visible at https://drupal-project.lndo.site/en/admin/reports/status/php. If not, do a lando rebuild and run `lando xdebug <mode>` again.
 
 ### Drupal development hints
 
