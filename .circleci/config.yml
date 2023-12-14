@@ -22,6 +22,8 @@ workflows:
           context: analyze
           sources: web
 
+      # Build and deploy job for feature environments.
+      # Other jobs defined below extend this job.
       - silta/drupal-build-deploy: &build-deploy
           name: build-deploy
           executor: cicd81
@@ -33,10 +35,23 @@ workflows:
             branches:
               ignore:
                 - production
+                - main
                 - /dependabot\/.*/
 
+      # Build and deploy job for main environment.
+      # Extends the job defined for feature environments.
       - silta/drupal-build-deploy:
-          # Extend the build-deploy configuration for the production environment.
+          <<: *build-deploy
+          name: build-deploy-main
+          silta_config: silta/silta.yml,silta/silta-main.yml
+          filters:
+            branches:
+              only:
+                - main
+
+      # Build and deploy job for production environment.
+      # Extends the job defined for feature environments.
+      - silta/drupal-build-deploy:
           <<: *build-deploy
           name: build-deploy-prod
           silta_config: silta/silta.yml,silta/silta-prod.yml

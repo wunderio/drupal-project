@@ -14,7 +14,11 @@ backup:
   enabled: true
 
 php:
-  # Reserve more resources for our PHP containerss.
+  cron:
+    drupal:
+      # In production environments, run cron every 5 minutes. Adjust as needed.
+      schedule: '*/5 * * * *'
+  # Reserve more resources for our PHP containers.
   resources:
     requests:
       cpu: 200m
