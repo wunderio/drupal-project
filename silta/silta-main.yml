@@ -4,5 +4,4 @@ php:
   cron:
     drupal:
       # In main environment, run cron once an hour. Adjust as needed.
-      # ~ gets replaced with a random digit between 0 and 9 to prevent having all cron jobs at once.
       schedule: '~ * * * *'
