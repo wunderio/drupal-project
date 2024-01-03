@@ -27,32 +27,32 @@ check_files() {
 
 # This function decrypts the target file, opens it in vim for editing, and encrypts it again after saving.
 edit_file() {
-    check_files $2 # Check if the target file exists
-    openssl enc -d -aes-256-cbc -pbkdf2 -in $2 -out $2.dec -pass pass:$ssl_pass # Decrypt the target file and save it as .dec
-    vim $2.dec # Open the decrypted file in vim
-    openssl aes-256-cbc -pbkdf2 -in $2.dec -out $2 -pass pass:$ssl_pass # Encrypt the edited file and overwrite the original target file
-    rm $2.dec # Remove the decrypted file
+    check_files "$2" # Check if the target file exists
+    openssl enc -d -aes-256-cbc -pbkdf2 -in "$2" -out "$2.dec" -pass pass:"$ssl_pass" # Decrypt the target file and save it as .dec
+    vim "$2.dec" # Open the decrypted file in vim
+    openssl aes-256-cbc -pbkdf2 -in "$2.dec" -out "$2" -pass pass:"$ssl_pass" # Encrypt the edited file and overwrite the original target file
+    rm "$2.dec" # Remove the decrypted file
 }
 
 # This function decrypts the target file and saves it as .dec.
 decrypt_file() {
-    check_files $2 # Check if the target file exists
-    openssl enc -d -aes-256-cbc -pbkdf2 -in $2 -out $2.dec -pass pass:$ssl_pass # Decrypt the target file and save it as .dec
+    check_files "$2" # Check if the target file exists
+    openssl enc -d -aes-256-cbc -pbkdf2 -in "$2" -out "$2.dec" -pass pass:"$ssl_pass" # Decrypt the target file and save it as .dec
     echo "Decrypted into $2.dec" # Print a message
 }
 
 # This function encrypts the target file and overwrites the original file.
 encrypt_file() {
-    check_files $2 # Check if the target file exists
+    check_files "$2" # Check if the target file exists
     echo "Encrypting..." # Print a message
-    cp $2 $2.dec # Copy the target file and save it as .dec
-    openssl aes-256-cbc -pbkdf2 -in $2.dec -out $2 -pass pass:$ssl_pass # Encrypt the target file and overwrite the original file
-    rm $2.dec # Remove the decrypted file
+    cp "$2" "$2.dec" # Copy the target file and save it as .dec
+    openssl aes-256-cbc -pbkdf2 -in "$2.dec" -out "$2" -pass pass:"$ssl_pass" # Encrypt the target file and overwrite the original file
+    rm "$2.dec" # Remove the decrypted file
     echo "Encrypted into $2" # Print a message
 }
 
 # This block checks the number of arguments and the first argument, and calls the appropriate function
-if [[ $# -ne 2 ]] ; then # If the number of arguments is not 2, print an error message and the usage message
+if [[ $# -ne 2 ]]; then # If the number of arguments is not 2, print an error message and the usage message
     echo 'You need to pass 2 arguments.'
     usage
     exit 1
