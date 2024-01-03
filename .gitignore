@@ -37,5 +37,5 @@
 # Ignore node modules
 node_modules
 
-# Ignore files decrypted by `lando secrets` tool
-*.dec
+# Ignore plain secrets files used by `lando secrets` tool
+*.plain
