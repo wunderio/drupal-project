@@ -43,7 +43,11 @@ decrypt_file() {
 encrypt_file() {
     check_files "$2" # Check if the target file exists
     echo "Encrypting..." # Print a message
-    cp "$2" "$2.dec" # Copy the target file and save it as .dec
+    filename=$(basename "$2") # Extract the file name from the path
+    extension=${filename##*.} # Extract the file extension from the file name
+    if [ "$extension" != "dec" ]; then # Check if the file extension is not dec
+        mv "$2" "$2.dec" # Save the target file as .dec
+    fi
     openssl aes-256-cbc -pbkdf2 -in "$2.dec" -out "$2" -pass pass:"$ssl_pass" # Encrypt the target file and overwrite the original file
     rm "$2.dec" # Remove the decrypted file
     echo "Encrypted into $2" # Print a message
