@@ -33,6 +33,10 @@ tooling:
     description: "Regenerates fresh PHPUnit configuration."
     cmd:
       - appserver: /app/.lando/phpunit.sh
+  secrets:
+    description: "Perform encryption and decryption operations. Usage: lando secrets {edit|decrypt|encrypt} {target}."
+    cmd:
+      - appserver: /app/silta/secrets.sh
   varnishadm:
     description: "Runs varnishadm commands"
     service: varnish
