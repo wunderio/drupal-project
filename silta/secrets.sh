@@ -3,10 +3,8 @@ set -eu
 
 # Title: secrets.sh
 # Description: This script performs encryption and decryption operations on a target file.
-# Usage: `./secrets.sh {edit|decrypt|encrypt} {target}`.
-# Usage: Use the `SECRET_KEY` value of the appropriate context environment variable as the password.
-# Usage: Use the CircleCI deployment with SSH to access the `SECRET_KEY`` value.
-# Example: ./secrets.sh edit secret.txt
+# Use the `SECRET_KEY` value of the appropriate Silta context environment variable as the password.
+# Use the CircleCI deployment with SSH to access the `SECRET_KEY` value.
 
 # This function prints the usage message and exits with an error code.
 usage() {
