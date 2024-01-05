@@ -37,6 +37,9 @@ workflows:
                 secret_key_env: SEC_DRUPAL_PROJECT_SILTA_DEV
           silta_config: silta/silta.yml,silta/silta.secret
           context: silta_dev
+          requires:
+            - validate
+            - analyze
           filters:
             branches:
               ignore:
@@ -49,7 +52,7 @@ workflows:
       - silta/drupal-build-deploy:
           <<: *build-deploy
           name: build-deploy-main
-          silta_config: silta/silta.yml,silta/silta-main.yml
+          silta_config: silta/silta.yml,silta/silta.secret,silta/silta-main.yml
           filters:
             branches:
               only:
