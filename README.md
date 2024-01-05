@@ -23,6 +23,12 @@ For additional instructions, please see the [Silta documentation](https://github
 
 Drush alias for the **current** Silta feature branch deployment is `drush @current st`.
 
+### Environment variables for silta_dev context
+
+The following secret variables are defined in the file `silta/silta.secret` for the context `silta_dev`:
+
+- `TEST_KEY` - secret key for tesing purposes.
+
 ## Local environment
 
 - Appserver: <https://drupal-project.lndo.site>
@@ -59,7 +65,9 @@ Drush alias for the **current** Silta feature branch deployment is `drush @curre
 - `lando varnishadm <commands>` - run [varnishadm](https://varnish-cache.org/docs/6.0/reference/varnishadm.html) commands.
 - `lando xdebug <mode>` - load [Xdebug](https://xdebug.org/) in the selected [mode(s)](https://xdebug.org/docs/all_settings#mode).
 
-### Drupal development hints
+## Development advices
+
+### Drupal core tips
 
 - [Updating Drupal core](https://www.drupal.org/docs/updating-drupal/updating-drupal-core-via-composer).
 - [Altering scaffold files](https://www.drupal.org/docs/develop/using-composer/using-drupals-composer-scaffold#toc_4) (`robots.txt`, `.htaccess` etc.).
@@ -94,3 +102,17 @@ Use `lando phpunit` to run the PHPUnit commands.
 - run one test class: `lando phpunit path/to/your/class/file.php`,
 - list groups: `lando phpunit --list-groups`,
 - run all the tests in a particular group: `lando phpunit --group Groupname`.
+
+### Secrets handling
+
+[Silta CLI](https://github.com/wunderio/silta-cli) is a command-line tool that helps you manage secrets and configurations for your Silta projects. You can use Silta CLI to encrypt and decrypt files with the following commands:
+
+- `silta secrets encrypt --file silta/silta.secret --secret-key=$SECRET_KEY` to encrypt a file.
+- `silta secrets decrypt --file silta/silta.secret --secret-key=$SECRET_KEY` to decrypt a file.
+- `silta secrets --help` for help.
+
+To use these commands, you need a secret key that is used to encrypt and decrypt the data. It can be specified with the `--secret-key` flag (defaults to the `SECRET_KEY` environment variable). It is strongly advised to use a custom key for each project to ensure security and avoid conflicts. See Silta's documentation on [how to use a custom decryption key in a CircleCI configuration](https://wunderio.github.io/silta/docs/encrypting-sensitive-configuration/#using-a-custom-encryption-key).
+
+You should use the following naming convention for your custom keys: `SEC_{PROJECT_NAME}_{CONTEXT}` where `CONTEXT` refers to the environment you are working on, such as `silta_dev` (development context) or `silta_finland` (production context). For example, if you are working on the `drupal-project` project in the `silta_dev` environment, you should use the `SEC_DRUPAL_PROJECT_SILTA_DEV` key.
+
+The `silta/silta.secret` file is a YAML file that contains the encrypted secrets for your project in the default `silta-dev` context. You can add more files for other contexts, such as `silta/silta-prod.secret` for the production context.
