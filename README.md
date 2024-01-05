@@ -59,6 +59,10 @@ Drush alias for the **current** Silta feature branch deployment is `drush @curre
 - `lando varnishadm <commands>` - run [varnishadm](https://varnish-cache.org/docs/6.0/reference/varnishadm.html) commands.
 - `lando xdebug <mode>` - load [Xdebug](https://xdebug.org/) in the selected [mode(s)](https://xdebug.org/docs/all_settings#mode).
 
+#### Secrets handling
+
+Perform encryption and decryption operations by using [Silta CLI](https://github.com/wunderio/silta-cli). Use `silta secrets -h` to see the available commands. Use the `SECRET_KEY` value of the corresponding Silta context environment variable as the password.
+
 ### Drupal development hints
 
 - [Updating Drupal core](https://www.drupal.org/docs/updating-drupal/updating-drupal-core-via-composer).
