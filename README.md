@@ -105,7 +105,7 @@ Use `lando phpunit` to run the PHPUnit commands.
 - `silta secrets decrypt --file silta/silta.secret --secret-key=$SECRET_KEY` to decrypt a file.
 - `silta secrets --help` for help.
 
-To use these commands, you need a secret key that is used to encrypt and decrypt the data. It can be specified with the `--secret-key` flag (defaults to the `SECRET_KEY` environment variable). It is strongly advised to use a custom key for each project to ensure security and avoid conflicts.
+To use these commands, you need a secret key that is used to encrypt and decrypt the data. It can be specified with the `--secret-key` flag (defaults to the `SECRET_KEY` environment variable). It is strongly advised to use a custom key for each project to ensure security and avoid conflicts. See Silta's documentation on [how to use a custom decryption key in a CircleCI configuration](https://wunderio.github.io/silta/docs/encrypting-sensitive-configuration/#using-a-custom-encryption-key).
 
 You should use the following naming convention for your custom keys: `SEC_{PROJECT_NAME}_{CONTEXT}` where `CONTEXT` refers to the environment you are working on, such as `silta_dev` (development context) or `silta_finland` (production context). For example, if you are working on the `drupal-project` project in the `silta_dev` environment, you should use the `SEC_DRUPAL_PROJECT_SILTA_DEV` key.
 
