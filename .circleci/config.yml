@@ -49,7 +49,13 @@ workflows:
       - silta/drupal-build-deploy:
           <<: *build-deploy
           name: build-deploy-main
-          silta_config: silta/silta.yml,silta/silta-main.yml
+          codebase-build:
+            - silta/drupal-composer-install
+            - silta/npm-install-build
+            - silta/decrypt-files:
+                files: silta/silta.secret
+                secret_key_env: SEC_DRUPAL_PROJECT_SILTA_DEV
+          silta_config: silta/silta.yml,silta/silta.secret,silta/silta-main.yml
           filters:
             branches:
               only:
