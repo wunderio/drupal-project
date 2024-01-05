@@ -23,6 +23,12 @@ For additional instructions, please see the [Silta documentation](https://github
 
 Drush alias for the **current** Silta feature branch deployment is `drush @current st`.
 
+### Environment variables for silta_dev context
+
+The following secret variables are defined in the file `silta/silta.secret` for the context `silta_dev`:
+
+- `TEST_KEY` - secret key for tesing purposes.
+
 ## Local environment
 
 - Appserver: <https://drupal-project.lndo.site>
