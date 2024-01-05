@@ -37,6 +37,9 @@ workflows:
                 secret_key_env: SEC_DRUPAL_PROJECT_SILTA_DEV
           silta_config: silta/silta.yml,silta/silta.secret
           context: silta_dev
+          requires:
+            - validate
+            - analyze
           filters:
             branches:
               ignore:
