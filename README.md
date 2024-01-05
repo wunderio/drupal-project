@@ -27,7 +27,7 @@ Drush alias for the **current** Silta feature branch deployment is `drush @curre
 
 The following secret variables are defined in the file `silta/silta.secret` for the context `silta_dev`:
 
-- `TEST_KEY` - secret key for tesing purposes.
+- `TEST_KEY` - secret key for testing purposes.
 
 ## Local environment
 
