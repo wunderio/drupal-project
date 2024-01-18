@@ -66,6 +66,7 @@ workflows:
       # Extends the job defined for feature environments.
       - silta/drupal-build:
           <<: *build
+          name: build-main
           filters:
             branches:
               only:
@@ -77,6 +78,8 @@ workflows:
           <<: *deploy
           name: deploy-main
           silta_config: silta/silta.yml,silta/silta.secret,silta/silta-main.yml
+          requires:
+            - build-main
           filters:
             branches:
               only:
@@ -86,7 +89,7 @@ workflows:
       # Extends the job defined for feature environments.
       - silta/drupal-build:
           <<: *build
-          name: build
+          name: build-prod
           context: silta_finland
           filters:
             branches:
@@ -99,6 +102,8 @@ workflows:
           name: deploy-prod
           silta_config: silta/silta.yml,silta/silta-prod.yml
           context: silta_finland
+          requires:
+            - build-prod
           filters:
             branches:
               only: production
@@ -108,6 +113,7 @@ workflows:
       # Extends the job defined for feature environments.
       #- silta/drupal-build:
       #    <<: *build
+      #    name: build-dependabot
       #    skip-deployment: true
       #    filters:
       #      branches:
