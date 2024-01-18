@@ -30,11 +30,6 @@ workflows:
           codebase-build:
             - silta/drupal-composer-install
             - silta/npm-install-build
-            - silta/decrypt-files:
-                files: silta/silta.secret
-                # SEC_DRUPAL_PROJECT_SILTA_DEV holds the secret key for decryption purposes.
-                # This is stored in CircleCI as an environment variable and also in LastPass.
-                secret_key_env: SEC_DRUPAL_PROJECT_SILTA_DEV
           context: silta_dev
           requires:
             - validate
@@ -52,6 +47,12 @@ workflows:
           name: deploy
           executor: cicd81
           silta_config: silta/silta.yml,silta/silta.secret
+          pre-release:
+            - silta/decrypt-files:
+                files: silta/silta.secret
+                # SEC_DRUPAL_PROJECT_SILTA_DEV holds the secret key for decryption purposes.
+                # This is stored in CircleCI as an environment variable and also in LastPass.
+                secret_key_env: SEC_DRUPAL_PROJECT_SILTA_DEV
           context: silta_dev
           requires:
             - build
