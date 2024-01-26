@@ -3,7 +3,6 @@
 **/CHANGELOG*
 **/README*
 **/LICENSE*
-.circleci/*
 phpcs.xml
 **/*.sql
 **/*.gz
@@ -15,6 +14,25 @@ vendor/**/Tests
 **/.git
 web/sites/**/files
 web/.dockerignore
-silta/*.Dockerfile
 composer.lock
-silta/silta*.yml
+
+# Rades changes
+**/silta
+.circleci
+scripts/composer
+.idea
+.vscode
+.github
+.lando
+.lando.yml
+phpstan.neon
+phpunit.xml
+grumphp.yml
+composer.json
+package.json
+package-lock.json
+.editorconfig
+.env.example
+.gitattributes
+.prettierrc.json
+.stylelintrc.json
