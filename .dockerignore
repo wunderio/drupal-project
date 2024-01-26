@@ -15,6 +15,6 @@ vendor/**/Tests
 **/.git
 web/sites/**/files
 web/.dockerignore
-Dockerfile
+silta/*.Dockerfile
 composer.lock
 silta/silta*.yml
