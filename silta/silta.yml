@@ -4,6 +4,8 @@
 # See https://github.com/wunderio/charts/blob/master/drupal/values.yaml
 # for all possible options.
 
+# Test 1.
+
 php:
   drupalCoreVersion: "10"
   cron:
