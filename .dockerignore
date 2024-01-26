@@ -33,6 +33,8 @@ package.json
 package-lock.json
 .editorconfig
 .env.example
+.eslintignore
+.eslintrc.json
 .gitattributes
 .prettierrc.json
 .stylelintrc.json
