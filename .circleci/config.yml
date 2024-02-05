@@ -11,6 +11,16 @@ executors:
 workflows:
   commit:
     jobs:
+      - approval:
+          type: approval
+          name: approve-deployment
+          filters:
+            branches:
+              ignore:
+                - production
+                - main
+                - /dependabot\/.*/
+
       - silta/drupal-validate:
           name: validate
           executor: cicd81
@@ -34,6 +44,7 @@ workflows:
           requires:
             - validate
             - analyze
+            - approve-deployment
           filters:
             branches:
               ignore:
@@ -68,6 +79,9 @@ workflows:
       - silta/drupal-build:
           <<: *build
           name: build-main
+          requires:
+            - validate
+            - analyze
           filters:
             branches:
               only:
@@ -92,6 +106,9 @@ workflows:
           <<: *build
           name: build-prod
           context: silta_finland
+          requires:
+            - validate
+            - analyze
           filters:
             branches:
               only: production
