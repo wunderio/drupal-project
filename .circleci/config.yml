@@ -22,20 +22,14 @@ workflows:
           context: analyze
           sources: web
 
-      # Build and deploy job for feature environments.
+      # Build job for feature environments.
       # Other jobs defined below extend this job.
-      - silta/drupal-build-deploy: &build-deploy
-          name: build-deploy
+      - silta/drupal-build: &build
+          name: build
           executor: cicd81
           codebase-build:
             - silta/drupal-composer-install
             - silta/npm-install-build
-            - silta/decrypt-files:
-                files: silta/silta.secret
-                # SEC_DRUPAL_PROJECT_SILTA_DEV holds the secret key for decryption purposes.
-                # This is stored in CircleCI as an environment variable and also in LastPass.
-                secret_key_env: SEC_DRUPAL_PROJECT_SILTA_DEV
-          silta_config: silta/silta.yml,silta/silta.secret
           context: silta_dev
           requires:
             - validate
@@ -47,33 +41,80 @@ workflows:
                 - main
                 - /dependabot\/.*/
 
-      # Build and deploy job for main environment.
+      # Deploy job for feature environments.
+      # Other jobs defined below extend this job.
+      - silta/drupal-deploy: &deploy
+          name: deploy
+          executor: cicd81
+          silta_config: silta/silta.yml,silta/silta.secret
+          pre-release:
+            - silta/decrypt-files:
+                files: silta/silta.secret
+                # SEC_DRUPAL_PROJECT_SILTA_DEV holds the secret key for decryption purposes.
+                # This is stored in CircleCI as an environment variable and also in LastPass.
+                secret_key_env: SEC_DRUPAL_PROJECT_SILTA_DEV
+          context: silta_dev
+          requires:
+            - build
+          filters:
+            branches:
+              ignore:
+                - production
+                - main
+                - /dependabot\/.*/
+
+      # Build job for main environment.
       # Extends the job defined for feature environments.
-      - silta/drupal-build-deploy:
-          <<: *build-deploy
-          name: build-deploy-main
-          silta_config: silta/silta.yml,silta/silta.secret,silta/silta-main.yml
+      - silta/drupal-build:
+          <<: *build
+          name: build-main
           filters:
             branches:
               only:
                 - main
 
-      # Build and deploy job for production environment.
+      # Deploy job for main environment.
       # Extends the job defined for feature environments.
-      - silta/drupal-build-deploy:
-          <<: *build-deploy
-          name: build-deploy-prod
-          silta_config: silta/silta.yml,silta/silta-prod.yml
+      - silta/drupal-deploy:
+          <<: *deploy
+          name: deploy-main
+          silta_config: silta/silta.yml,silta/silta.secret,silta/silta-main.yml
+          requires:
+            - build-main
+          filters:
+            branches:
+              only:
+                - main
+
+      # Build job for production environment.
+      # Extends the job defined for feature environments.
+      - silta/drupal-build:
+          <<: *build
+          name: build-prod
           context: silta_finland
           filters:
             branches:
               only: production
 
+      # Deploy job for production environment.
+      # Extends the job defined for feature environments.
+      - silta/drupal-deploy:
+          <<: *deploy
+          name: deploy-prod
+          silta_config: silta/silta.yml,silta/silta-prod.yml
+          context: silta_finland
+          requires:
+            - build-prod
+          filters:
+            branches:
+              only: production
+
       # This enables validation on dependabot PRs
-      #- silta/drupal-build-deploy:
-      #    <<: *build-deploy
+      # Build job for dependabot environments.
+      # Extends the job defined for feature environments.
+      #- silta/drupal-build:
+      #    <<: *build
       #    name: build-dependabot
-      #    context: silta_dev
       #    skip-deployment: true
       #    filters:
       #      branches:
