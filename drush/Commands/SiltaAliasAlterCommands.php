@@ -106,8 +106,8 @@ class SiltaAliasAlterCommands extends DrushCommands implements SiteAliasManagerA
         $silta_config_file = 'silta/silta.yml';
         if (file_exists($silta_config_file)) {
             $silta_config = Yaml::parse(file_get_contents($silta_config_file));
-            if ($project_name = $silta_config['projectName']) {
-                return $project_name;
+            if (isset($silta_config['projectName'])) {
+                return $silta_config['projectName'];
             }
         }
         return NULL;
