@@ -2,7 +2,7 @@ name: drupal-project
 recipe: drupal10
 
 config:
-  php: "8.1"
+  php: "8.2"
   via: nginx
   webroot: web
   database: "mariadb:10.3"
@@ -122,7 +122,7 @@ services:
     hogfrom:
       - appserver
   node:
-    type: "node:16"
+    type: "node:20"
     build:
       - "npm install"
   # varnish:
