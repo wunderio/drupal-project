@@ -5,3 +5,9 @@ php:
     drupal:
       # In main environment, run cron once an hour. Adjust as needed.
       schedule: '~ * * * *'
+
+# Prevent specific users from being sanitizied on feature environments.
+# gdprDump:
+#   tables:
+#     users_field_data:
+#       skip_conversion_if: 'in_array({{uid}}, [1, 2, 3])'
