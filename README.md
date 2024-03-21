@@ -116,3 +116,7 @@ To use these commands, you need a secret key that is used to encrypt and decrypt
 You should use the following naming convention for your custom keys: `SEC_{PROJECT_NAME}_{CONTEXT}` where `CONTEXT` refers to the environment you are working on, such as `silta_dev` (development context) or `silta_finland` (production context). For example, if you are working on the `drupal-project` project in the `silta_dev` environment, you should use the `SEC_DRUPAL_PROJECT_SILTA_DEV` key.
 
 The `silta/silta.secret` file is a YAML file that contains the encrypted secrets for your project in the default `silta-dev` context. You can add more files for other contexts, such as `silta/silta-prod.secret` for the production context.
+
+### GDPR requirements
+User data in feature environments is sanitized using [Smile-SA/gdpr-dump tool](https://github.com/Smile-SA/gdpr-dump). In order to preserve certain users,
+you can uncomment the gdprDump code block in silta-main.yml and specificy user IDs which need to be preserved.
