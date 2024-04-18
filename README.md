@@ -13,6 +13,7 @@ This project template is an opinionated fork of the popular [Drupal-composer tem
   - `silta/silta.yml` [values](https://github.com/wunderio/charts/blob/master/drupal/values.yaml),
   - `grumphp.yml` tasks, including the project name in `git_commit_message` regex.
 - Log in to [CircleCI](https://app.circleci.com/) using your Github account and add the new project using existing config.
+- Configure [automatic autolinks](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/autolinked-references-and-urls#custom-autolinks-to-external-resources) for the project's JIRA environment.
 
 For additional instructions, please see the [Silta documentation](https://github.com/wunderio/silta).
 
