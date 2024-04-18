@@ -16,23 +16,23 @@
     ],
     "require": {
         "php": ">=8.2",
-        "composer/installers": "^2.1",
+        "composer/installers": "^2.2",
         "cweagans/composer-patches": "^1.7",
-        "drupal/admin_toolbar": "^3.3",
-        "drupal/core-composer-scaffold": "^10.0",
-        "drupal/core-recommended": "^10.0",
-        "drupal/monolog": "^3.0@beta",
-        "drupal/purge": "^3.4",
-        "drupal/simplei": "^2.0@beta",
+        "drupal/admin_toolbar": "^3.4",
+        "drupal/core-composer-scaffold": "^10.2",
+        "drupal/core-recommended": "^10.2",
+        "drupal/monolog": "^3.0",
+        "drupal/purge": "^3.5",
+        "drupal/simplei": "^2.1",
         "drupal/varnish_purge": "^2.2",
-        "drush/drush": "^11.6",
-        "vlucas/phpdotenv": "^5.4",
+        "drush/drush": "^12.5",
+        "vlucas/phpdotenv": "^5.6",
         "webflo/drupal-finder": "^1.2",
-        "wunderio/drupal-ping": "^2.4"
+        "wunderio/drupal-ping": "^2.5"
     },
     "require-dev": {
-        "drupal/core-dev": "^10.0",
-        "wunderio/code-quality": "^2.2"
+        "drupal/core-dev": "^10.2",
+        "wunderio/code-quality": "^2.4"
     },
     "conflict": {
         "drupal/drupal": "*"
@@ -47,7 +47,8 @@
             "drupal/core-composer-scaffold": true,
             "koodimonni/composer-dropin-installer": true,
             "phpro/grumphp": true,
-            "phpstan/extension-installer": true
+            "phpstan/extension-installer": true,
+            "php-http/discovery": true
         },
         "discard-changes": true,
         "process-timeout": 0,
