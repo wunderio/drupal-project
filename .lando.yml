@@ -125,17 +125,17 @@ services:
     type: "node:20"
     build:
       - "npm install"
-  # varnish:
-  #   type: "varnish:6"
-  #   backends:
-  #     - appserver_nginx
-  #   config:
-  #     vcl: .lando/varnish.vcl
-  #   ssl: true
-  #   overrides:
-  #     environment:
-  #       ADMIN_PORT: ":6082"
-  #       VARNISH_ALLOW_UNRESTRICTED_PURGE: "true"
+  varnish:
+    type: "varnish:6"
+    backends:
+      - appserver_nginx
+    config:
+      vcl: .lando/varnish.vcl
+    ssl: true
+    overrides:
+      environment:
+        ADMIN_PORT: ":6082"
+        VARNISH_ALLOW_UNRESTRICTED_PURGE: "true"
 
 proxy:
   adminer:
@@ -146,8 +146,8 @@ proxy:
   #   - elasticsearch.lndo.site:9200
   # kibana:
   #   - kibana.lndo.site:5601
-  # varnish:
-  #   - varnish.drupal-project.lndo.site
+  varnish:
+    - varnish.drupal-project.lndo.site
 
 events:
   post-db-import:
