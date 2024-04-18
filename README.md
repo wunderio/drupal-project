@@ -116,3 +116,9 @@ To use these commands, you need a secret key that is used to encrypt and decrypt
 You should use the following naming convention for your custom keys: `SEC_{PROJECT_NAME}_{CONTEXT}` where `CONTEXT` refers to the environment you are working on, such as `silta_dev` (development context) or `silta_finland` (production context). For example, if you are working on the `drupal-project` project in the `silta_dev` environment, you should use the `SEC_DRUPAL_PROJECT_SILTA_DEV` key.
 
 The `silta/silta.secret` file is a YAML file that contains the encrypted secrets for your project in the default `silta-dev` context. You can add more files for other contexts, such as `silta/silta-prod.secret` for the production context.
+
+Example content for a secret file:
+
+    php:
+      env:
+        PAYMENT_GW_KEY: '1234567890qwertyuiop'
