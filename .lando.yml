@@ -5,8 +5,7 @@ config:
   php: "8.2"
   via: nginx
   webroot: web
-  database: "mariadb:10.3"
-  composer_version: 2
+  database: "mariadb:10.6"
   xdebug: off
   config:
     php: .lando/php.ini
@@ -125,17 +124,17 @@ services:
     type: "node:20"
     build:
       - "npm install"
-  # varnish:
-  #   type: "varnish:6"
-  #   backends:
-  #     - appserver_nginx
-  #   config:
-  #     vcl: .lando/varnish.vcl
-  #   ssl: true
-  #   overrides:
-  #     environment:
-  #       ADMIN_PORT: ":6082"
-  #       VARNISH_ALLOW_UNRESTRICTED_PURGE: "true"
+  varnish:
+    type: "varnish:6"
+    backends:
+      - appserver_nginx
+    config:
+      vcl: .lando/varnish.vcl
+    ssl: true
+    overrides:
+      environment:
+        ADMIN_PORT: ":6082"
+        VARNISH_ALLOW_UNRESTRICTED_PURGE: "true"
 
 proxy:
   adminer:
@@ -146,8 +145,8 @@ proxy:
   #   - elasticsearch.lndo.site:9200
   # kibana:
   #   - kibana.lndo.site:5601
-  # varnish:
-  #   - varnish.drupal-project.lndo.site
+  varnish:
+    - varnish.drupal-project.lndo.site
 
 events:
   post-db-import:
@@ -159,4 +158,4 @@ env_file:
   # - .env
 
 # Tested with Lando version
-version: v3.20.4
+version: v3.21
