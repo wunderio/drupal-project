@@ -11,9 +11,9 @@ grumphp:
       max_body_width: 0
       max_subject_width: 0
       matchers:
-        # Change the universal template regex to match your project name.
-        # Example for a JIRA project called WD: '/^WD-[0-9]+: /'.
-        'The commit must start with the JIRA issue number': '/^[A-Z]+-[0-9]+: /'
+        # Modify the universal JIRA regex provided to suit your project requirements, incl. name.
+        # For example, the regex for a project called WD would be: `/^WD-[1-9][0-9]*: /`.
+        'The commit must start with the JIRA issue number': '/^[A-Z][A-Z0-9_]+-[1-9][0-9]*: /'
     php_compatibility:
       run_on: '%grumphp.run_on_paths%'
       testVersion: '8.1'
