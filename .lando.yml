@@ -6,7 +6,6 @@ config:
   via: nginx
   webroot: web
   database: "mariadb:10.6"
-  composer_version: 2
   xdebug: off
   config:
     php: .lando/php.ini
@@ -159,4 +158,4 @@ env_file:
   # - .env
 
 # Tested with Lando version
-version: v3.20.4
+version: v3.21
