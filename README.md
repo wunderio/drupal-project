@@ -10,7 +10,8 @@ This project template is an opinionated fork of the popular [Drupal-composer tem
   - make the repository private (unless the project is public).
 - Clone the new project locally and modify its details:
   - `composer.json` name,
-  - `silta/silta.yml` [values](https://github.com/wunderio/charts/blob/master/drupal/values.yaml).
+  - `silta/silta.yml` [values](https://github.com/wunderio/charts/blob/master/drupal/values.yaml),
+  - `grumphp.yml` tasks, including the project name in `git_commit_message` regex.
 - Log in to [CircleCI](https://app.circleci.com/) using your Github account and add the new project using existing config.
 
 For additional instructions, please see the [Silta documentation](https://github.com/wunderio/silta).
