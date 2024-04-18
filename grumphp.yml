@@ -7,6 +7,13 @@ grumphp:
     failed: ~
     succeeded: ~
   tasks:
+    git_commit_message:
+      max_body_width: 0
+      max_subject_width: 0
+      matchers:
+        # Change the universal template regex to match your project name.
+        # Example for a JIRA project called WD: '/^WD-[0-9]+: /'.
+        'The commit must start with the JIRA issue number': '/^[A-Z]+-[0-9]+: /'
     php_compatibility:
       run_on: '%grumphp.run_on_paths%'
       testVersion: '8.1'
