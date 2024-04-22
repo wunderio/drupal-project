@@ -18,7 +18,7 @@ function adminer_object()
      * Drupal 10 db.
      */
     function name() {
-      return '<a href="' . '/?username=&db=' . getenv('DB_NAME_DRUPAL') . '" id="h1">Adminer</a>';
+      return '<a href="' . '/?username=&db=' . getenv('DB_NAME') . '" id="h1">Adminer</a>';
     }
 
     /**
@@ -27,7 +27,7 @@ function adminer_object()
     public function credentials()
     {
       // Server, username and password for connecting to database.
-      return array(getenv('DB_HOST_DRUPAL'), getenv('DB_USER_DRUPAL'), getenv('DB_PASS_DRUPAL'));
+      return array(getenv('DB_HOST'), getenv('DB_USER'), getenv('DB_PASS'));
     }
 
     /**
@@ -48,7 +48,7 @@ function adminer_object()
       $original_form = ob_get_clean();
 
       // Preselect Drupal 10 db.
-      $original_form = str_replace('name="auth[db]" value=""', 'name="auth[db]" value="' . getenv('DB_NAME_DRUPAL') . '"', $original_form);
+      $original_form = str_replace('name="auth[db]" value=""', 'name="auth[db]" value="' . getenv('DB_NAME') . '"', $original_form);
 
       // Add id attribute to the submit button to target it with js in next
       // section.
