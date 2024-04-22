@@ -16,7 +16,6 @@ $databases['default']['default'] = [
   'prefix' => '',
   'host' => $_ENV['DB_HOST_DRUPAL'],
   'port' => '3306',
-  'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',
   'driver' => 'mysql',
 ];
 
