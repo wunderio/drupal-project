@@ -101,6 +101,6 @@ if (file_exists($app_root . '/' . $site_path . '/settings.local.php')) {
 }
 
 // Silta cluster configuration overrides.
-if (null !== getenv('SILTA_CLUSTER') && file_exists($app_root . '/' . $site_path . '/settings.silta.php')) {
+if (getenv('SILTA_CLUSTER') && file_exists($app_root . '/' . $site_path . '/settings.silta.php')) {
   include $app_root . '/' . $site_path . '/settings.silta.php';
 }
