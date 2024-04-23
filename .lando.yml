@@ -48,6 +48,10 @@ services:
     services:
       image: dehy/adminer
       command: /bin/s6-svscan /etc/services.d
+    overrides:
+      volumes:
+      # Override Adminer PHP-FPM settings.
+      - ./.lando/adminer.conf:/etc/php8/php-fpm.d/www_overrides.conf
     run_as_root:
       - /app/.lando/adminer.sh
   appserver:
@@ -63,6 +67,8 @@ services:
     #  - apt install vim -y
     overrides:
       environment:
+        # Database credentials are defined in the .lando/.env file
+        # to be available in both the adminer and appserver containers.
         HASH_SALT: notsosecurehash
         ENVIRONMENT_NAME: lando
         DRUSH_OPTIONS_URI: https://drupal-project.lndo.site
