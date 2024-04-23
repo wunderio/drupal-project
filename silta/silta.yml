@@ -52,15 +52,12 @@ mariadb:
       max_connections=200
       # Set innodb_buffer_pool_size to 70/80% of resources.requests.memory (366Mi).
       innodb_buffer_pool_size=275Mi
-      # Set innodb_buffer_pool_instances to 1 per GB of innodb_buffer_pool_size.
-      innodb_buffer_pool_instances=1
       innodb_log_buffer_size=8M
       # Set innodb_log_file_size to 12.5% of innodb_buffer_pool_size (34Mi is 12.5% of 275Mi).
       innodb_log_file_size=34Mi
       innodb_lock_wait_timeout=120
       innodb_open_files=49152
       innodb_flush_log_at_trx_commit=2
-      innodb_thread_concurrency=16
       innodb_flush_method=O_DIRECT
       table_open_cache=4000
       table_definition_cache=1000
