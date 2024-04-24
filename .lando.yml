@@ -58,9 +58,10 @@ services:
     # Install dependencies when building lando.
     build:
       - "composer install"
-    run_as_root:
-      - ln -snf /usr/share/zoneinfo/Europe/Helsinki /etc/localtime
-      - echo "Europe/Helsinki" > /etc/timezone
+    # Uncomment if you need a specific timezone for example for integrations
+    #run_as_root:
+    #  - ln -snf /usr/share/zoneinfo/Europe/Helsinki /etc/localtime
+    #  - echo "Europe/Helsinki" > /etc/timezone
     # Uncomment this if you need to edit files inside the container
     #build_as_root:
     #  - apt update -y
