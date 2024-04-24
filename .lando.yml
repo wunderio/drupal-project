@@ -50,8 +50,9 @@ services:
       command: /bin/s6-svscan /etc/services.d
     overrides:
       volumes:
-      # Override Adminer PHP-FPM settings.
-      - ./.lando/adminer.conf:/etc/php8/php-fpm.d/www_overrides.conf
+        # Mount Adminer configuration files.
+        - ./.lando/adminer.conf:/etc/php8/php-fpm.d/www_overrides.conf
+        - ./.lando/adminer.php:/var/www/html/adminer.php
     run_as_root:
       - /app/.lando/adminer.sh
   appserver:
