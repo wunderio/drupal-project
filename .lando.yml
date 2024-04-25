@@ -48,21 +48,29 @@ services:
     services:
       image: dehy/adminer
       command: /bin/s6-svscan /etc/services.d
+    overrides:
+      volumes:
+        # Mount Adminer configuration files.
+        - ./.lando/adminer.conf:/etc/php8/php-fpm.d/www_overrides.conf
+        - ./.lando/adminer.php:/var/www/html/adminer.php
     run_as_root:
       - /app/.lando/adminer.sh
   appserver:
     # Install dependencies when building lando.
     build:
       - "composer install"
-    run_as_root:
-      - ln -snf /usr/share/zoneinfo/Europe/Helsinki /etc/localtime
-      - echo "Europe/Helsinki" > /etc/timezone
+    # Uncomment if you need a specific timezone for example for integrations
+    #run_as_root:
+    #  - ln -snf /usr/share/zoneinfo/Europe/Helsinki /etc/localtime
+    #  - echo "Europe/Helsinki" > /etc/timezone
     # Uncomment this if you need to edit files inside the container
     #build_as_root:
     #  - apt update -y
     #  - apt install vim -y
     overrides:
       environment:
+        # Database credentials are defined in the .lando/.env file
+        # to be available in both the adminer and appserver containers.
         HASH_SALT: notsosecurehash
         ENVIRONMENT_NAME: lando
         DRUSH_OPTIONS_URI: https://drupal-project.lndo.site
