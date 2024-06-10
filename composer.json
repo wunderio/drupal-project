@@ -31,7 +31,7 @@
     },
     "require-dev": {
         "drupal/core-dev": "^10.2",
-        "wunderio/code-quality": "^2.4"
+        "wunderio/code-quality": "^3.0"
     },
     "conflict": {
         "drupal/drupal": "*"
