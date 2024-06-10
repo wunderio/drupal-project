@@ -85,10 +85,12 @@ services:
     services:
       image: drupalci/webdriver-chromedriver:production
       command: chromedriver --log-path=/tmp/chromedriver.log --verbose --whitelisted-ips=
+  database:
   # Use random static high port for database connection.
   # @see: https://docs.lando.dev/guides/external-access.html
-  # database:
-  #   portforward: 34567
+  # portforward: 34567
+    overrides:
+      image: bitnami/mariadb:10.6-debian-12
   # elasticsearch:
   #   type: lando
   #   services:
