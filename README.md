@@ -123,6 +123,15 @@ The `silta/silta.secret` file is a YAML file that contains the encrypted secrets
 
 This project is maintained by [Wunder](https://wunder.io/). We welcome contributions from the community.
 
-Internally, we use JIRA for project management, but we also use GitHub issues for public projects.
+### Commit message validation and ticketing system integration
 
-Introduce your idea in the issue queue and prefix the pull request and commit messages with the issue key in the following format: `GH-123: Add a new feature`. In this way, the issue is automatically linked to your contribution.
+Our project uses both JIRA and GitHub Issues for tracking and managing tasks. We use [Autolinked references](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/autolinked-references-and-urls) to convert ticket IDs into links for easy navigation. To ensure traceability, commit messages must include a valid ticket ID from either system, except for merge commits. Additionally, provide a clear description of the change.
+
+The format is as follows:
+
+- JIRA: `[PROJECTKEY-123]: Description`
+- GitHub: `[GH-123]: Description`
+
+Validation rules are implemented via GrumPHP `git_commit_message` component. Please see `grumphp.yml` for details.
+
+Following these guidelines ensures our project remains organized and changes are traceable. Thank you for adhering to these standards.
