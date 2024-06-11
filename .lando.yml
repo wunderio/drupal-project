@@ -5,7 +5,6 @@ config:
   php: "8.2"
   via: nginx
   webroot: web
-  database: "mariadb:10.6"
   xdebug: off
   config:
     php: .lando/php.ini
@@ -85,10 +84,11 @@ services:
     services:
       image: drupalci/webdriver-chromedriver:production
       command: chromedriver --log-path=/tmp/chromedriver.log --verbose --whitelisted-ips=
-  # Use random static high port for database connection.
-  # @see: https://docs.lando.dev/guides/external-access.html
-  # database:
-  #   portforward: 34567
+  database:
+    type: "mariadb:10.6.18"
+    # Assign a static port if you need to access the database from your host machine.
+    # @see: https://docs.lando.dev/guides/external-access.html
+    # portforward: 34567
   # elasticsearch:
   #   type: lando
   #   services:
