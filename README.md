@@ -135,3 +135,15 @@ The format is as follows:
 Validation rules are implemented via GrumPHP `git_commit_message` component. Please see `grumphp.yml` for details.
 
 Following these guidelines ensures our project remains organized and changes are traceable. Thank you for adhering to these standards.
+
+### Git workflow
+
+Our default Git workflow is detailed in the [WunderFlow repository](https://github.com/wunderio/WunderFlow). Please refer to it for more information.
+
+### Deployments
+
+Project deployment is managed by CircleCI. Deployment configurations can be found in the `.circleci/config.yml` file.
+
+Feature branches require manual approval for deployment by default to reduce CI costs. Other branches are deployed automatically but can be switched to manual approval if needed.
+
+Manual approvals are handled through the `approve-deployment` job. A project maintainer can approve the deployment in the CircleCI UI by clicking the "approve-deployment" job label when marked as "Needs Approval."
