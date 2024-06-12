@@ -11,16 +11,6 @@ executors:
 workflows:
   commit:
     jobs:
-      - approval:
-          type: approval
-          name: approve-deployment
-          filters:
-            branches:
-              ignore:
-                - production
-                - main
-                - /dependabot\/.*/
-
       - silta/drupal-validate:
           name: validate
           executor: cicd82
@@ -31,6 +21,16 @@ workflows:
           name: analyze
           context: analyze
           sources: web
+
+      # Feature branches approval
+      - approval:
+          type: approval
+          name: approve-feature-deployment
+          filters:
+            branches:
+              only: /^feature\/.*/
+            tags:
+              ignore: /.*/
 
       # Build job for feature environments.
       # Other jobs defined below extend this job.
@@ -44,13 +44,11 @@ workflows:
           requires:
             - validate
             - analyze
-            - approve-deployment
           filters:
             branches:
-              ignore:
-                - production
-                - main
-                - /dependabot\/.*/
+              only: /^feature\/.*/
+            tags:
+              ignore: /.*/
 
       # Deploy job for feature environments.
       # Other jobs defined below extend this job.
@@ -67,12 +65,12 @@ workflows:
           context: silta_dev
           requires:
             - build
+            - approve-feature-deployment
           filters:
             branches:
-              ignore:
-                - production
-                - main
-                - /dependabot\/.*/
+              only: /^feature\/.*/
+            tags:
+              ignore: /.*/
 
       # Build job for main environment.
       # Extends the job defined for feature environments.
@@ -86,6 +84,8 @@ workflows:
             branches:
               only:
                 - main
+            tags:
+              ignore: /.*/
 
       # Deploy job for main environment.
       # Extends the job defined for feature environments.
@@ -99,6 +99,8 @@ workflows:
             branches:
               only:
                 - main
+            tags:
+              ignore: /.*/
 
       # Build job for production environment.
       # Extends the job defined for feature environments.
@@ -110,8 +112,20 @@ workflows:
             - validate
             - analyze
           filters:
+            tags:
+              only: /^\d+\.\d+\.\d+$/
             branches:
-              only: production
+              ignore: /.*/
+
+      # Approval job for production deployment
+      - approval:
+          type: approval
+          name: approve-prod-deployment
+          filters:
+            tags:
+              only: /^\d+\.\d+\.\d+$/
+            branches:
+              ignore: /.*/
 
       # Deploy job for production environment.
       # Extends the job defined for feature environments.
@@ -122,9 +136,12 @@ workflows:
           context: silta_finland
           requires:
             - build-prod
+            - approve-prod-deployment
           filters:
+            tags:
+              only: /^\d+\.\d+\.\d+$/
             branches:
-              only: production
+              ignore: /.*/
 
       # This enables validation on dependabot PRs
       # Build job for dependabot environments.
