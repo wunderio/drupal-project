@@ -8,6 +8,41 @@ executors:
     docker:
       - image: wunderio/silta-cicd:circleci-php8.2-node20-composer2-v1
 
+jobs:
+  run-phpstan:
+    executor: cicd82
+    steps:
+      - checkout
+      - run:
+          name: Install PHPStan
+          command: composer require --dev phpstan/phpstan
+      - run:
+          name: Run PHPStan
+          command: vendor/bin/phpstan analyse -c phpstan.neon --error-format=checkstyle > phpstan-result.xml
+      - persist_to_workspace:
+          root: .
+          paths:
+            - phpstan-result.xml
+
+  analyze:
+    executor: cicd82
+    description: "Drupal code analyze job with PHPStan."
+    parameters:
+      sources:
+        description: "Codebase scan paths."
+        type: string
+        default: "web"
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /workspace
+      - run: >-
+          sonar-scanner -Dsonar.host.url="${SONAR_HOST}"
+          -Dsonar.login="${SONAR_TOKEN}"
+          -Dsonar.projectKey="${CIRCLE_PROJECT_REPONAME,,}"
+          -Dsonar.sources='<<parameters.sources>>'
+          -Dsonar.phpstan.reportPaths=/workspace/phpstan-result.xml
+
 workflows:
   commit:
     jobs:
@@ -27,10 +62,14 @@ workflows:
           post-validation:
             - run: echo "You can add additional validation here!"
 
-      - silta/analyze:
+      - run-phpstan
+
+      - analyze:
           name: analyze
           context: analyze
           sources: web
+          requires:
+            - run-phpstan
 
       # Build job for feature environments.
       # Other jobs defined below extend this job.
