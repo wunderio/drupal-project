@@ -11,6 +11,7 @@ database:
   version: "10.11"
 use_dns_when_possible: true
 composer_version: "2"
+nodejs_version: "20"
 disable_settings_management: true
 web_environment:
   - DB_NAME=db
