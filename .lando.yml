@@ -70,9 +70,10 @@ services:
       environment:
         # Database credentials are defined in the .lando/.env file
         # to be available in both the adminer and appserver containers.
-        HASH_SALT: notsosecurehash
-        ENVIRONMENT_NAME: lando
         DRUSH_OPTIONS_URI: https://drupal-project.lndo.site
+        ENVIRONMENT_NAME: lando
+        EXEC_GRUMPHP_COMMAND: "lando php"
+        HASH_SALT: notsosecurehash
         VARNISH_ADMIN_HOST: varnish
         # Support debugging with XDEBUG 3.
         XDEBUG_MODE:

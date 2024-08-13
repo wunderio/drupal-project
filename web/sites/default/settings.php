@@ -55,6 +55,7 @@ switch ($env) {
     $settings['simple_environment_indicator'] = 'DarkBlue Stage';
     break;
 
+  case 'ddev':
   case 'local':
   case 'lando':
     $settings['simple_environment_indicator'] = 'DarkGreen Local';
@@ -72,6 +73,16 @@ switch ($env) {
     $settings['cache']['bins']['dynamic_page_cache'] = 'cache.backend.null';
     $settings['cache']['bins']['page'] = 'cache.backend.null';
     $settings['extension_discovery_scan_tests'] = FALSE;
+
+    // Override drupal/symfony_mailer default config to use Mailpit.
+    if ($env === 'ddev') {
+      $config['symfony_mailer.settings']['default_transport'] = 'sendmail';
+      $config['symfony_mailer.mailer_transport.sendmail']['plugin'] = 'smtp';
+      $config['symfony_mailer.mailer_transport.sendmail']['configuration']['user'] = '';
+      $config['symfony_mailer.mailer_transport.sendmail']['configuration']['pass'] = '';
+      $config['symfony_mailer.mailer_transport.sendmail']['configuration']['host'] = 'localhost';
+      $config['symfony_mailer.mailer_transport.sendmail']['configuration']['port'] = '1025';
+    }
     break;
 
   default:
