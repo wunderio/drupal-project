@@ -1,0 +1,31 @@
+#ddev-generated
+services:
+  kibana:
+    container_name: ddev-${DDEV_SITENAME}-kibana
+    hostname: ${DDEV_SITENAME}-kibana
+    build:
+      context: ./kibana
+      dockerfile: Dockerfile
+      args:
+        - KIBANA_VERSION=7.17.14
+    expose:
+      - "5601"
+    environment:
+      KIBANA_VERSION: 7.17.14
+      ELASTICSEARCH_HOSTS: '["http://ddev-${DDEV_SITENAME}-elasticsearch:9200"]'
+      VIRTUAL_HOST: $DDEV_HOSTNAME
+      HTTP_EXPOSE: 5600:5601
+      HTTPS_EXPOSE: 5601:5601
+    labels:
+      com.ddev.site-name: ${DDEV_SITENAME}
+      com.ddev.approot: $DDEV_APPROOT
+    volumes:
+      - ./kibana/config.yml:/usr/share/kibana/config/kibana.yml
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "[ -f /tmp/healthcheck.sh ]"]
+      interval: 60s
+      timeout: 30s
+      retries: 3
