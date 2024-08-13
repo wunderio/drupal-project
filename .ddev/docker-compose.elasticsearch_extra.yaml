@@ -1,0 +1,8 @@
+# Overrides for default Elasticsearch configuration.
+services:
+  elasticsearch:
+    image: elasticsearch:8.10.2
+    volumes:
+      - ./elasticsearch/config/elasticsearch8.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    command: >
+      /bin/sh -c "./bin/elasticsearch-plugin install analysis-ukrainian analysis-icu; /usr/local/bin/docker-entrypoint.sh"
