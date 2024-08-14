@@ -31,7 +31,9 @@ The following secret variables are defined in the file `silta/silta.secret` for 
 
 - `TEST_KEY` - secret key for testing purposes.
 
-## Local environment
+## Local environment (Lando)
+
+See the section about DDEV below.
 
 - Appserver: <https://drupal-project.lndo.site>
 - Adminer: <http://adminer.drupal-project.lndo.site>
@@ -66,6 +68,43 @@ The following secret variables are defined in the file `silta/silta.secret` for 
 - `lando phpunit <commands>` - run [PHPUnit](https://phpunit.de/) commands.
 - `lando varnishadm <commands>` - run [varnishadm](https://varnish-cache.org/docs/6.0/reference/varnishadm.html) commands.
 - `lando xdebug <mode>` - load [Xdebug](https://xdebug.org/) in the selected [mode(s)](https://xdebug.org/docs/all_settings#mode).
+
+## Local environment (DDEV)
+
+- Web server: <https://drupal-project.ddev.site>
+- Adminer: <https://drupal-project.ddev.site:9101> OR `ddev adminer`
+- Elasticsearch: <https://drupal-project.ddev.site:9002>
+- Kibana: <https://drupal-project.ddev.site:5601>
+- Mailpit: <https://drupal-project.ddev.site:8026> OR `ddev mailpit`
+- Varnish: Varnish is running by default on the web server. To access the site without Varnish caching, visit <https://novarnish.drupal-project.ddev.site>.
+- Drush alias: `ddev drush @local st`
+- SSH: `ddev ssh (-s <service>)`
+
+### [Setup](https://ddev.com/get-started/)
+1. Install the latest [DDEV](https://ddev.com/get-started/) and read the [documentation](https://ddev.readthedocs.io).
+    1. NOTE: DDEV suggest installing Orbstack by default. Docker Desktop should still work fine too, if that has been already setup. Open source alternative like [Rancher Desktop](https://rancherdesktop.io/) can also be considered.
+2. Update your project name and other  [DDEV parameters](https://ddev.readthedocs.io/en/stable/users/configuration/config/) at `.ddev/config.yaml`.
+3. Run `ddev start`.
+4. Run `ddev composer install`.
+
+### [Services](https://ddev.readthedocs.io/en/stable/users/extend/additional-services/)
+
+- `adminer` - uses [Adminer database management tool](https://github.com/ddev/ddev-adminer).
+- `elasticsearch` - uses [Elasticsearch image](https://github.com/ddev/ddev-elasticsearch).
+- `kibana`  - uses official [Kibana image](https://github.com/JanoPL/ddev-kibana/).
+- `mailpit` - uses DDEV [MailPit service](https://ddev.readthedocs.io/en/stable/users/usage/developer-tools/#email-capture-and-review-mailpit).
+- `node` - uses DDEV [Node service](https://docs.lando.dev/node/).
+- `varnish` - uses [Varnish image](https://github.com/ddev/ddev-varnish).
+
+### [Tools](https://ddev.readthedocs.io/en/stable/users/usage/cli)
+
+- `ddev` - tools / commands overview.
+- `ddev grumphp <commands>` - run [GrumPHP](https://github.com/phpro/grumphp) code quality checks. Modified or new files are checked on git commit, see more at `ddev grumphp -h` or [wunderio/code-quality](https://github.com/wunderio/code-quality).
+- `ddev npm <commands>` - run [npm](https://www.npmjs.com/) commands.
+- `ddev phpunit <commands>` - run [PHPUnit](https://phpunit.de/) commands.
+- `ddev varnishadm <commands>` - run [varnishadm](https://varnish-cache.org/docs/6.0/reference/varnishadm.html) commands.
+- `ddev xdebug <mode>` - load [Xdebug](https://xdebug.org/) in the selected [mode(s)](https://xdebug.org/docs/all_settings#mode).
+
 
 ## Development advices
 
