@@ -15,6 +15,10 @@ tooling:
     description: "Runs Composer commands"
     cmd:
       - appserver: /usr/local/bin/composer
+  drupal:
+    description: "Runs Drupal core script with provided arguments"
+    cmd:
+      - appserver: /app/.lando/drupal.sh
   grumphp:
     description: "Runs grumphp commands"
     cmd:
