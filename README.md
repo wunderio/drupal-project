@@ -61,6 +61,7 @@ The following secret variables are defined in the file `silta/silta.secret` for 
 ### [Tools](https://docs.lando.dev/core/v3/tooling.html)
 
 - `lando` - tools / commands overview.
+- `lando drupal <arguments>` - run the Drupal core script with provided arguments.
 - `lando grumphp <commands>` - run [GrumPHP](https://github.com/phpro/grumphp) code quality checks. Modified or new files are checked on git commit, see more at `lando grumphp -h` or [wunderio/code-quality](https://github.com/wunderio/code-quality).
 - `lando npm <commands>` - run [npm](https://www.npmjs.com/) commands.
 - `lando phpunit <commands>` - run [PHPUnit](https://phpunit.de/) commands.
