@@ -42,6 +42,20 @@ if (getenv('VARNISH_ADMIN_HOST')) {
   $config['varnish_purger.settings.f94540554c']['port'] = '80';
 }
 
+// Symfony Mailer configuration.
+// @see: https://www.drupal.org/node/3369935
+$config['system.mail']['interface'] = [ 'default' => 'symfony_mailer' ];
+
+// Default SMTP settings.
+$smtp_address_parts = explode(':', getenv('SMTP_ADDRESS'));
+if (!empty($smtp_address_parts[0]) && !empty($smtp_address_parts[1])) {
+  $config['system.mail']['mailer_dsn'] = [
+    'scheme' => 'smtp',
+    'host' => $smtp_address_parts[0],
+    'port' => $smtp_address_parts[1],
+  ];
+}
+
 // Environment-specific settings.
 $env = getenv('ENVIRONMENT_NAME');
 switch ($env) {

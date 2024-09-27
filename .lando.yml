@@ -77,6 +77,7 @@ services:
         HASH_SALT: notsosecurehash
         ENVIRONMENT_NAME: lando
         DRUSH_OPTIONS_URI: https://drupal-project.lndo.site
+        SMTP_ADDRESS: mailpit:1025
         VARNISH_ADMIN_HOST: varnish
         # Support debugging with XDEBUG 3.
         XDEBUG_MODE:
