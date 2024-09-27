@@ -40,3 +40,6 @@
 
 # Ignore node modules
 node_modules
+
+# Ignore Lando data volumes
+/.lando/data-*
