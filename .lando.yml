@@ -77,6 +77,7 @@ services:
         HASH_SALT: notsosecurehash
         ENVIRONMENT_NAME: lando
         DRUSH_OPTIONS_URI: https://drupal-project.lndo.site
+        SMTP_ADDRESS: mailpit:1025
         VARNISH_ADMIN_HOST: varnish
         # Support debugging with XDEBUG 3.
         XDEBUG_MODE:
@@ -128,10 +129,24 @@ services:
   #     user: kibana
   #     ports:
   #       - "5601:5601"
-  mailhog:
-    type: mailhog
-    hogfrom:
-      - appserver
+  mailpit:
+    type: lando
+    api: 3
+    ssl: true
+    sslExpose: false
+    services:
+      image: axllent/mailpit
+      volumes:
+       - .lando/data-mailpit:/data
+      ports:
+        - "8025"  # Web UI
+        - "1025"  # SMTP
+      environment:
+        MP_MAX_MESSAGES: 5000
+        MP_DATA_FILE: /data/mailpit.db
+        MP_SMTP_AUTH_ACCEPT_ANY: 1
+        MP_SMTP_AUTH_ALLOW_INSECURE: 1
+      command: "/mailpit"
   node:
     type: "node:20"
     build:
@@ -151,8 +166,8 @@ services:
 proxy:
   adminer:
     - adminer.drupal-project.lndo.site
-  mailhog:
-    - mail.lndo.site
+  mailpit:
+    - mail.lndo.site:8025
   # elasticsearch:
   #   - elasticsearch.lndo.site:9200
   # kibana:

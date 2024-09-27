@@ -37,7 +37,7 @@ The following secret variables are defined in the file `silta/silta.secret` for 
 - Adminer: <http://adminer.drupal-project.lndo.site>
 - Elasticsearch: <http://localhost:9200>, <http://elasticsearch.lndo.site>
 - Kibana: <http://localhost:5601>, <http://kibana.lndo.site>
-- Mailhog: <http://mail.lndo.site>
+- Mailpit: <http://mail.lndo.site>
 - Varnish: <https://varnish.drupal-project.lndo.site>
 - Drush alias: `lando drush @local st`
 - SSH: `lando ssh (-s <service>)`
@@ -54,7 +54,7 @@ The following secret variables are defined in the file `silta/silta.secret` for 
 - `chrome` - uses [selenium/standalone-chrome](https://hub.docker.com/r/selenium/standalone-chrome/) image, uncomment the service definition at `.lando.yml` to enable.
 - `elasticsearch` - uses official [Elasticsearch image](https://hub.docker.com/r/elastic/elasticsearch), uncomment the service definition at `.lando.yml` to enable. Requires [at least 4GiB of memory](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html).
 - `kibana`  - uses official [Kibana image](https://hub.docker.com/r/elastic/kibana), uncomment the service definition at `.lando.yml` to enable.
-- `mailhog` - uses Lando [MailHog service](https://docs.lando.dev/mailhog/).
+- `mailpit` - uses custom [Mailpit service](https://mailpit.axllent.org/).
 - `node` - uses Lando [Node service](https://docs.lando.dev/node/).
 - `varnish` - uses Lando [Varnish service](https://docs.lando.dev/varnish/), uncomment the service definition at `.lando.yml` to enable.
 
