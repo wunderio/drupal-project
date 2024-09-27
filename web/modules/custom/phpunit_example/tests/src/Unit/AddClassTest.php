@@ -3,6 +3,7 @@
 namespace Drupal\Tests\phpunit_example\Unit;
 
 use Drupal\phpunit_example\AddClass;
+// phpcs:ignore SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses.IncorrectlyOrderedUses
 use Drupal\Tests\UnitTestCase;
 
 /**
