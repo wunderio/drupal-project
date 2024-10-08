@@ -4,9 +4,9 @@ orbs:
   silta: silta/silta@1
 
 executors:
-  cicd82:
+  cicd83:
     docker:
-      - image: wunderio/silta-cicd:circleci-php8.2-node22-composer2-v1
+      - image: wunderio/silta-cicd:circleci-php8.3-node22-composer2-v1
 
 workflows:
   commit:
@@ -23,7 +23,7 @@ workflows:
 
       - silta/drupal-validate:
           name: validate
-          executor: cicd82
+          executor: cicd83
           post-validation:
             - run: echo "You can add additional validation here!"
 
@@ -36,7 +36,7 @@ workflows:
       # Other jobs defined below extend this job.
       - silta/drupal-build: &build
           name: build
-          executor: cicd82
+          executor: cicd83
           codebase-build:
             - silta/drupal-composer-install
             - silta/npm-install-build
@@ -56,7 +56,7 @@ workflows:
       # Other jobs defined below extend this job.
       - silta/drupal-deploy: &deploy
           name: deploy
-          executor: cicd82
+          executor: cicd83
           silta_config: silta/silta.yml,silta/silta.secret
           pre-release:
             - silta/decrypt-files:
