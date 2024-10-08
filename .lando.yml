@@ -2,7 +2,7 @@ name: drupal-project
 recipe: drupal10
 
 config:
-  php: "8.2"
+  php: "8.3"
   via: nginx
   webroot: web
   xdebug: off
