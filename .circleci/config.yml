@@ -65,6 +65,10 @@ workflows:
                 # This is stored in CircleCI as an environment variable and also in LastPass.
                 secret_key_env: SEC_DRUPAL_PROJECT_SILTA_DEV
           context: silta_dev
+          # Make sure that `requires` is always set to override the default value in `main` and `production` build jobs.
+          # This is to avoid requiring the `approve-deployment` job which breaks the deployment.
+          # This is because the `main` and `production` environments are filtered out from the default `build` job.
+          # Use `requires: []` to override the default value when no other jobs are required.
           requires:
             - build
           filters:
