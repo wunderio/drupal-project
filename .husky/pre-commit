@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+if [ "$LANDO"=ON ]
+then
+  lando npm run pre-commit
+else
+  npm run pre-commit
+fi
