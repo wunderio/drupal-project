@@ -61,8 +61,6 @@ $env = getenv('ENVIRONMENT_NAME');
 switch ($env) {
   case 'production':
     $settings['simple_environment_indicator'] = 'DarkRed Production';
-    // Warden settings.
-    $config['warden.settings']['warden_token'] = getenv('WARDEN_TOKEN');
     break;
 
   case 'main':
