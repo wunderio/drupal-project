@@ -18,6 +18,9 @@ referenceData:
   # The name of the environment from which reference data will be copied.
   referenceEnvironment: 'main'
 
+mailhog:
+  enabled: true
+
 mariadb:
   master:
     persistence:

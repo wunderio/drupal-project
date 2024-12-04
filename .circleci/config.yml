@@ -4,9 +4,9 @@ orbs:
   silta: silta/silta@1
 
 executors:
-  cicd82:
+  silta:
     docker:
-      - image: wunderio/silta-cicd:circleci-php8.2-node20-composer2-v1
+      - image: wunderio/silta-cicd:circleci-php8.3-node22-composer2-v1
 
 workflows:
   commit:
@@ -23,7 +23,7 @@ workflows:
 
       - silta/drupal-validate:
           name: validate
-          executor: cicd82
+          executor: silta
           post-validation:
             - run: echo "You can add additional validation here!"
 
@@ -36,7 +36,7 @@ workflows:
       # Other jobs defined below extend this job.
       - silta/drupal-build: &build
           name: build
-          executor: cicd82
+          executor: silta
           codebase-build:
             - silta/drupal-composer-install
             - silta/npm-install-build
@@ -56,7 +56,7 @@ workflows:
       # Other jobs defined below extend this job.
       - silta/drupal-deploy: &deploy
           name: deploy
-          executor: cicd82
+          executor: silta
           silta_config: silta/silta.yml,silta/silta.secret
           pre-release:
             - silta/decrypt-files:
@@ -65,6 +65,10 @@ workflows:
                 # This is stored in CircleCI as an environment variable and also in LastPass.
                 secret_key_env: SEC_DRUPAL_PROJECT_SILTA_DEV
           context: silta_dev
+          # Make sure that `requires` is always set to override the default value in `main` and `production` build jobs.
+          # This is to avoid requiring the `approve-deployment` job which breaks the deployment.
+          # This is because the `main` and `production` environments are filtered out from the default `build` job.
+          # Use `requires: []` to override the default value when no other jobs are required.
           requires:
             - build
           filters:

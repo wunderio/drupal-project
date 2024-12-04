@@ -28,6 +28,8 @@ $settings['file_public_path']  = 'sites/default/files';
 $settings['config_sync_directory'] = '../config/sync';
 
 // Load services definition file.
+// Note: settings.silta.php defines Monolog services override via silta.services.yml.
+// @see: https://github.com/wunderio/charts/blob/master/drupal/files/silta.services.yml
 $settings['container_yamls'][] = DRUPAL_ROOT . '/sites/services.yml';
 
 // The default list of directories that will be ignored by Drupal's file API.
@@ -42,13 +44,25 @@ if (getenv('VARNISH_ADMIN_HOST')) {
   $config['varnish_purger.settings.f94540554c']['port'] = '80';
 }
 
+// Symfony Mailer configuration.
+// @see: https://www.drupal.org/node/3369935
+$config['system.mail']['interface'] = [ 'default' => 'symfony_mailer' ];
+
+// Default SMTP settings.
+$smtp_address_parts = explode(':', getenv('SMTP_ADDRESS'));
+if (!empty($smtp_address_parts[0]) && !empty($smtp_address_parts[1])) {
+  $config['system.mail']['mailer_dsn'] = [
+    'scheme' => 'smtp',
+    'host' => $smtp_address_parts[0],
+    'port' => $smtp_address_parts[1],
+  ];
+}
+
 // Environment-specific settings.
 $env = getenv('ENVIRONMENT_NAME');
 switch ($env) {
   case 'production':
     $settings['simple_environment_indicator'] = 'DarkRed Production';
-    // Warden settings.
-    $config['warden.settings']['warden_token'] = getenv('WARDEN_TOKEN');
     break;
 
   case 'main':
@@ -85,6 +99,7 @@ if (file_exists(DRUPAL_ROOT . '/sites/default/settings.local.php')) {
 }
 
 // Silta cluster configuration overrides.
+// @see: https://github.com/wunderio/charts/blob/master/drupal/files/settings.silta.php
 if (getenv('SILTA_CLUSTER') && file_exists(DRUPAL_ROOT . '/sites/default/settings.silta.php')) {
   include DRUPAL_ROOT . '/sites/default/settings.silta.php';
 }

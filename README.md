@@ -37,7 +37,7 @@ The following secret variables are defined in the file `silta/silta.secret` for 
 - Adminer: <http://adminer.drupal-project.lndo.site>
 - Elasticsearch: <http://localhost:9200>, <http://elasticsearch.lndo.site>
 - Kibana: <http://localhost:5601>, <http://kibana.lndo.site>
-- Mailhog: <http://mail.lndo.site>
+- Mailpit: <http://mail.lndo.site>
 - Varnish: <https://varnish.drupal-project.lndo.site>
 - Drush alias: `lando drush @local st`
 - SSH: `lando ssh (-s <service>)`
@@ -54,13 +54,14 @@ The following secret variables are defined in the file `silta/silta.secret` for 
 - `chrome` - uses [selenium/standalone-chrome](https://hub.docker.com/r/selenium/standalone-chrome/) image, uncomment the service definition at `.lando.yml` to enable.
 - `elasticsearch` - uses official [Elasticsearch image](https://hub.docker.com/r/elastic/elasticsearch), uncomment the service definition at `.lando.yml` to enable. Requires [at least 4GiB of memory](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html).
 - `kibana`  - uses official [Kibana image](https://hub.docker.com/r/elastic/kibana), uncomment the service definition at `.lando.yml` to enable.
-- `mailhog` - uses Lando [MailHog service](https://docs.lando.dev/mailhog/).
+- `mailpit` - uses custom [Mailpit service](https://mailpit.axllent.org/).
 - `node` - uses Lando [Node service](https://docs.lando.dev/node/).
 - `varnish` - uses Lando [Varnish service](https://docs.lando.dev/varnish/), uncomment the service definition at `.lando.yml` to enable.
 
 ### [Tools](https://docs.lando.dev/core/v3/tooling.html)
 
 - `lando` - tools / commands overview.
+- `lando drupal <arguments>` - run the Drupal core script with provided arguments.
 - `lando grumphp <commands>` - run [GrumPHP](https://github.com/phpro/grumphp) code quality checks. Modified or new files are checked on git commit, see more at `lando grumphp -h` or [wunderio/code-quality](https://github.com/wunderio/code-quality).
 - `lando npm <commands>` - run [npm](https://www.npmjs.com/) commands.
 - `lando phpunit <commands>` - run [PHPUnit](https://phpunit.de/) commands.
@@ -123,6 +124,27 @@ The `silta/silta.secret` file is a YAML file that contains the encrypted secrets
 
 This project is maintained by [Wunder](https://wunder.io/). We welcome contributions from the community.
 
-Internally, we use JIRA for project management, but we also use GitHub issues for public projects.
+### Commit message validation and ticketing system integration
 
-Introduce your idea in the issue queue and prefix the pull request and commit messages with the issue key in the following format: `GH-123: Add a new feature`. In this way, the issue is automatically linked to your contribution.
+Our project uses both JIRA and GitHub Issues for tracking and managing tasks. We use [Autolinked references](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/autolinked-references-and-urls) to convert ticket IDs into links for easy navigation. To ensure traceability, commit messages must include a valid ticket ID from either system, except for merge commits. Additionally, provide a clear description of the change.
+
+The format is as follows:
+
+- JIRA: `[PROJECTKEY-123]: Description`
+- GitHub: `[GH-123]: Description`
+
+Validation rules are implemented via GrumPHP `git_commit_message` component. Please see `grumphp.yml` for details.
+
+Following these guidelines ensures our project remains organized and changes are traceable. Thank you for adhering to these standards.
+
+### Git workflow
+
+Our default Git workflow is detailed in the [WunderFlow repository](https://github.com/wunderio/WunderFlow). Please refer to it for more information.
+
+### Deployments
+
+Project deployment is managed by CircleCI. Deployment configurations can be found in the `.circleci/config.yml` file.
+
+Feature branches require manual approval for deployment by default to reduce CI costs. Other branches are deployed automatically but can be switched to manual approval if needed.
+
+Manual approvals are handled through the `approve-deployment` job. A project maintainer can approve the deployment in the CircleCI UI by clicking the "approve-deployment" job label when marked as "Needs Approval."
