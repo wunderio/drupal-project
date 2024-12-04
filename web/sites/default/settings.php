@@ -28,6 +28,8 @@ $settings['file_public_path']  = 'sites/default/files';
 $settings['config_sync_directory'] = '../config/sync';
 
 // Load services definition file.
+// Note: settings.silta.php defines Monolog services override via silta.services.yml.
+// @see: https://github.com/wunderio/charts/blob/master/drupal/files/silta.services.yml
 $settings['container_yamls'][] = DRUPAL_ROOT . '/sites/services.yml';
 
 // The default list of directories that will be ignored by Drupal's file API.
@@ -61,8 +63,6 @@ $env = getenv('ENVIRONMENT_NAME');
 switch ($env) {
   case 'production':
     $settings['simple_environment_indicator'] = 'DarkRed Production';
-    // Warden settings.
-    $config['warden.settings']['warden_token'] = getenv('WARDEN_TOKEN');
     break;
 
   case 'main':
@@ -99,6 +99,7 @@ if (file_exists(DRUPAL_ROOT . '/sites/default/settings.local.php')) {
 }
 
 // Silta cluster configuration overrides.
+// @see: https://github.com/wunderio/charts/blob/master/drupal/files/settings.silta.php
 if (getenv('SILTA_CLUSTER') && file_exists(DRUPAL_ROOT . '/sites/default/settings.silta.php')) {
   include DRUPAL_ROOT . '/sites/default/settings.silta.php';
 }
