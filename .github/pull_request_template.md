@@ -1,23 +1,15 @@
-## Ticket
+## Ticket QAG-XXX
 
-[Add a link to the ticket]
+## Changes
 
-## Description
-
-[Explain what was done and why. You can also add screenshots here if it helps.]
+- [Explain what changes were made in this PR]
 
 ## Testing
 
-### Feature environment
+Enviroment: [Feature environment URL]
 
-[Add a link to the feature environment]
+Login: [`drush uli` command]
 
-Drush uli: [Add a `drush uli` command to get (admin) login url to the feature environment]
+Instructions:
 
-### Setting up local environment
-
-[Detail custom setup instructions if any - any drush commands, content reindexing, specific user to use, etc.]
-
-### Testing instructions
-
-[List all the steps that should be performed to test the feature]
+- [Step by step instructions to test the changes]
