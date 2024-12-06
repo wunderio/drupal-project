@@ -1,0 +1,6 @@
+# Overrides for default Kibana configuration.
+services:
+  kibana:
+    build:
+      args:
+        - KIBANA_VERSION=8.10.2
