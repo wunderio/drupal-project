@@ -57,10 +57,10 @@ workflows:
       - silta/drupal-deploy: &deploy
           name: deploy
           executor: silta
-          silta_config: silta/silta.yml,silta/silta.secret
+          silta_config: silta/silta.yml,silta/silta.secrets
           pre-release:
             - silta/decrypt-files:
-                files: silta/silta.secret
+                files: silta/silta.secrets
                 # SEC_DRUPAL_PROJECT_SILTA_DEV holds the secret key for decryption purposes.
                 # This is stored in CircleCI as an environment variable and also in LastPass.
                 secret_key_env: SEC_DRUPAL_PROJECT_SILTA_DEV
@@ -96,7 +96,7 @@ workflows:
       - silta/drupal-deploy:
           <<: *deploy
           name: deploy-main
-          silta_config: silta/silta.yml,silta/silta.secret,silta/silta-main.yml
+          silta_config: silta/silta.yml,silta/silta.secrets,silta/silta-main.yml
           requires:
             - build-main
           filters:
@@ -122,7 +122,13 @@ workflows:
       - silta/drupal-deploy:
           <<: *deploy
           name: deploy-prod
-          silta_config: silta/silta.yml,silta/silta-prod.yml
+          silta_config: silta/silta.yml,silta/silta-prod.yml,silta/silta-prod.secrets
+          pre-release:
+            - silta/decrypt-files:
+                files: silta/silta-prod.secrets
+                # SEC_DRUPAL_PROJECT_SILTA_FINLAND holds the secret key for decryption purposes.
+                # This is stored in CircleCI as an environment variable and also in LastPass.
+                secret_key_env: SEC_DRUPAL_PROJECT_SILTA_FINLAND
           context: silta_finland
           requires:
             - build-prod
