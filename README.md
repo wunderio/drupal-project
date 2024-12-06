@@ -17,6 +17,18 @@ This project template is an opinionated fork of the popular [drupal-omposer temp
 
 For additional instructions, please refer to the [Silta documentation](https://github.com/wunderio/silta).
 
+## Production environment
+
+- **URL**: <https://production.drupal-project.finland.wdr.io>
+- **Drush alias**: `drush @prod st`
+- **SSH**: `ssh www-admin@production-shell.drupal-project -J www-admin@ssh.finland.wdr.io`
+
+### Environment variables for `silta_finland` context
+
+The following secret variables are defined in the `silta/silta-prod.secrets` file for the `silta_finland` context:
+
+- `TEST_KEY_PROD` - Secret key for testing purposes.
+
 ## Main environment
 
 - **URL**: <https://main.drupal-project.dev.wdr.io>
@@ -27,7 +39,7 @@ The Drush alias for the **current** Silta feature branch deployment is `drush @c
 
 ### Environment variables for `silta_dev` context
 
-The following secret variables are defined in the `silta/silta.secret` file for the `silta_dev` context:
+The following secret variables are defined in the `silta/silta.secrets` file for the `silta_dev` context:
 
 - `TEST_KEY` - Secret key for testing purposes.
 
