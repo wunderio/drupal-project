@@ -1,6 +1,8 @@
 version: 2.1
 
 orbs:
+  # Include the Silta orb.
+  # @see https://circleci.com/developer/orbs/orb/silta/silta
   silta: silta/silta@1
 
 executors:
