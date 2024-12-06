@@ -41,6 +41,10 @@ nginx:
 # basicauth:
 #   enabled: false
 
+# Disable MailHog in production.
+mailhog:
+  enabled: false
+
 mariadb:
   master:
     persistence:
