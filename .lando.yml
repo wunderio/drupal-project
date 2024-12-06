@@ -2,7 +2,7 @@ name: drupal-project
 recipe: drupal10
 
 config:
-  php: "8.2"
+  php: "8.3"
   via: nginx
   webroot: web
   xdebug: off
@@ -15,6 +15,10 @@ tooling:
     description: "Runs Composer commands"
     cmd:
       - appserver: /usr/local/bin/composer
+  drupal:
+    description: "Runs Drupal core script with provided arguments"
+    cmd:
+      - appserver: /app/.lando/drupal.sh
   grumphp:
     description: "Runs grumphp commands"
     cmd:
@@ -71,6 +75,7 @@ services:
         # Database credentials are defined in the .lando/.env file
         # to be available in both the adminer and appserver containers.
         DRUSH_OPTIONS_URI: https://drupal-project.lndo.site
+        SMTP_ADDRESS: mailpit:1025
         ENVIRONMENT_NAME: lando
         EXEC_GRUMPHP_COMMAND: "lando php"
         HASH_SALT: notsosecurehash
@@ -125,10 +130,24 @@ services:
   #     user: kibana
   #     ports:
   #       - "5601:5601"
-  mailhog:
-    type: mailhog
-    hogfrom:
-      - appserver
+  mailpit:
+    type: lando
+    api: 3
+    ssl: true
+    sslExpose: false
+    services:
+      image: axllent/mailpit
+      volumes:
+       - .lando/data-mailpit:/data
+      ports:
+        - "8025"  # Web UI
+        - "1025"  # SMTP
+      environment:
+        MP_MAX_MESSAGES: 5000
+        MP_DATA_FILE: /data/mailpit.db
+        MP_SMTP_AUTH_ACCEPT_ANY: 1
+        MP_SMTP_AUTH_ALLOW_INSECURE: 1
+      command: "/mailpit"
   node:
     type: "node:20"
     build:
@@ -148,8 +167,8 @@ services:
 proxy:
   adminer:
     - adminer.drupal-project.lndo.site
-  mailhog:
-    - mail.lndo.site
+  mailpit:
+    - mail.lndo.site:8025
   # elasticsearch:
   #   - elasticsearch.lndo.site:9200
   # kibana:
