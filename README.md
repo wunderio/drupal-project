@@ -1,19 +1,36 @@
 # Wunder template for Drupal projects
 
-This project template is an opinionated fork of the popular [drupal-omposer template](https://github.com/drupal-composer/drupal-project), configured to automatically deploy code to a [Kubernetes](https://kubernetes.io/) cluster using [CircleCI](https://circleci.com/).
+This project is a tailored fork of the popular [drupal-composer template](https://github.com/drupal-composer/drupal-project). It is designed for deploying to [Kubernetes](https://kubernetes.io/) clusters via [CircleCI](https://circleci.com/).
 
 ## Getting started
 
-1. Click "[Use this template](https://github.com/wunderio/drupal-project/generate)" to generate a new project:
+1. **Create a new project repository**
+   Click "[Use this template](https://github.com/wunderio/drupal-project/generate)" to generate a new project:
    - Select the correct owner.
    - Name the project as `client-COUNTRYCODE-CLIENT-PROJECT`.
-   - Make the repository private (unless the project is public).
-2. Clone the new project locally and update its details:
+   - Set the repository to private (unless the project is public).
+
+2. **Clone and customize the repository**
+   Clone the new project locally and update its details:
+   - Update `README.md` with the project details.
    - Update `composer.json` with the project name.
-   - Modify the `silta/silta.yml` [values](https://github.com/wunderio/charts/blob/master/drupal/values.yaml).
-   - Adjust `grumphp.yml` tasks, including the project name in the `git_commit_message` regex.
-3. Log in to [CircleCI](https://app.circleci.com/) using your GitHub account and add the new project using the existing configuration.
-4. Configure [automatic autolinks](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/autolinked-references-and-urls#custom-autolinks-to-external-resources) for the project's JIRA environment.
+   - Modify the `silta/silta*` files [values](https://github.com/wunderio/charts/blob/master/drupal/values.yaml).
+   - Adjust `grumphp.yml` tasks, including updating the project name in the `git_commit_message` regex.
+   - Adjust the `lando` configuration in `.lando.yml`.
+
+3. **Set up CircleCI**
+   - Log in to [CircleCI](https://app.circleci.com/) using your GitHub account.
+   - Add the new project to CircleCI using the existing configuration.
+
+4. **Configure encryption keys and secrets**
+   - Define encryption keys for `silta_dev` and `silta_finland` contexts in the CircleCI project settings and backup the keys in LastPass. Use the following naming convention: `SEC_{PROJECT_NAME}_{CONTEXT}` where `CONTEXT` is the environment, such as `silta_dev` or `silta_finland`.
+   - Update the `.circleci/config.yml` file with the corresponding `secret_key_env` values.
+   - Define the secret environment variables in the `silta/silta*.secrets` YAML files for the `silta_dev` and `silta_finland` contexts.
+   - Encrypt the `silta/silta*.secrets` files using the encryption keys and commit the encrypted files to the repository.
+   - See the relevant [Silta's documentation](https://wunderio.github.io/silta/docs/encrypting-sensitive-configuration/#using-a-custom-encryption-key) for details.
+
+5. **Enable JIRA integration**
+   - Configure [automatic autolinks](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/autolinked-references-and-urls#custom-autolinks-to-external-resources) for the project's JIRA environment to link ticket IDs to JIRA issues seamlessly.
 
 For additional instructions, please refer to the [Silta documentation](https://github.com/wunderio/silta).
 
@@ -84,9 +101,9 @@ The following secret variables are defined in the `silta/silta.secrets` file for
 - **`lando varnishadm <commands>`**: Run [varnishadm](https://varnish-cache.org/docs/6.0/reference/varnishadm.html) commands.
 - **`lando xdebug <mode>`**: Load [Xdebug](https://xdebug.org/) in the selected [mode(s)](https://xdebug.org/docs/all_settings#mode).
 
-## Development advice
+## Development tips
 
-### Drupal core tips
+### Drupal core updates
 
 - [Updating Drupal core](https://www.drupal.org/docs/updating-drupal/updating-drupal-core-via-composer).
 - [Altering scaffold files](https://www.drupal.org/docs/develop/using-composer/using-drupals-composer-scaffold#toc_4) (e.g., `robots.txt`, `.htaccess`).
@@ -148,28 +165,19 @@ Use `lando phpunit` to run PHPUnit commands:
 
 [Silta CLI](https://github.com/wunderio/silta-cli) is a command-line tool to manage secrets and configurations for Silta projects. Use the following commands:
 
-- Encrypt a file: `silta secrets encrypt --file silta/silta.secret --secret-key=$SECRET_KEY`
-- Decrypt a file: `silta secrets decrypt --file silta/silta.secret --secret-key=$SECRET_KEY`
+- Encrypt a file: `silta secrets encrypt --file silta/silta.secrets --secret-key=<secret_key_env>`
+- Decrypt a file: `silta secrets decrypt --file silta/silta.secrets --secret-key=<secret_key_env>`
 - Display help: `silta secrets --help`
 
-You need a secret key to encrypt and decrypt data. It can be specified with the `--secret-key` flag (defaults to the `SECRET_KEY` environment variable). To enhance security, use a custom key for each project. See [Silta's documentation](https://wunderio.github.io/silta/docs/encrypting-sensitive-configuration/#using-a-custom-encryption-key) for details.
-
-#### Key naming convention
-
-Use the following naming convention for custom keys: `SEC_{PROJECT_NAME}_{CONTEXT}` where `CONTEXT` is the environment, such as `silta_dev` or `silta_finland`.
-For example, for the `drupal-project` in the `silta_dev` environment, use the key: `SEC_DRUPAL_PROJECT_SILTA_DEV`.
-
-#### Secrets file
-
-The `silta/silta.secret` file is a YAML file containing encrypted secrets for the `silta-dev` context. Add additional files for other contexts, such as `silta/silta-prod.secret` for production.
+See the corresponding `secret_key_env` values in the `.circleci/config.yml` file for the `silta_dev` and `silta_finland` contexts. Refer to the Getting Started section for details.
 
 ## Contributing
 
 This project is maintained by [Wunder](https://wunder.io/). Contributions from the community are welcome.
 
-### Commit Message Validation and Ticketing System Integration
+### Commit message validation and ticketing system integration
 
-We use JIRA and GitHub Issues for tracking tasks. Commit messages must include a valid ticket ID except for merge commits. Use the following format:
+We use JIRA and GitHub issues for tracking tasks. Commit messages must include a valid ticket ID except for merge commits. Use the following format:
 
 - JIRA: `[PROJECTKEY-123]: Description`
 - GitHub: `[GH-123]: Description`
