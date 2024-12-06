@@ -1,3 +1,5 @@
+# Override the default values of Wunder's Drupal Helm chart and silta.yml.
+# @see: https://github.com/wunderio/charts/blob/master/drupal/values.yaml
 
 # Enable autoscaling for production.
 autoscaling:
