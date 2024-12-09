@@ -10,6 +10,18 @@ executors:
     docker:
       - image: wunderio/silta-cicd:circleci-php8.3-node22-composer2-v1
 
+# Define shared branch filters as reusable anchors.
+branch-filters:
+  &ignored-branches
+  branches:
+    ignore:
+      - production
+      - main
+      - /dependabot\/.*/
+      # Remove the following filters from actual project configuration.
+      - /^10\..*/
+      - /^11\..*/
+
 workflows:
   commit:
     jobs:
@@ -17,11 +29,7 @@ workflows:
           type: approval
           name: approve-deployment
           filters:
-            branches:
-              ignore:
-                - production
-                - main
-                - /dependabot\/.*/
+            <<: *ignored-branches
 
       - silta/drupal-validate:
           name: validate
@@ -48,14 +56,9 @@ workflows:
             - analyze
             - approve-deployment
           filters:
-            branches:
-              ignore:
-                - production
-                - main
-                - /dependabot\/.*/
+            <<: *ignored-branches
 
       # Deploy job for feature environments.
-      # Other jobs defined below extend this job.
       - silta/drupal-deploy: &deploy
           name: deploy
           executor: silta
@@ -74,14 +77,9 @@ workflows:
           requires:
             - build
           filters:
-            branches:
-              ignore:
-                - production
-                - main
-                - /dependabot\/.*/
+            <<: *ignored-branches
 
       # Build job for main environment.
-      # Extends the job defined for feature environments.
       - silta/drupal-build:
           <<: *build
           name: build-main
