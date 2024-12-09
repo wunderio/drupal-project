@@ -22,6 +22,9 @@ workflows:
                 - production
                 - main
                 - /dependabot\/.*/
+                # Ignore testing branches for Drupal 10 and 11.
+                - /^10\..*/
+                - /^11\..*/
 
       - silta/drupal-validate:
           name: validate
@@ -53,6 +56,9 @@ workflows:
                 - production
                 - main
                 - /dependabot\/.*/
+                # Ignore testing branches for Drupal 10 and 11.
+                - /^10\..*/
+                - /^11\..*/
 
       # Deploy job for feature environments.
       # Other jobs defined below extend this job.
@@ -79,6 +85,9 @@ workflows:
                 - production
                 - main
                 - /dependabot\/.*/
+                # Ignore testing branches for Drupal 10 and 11.
+                - /^10\..*/
+                - /^11\..*/
 
       # Build job for main environment.
       # Extends the job defined for feature environments.
