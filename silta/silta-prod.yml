@@ -1,26 +1,29 @@
+# Production environment configuration.
+#
 # Override the default values of Wunder's Drupal Helm chart and silta.yml.
 # @see: https://github.com/wunderio/charts/blob/master/drupal/values.yaml
 
-# Enable autoscaling for production.
+# Enable autoscaling.
 autoscaling:
   enabled: true
   minReplicas: 2
   maxReplicas: 5
 
-# Don't delay the production deployment process to create the reference data.
+# Reference data configuration.
 referenceData:
+  # Don't delay the production deployment process with reference data updates.
   updateAfterDeployment: false
 
-# Enable daily backups.
+# Enable backups.
 backup:
   enabled: true
 
+# PHP configuration.
 php:
   cron:
     drupal:
-      # In production environments, run cron every 5 minutes. Adjust as needed.
-      schedule: '*/5 * * * *'
-  # Reserve more resources for our PHP containers.
+      # Run cron every 5 minutes. Adjust as needed.
+      schedule: "*/5 * * * *"
   resources:
     requests:
       cpu: 200m
@@ -28,9 +31,15 @@ php:
     limits:
       cpu: 500m
       memory: 512M
+  # Set the preproduction environment URI.
+  # Update this to match the production URI during the site launch.
+  env:
+    DRUSH_OPTIONS_URI: "https://production.drupal-project.finland.wdr.io"
+
   # Don't show errors in production.
   errorLevel: "hide"
 
+# Nginx configuration.
 nginx:
   resources:
     requests:
@@ -39,7 +48,8 @@ nginx:
     limits:
       cpu: 100m
       memory: 150M
-# Uncomment these lines to disable basic auth protection.
+
+# Uncomment to disable basic authentication.
 # basicauth:
 #   enabled: false
 
@@ -47,11 +57,12 @@ nginx:
 mailhog:
   enabled: false
 
+# MariaDB configuration.
 mariadb:
   master:
     persistence:
-      # Database storage disk space allocation
-      # Request assistance from ops team after changing this on existing deployment.
+      # Database storage disk space allocation.
+      # Request assistance from Ops team to change this on an existing deployment.
       size: 5Gi
     resources:
       requests:
@@ -109,20 +120,11 @@ mariadb:
       socket=/opt/bitnami/mariadb/tmp/mysql.sock
       pid-file=/opt/bitnami/mariadb/tmp/mysqld.pid
 
-# Consider enabling memcached service
+# Memcached service configuration.
 # memcached:
 #   enabled: true
 
-# Connect to an externally hosted database.
-#  env:
-#    DB_HOST: 'hosted.database.server.com'
-#    DB_NAME: 'drupal-1A4G3C'
-#    DB_USER: 'drupal'
-#    DB_PASS: 'never store passwords'
-# Disable the built-in database when using an external database.
-#mariadb:
-#  enabled: false
-
+# Varnish service configuration.
 varnish:
   enabled: true
   resources:
@@ -132,6 +134,6 @@ varnish:
     limits:
       cpu: 500m
       memory: 1Gi
-  # See https://varnish-cache.org/docs/6.6/users-guide/storage-backends.html
-  # Disc allocated storage.
-  storageBackend: 'file,/var/lib/varnish/varnish_storage.bin,512M'
+  # Set the storage backend to file.
+  # @see: https://varnish-cache.org/docs/6.6/users-guide/storage-backends.html
+  storageBackend: "file,/var/lib/varnish/varnish_storage.bin,512M"
