@@ -144,7 +144,7 @@ workflows:
           build_folder: web/themes/custom/wunder-theme/storybook-static
           codebase-build:
             - silta/npm-install-build:
-                build-command: npm run build && npm run build-storybook
+                build-command: npm run build && node --version && npm run build-storybook
                 path: web/themes/custom/wunder-theme
           filters:
             branches:
