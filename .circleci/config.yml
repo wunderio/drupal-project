@@ -9,6 +9,9 @@ executors:
   silta:
     docker:
       - image: wunderio/silta-cicd:circleci-php8.3-node22-composer2-v1
+  cicd82:
+    docker:
+      - image: wunderio/silta-cicd:circleci-php8.2-node18-composer2-v1
 
 # Define shared branch filters as reusable anchors.
 branch-filters:
@@ -139,7 +142,7 @@ workflows:
       # Storybook deployment.
       - silta/simple-build-deploy:
           name: storybook-build-deploy
-          executor: silta
+          executor: cicd82
           context: silta_dev
           release-suffix: storybook
           build_folder: web/themes/custom/wunder-theme/storybook-static
