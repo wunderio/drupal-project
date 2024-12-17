@@ -1,0 +1,20 @@
+uuid: 11baf7b5-67d1-4258-8810-b74c8144be61
+langcode: en
+status: true
+dependencies:
+  theme:
+    - wunderful
+_core:
+  default_config_hash: Q9_2whdOj1YIomfvsIfopROW4FT_X5pY0DjdOiOaQ5U
+id: wunderful_primary_admin_actions
+theme: wunderful
+region: header
+weight: -5
+provider: null
+plugin: local_actions_block
+settings:
+  id: local_actions_block
+  label: 'Primary admin actions'
+  label_display: '0'
+  provider: core
+visibility: {  }

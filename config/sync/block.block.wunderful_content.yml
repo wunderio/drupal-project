@@ -1,0 +1,22 @@
+uuid: e9e4c405-00a5-41ed-8a09-5cbbd41253b8
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - wunderful
+_core:
+  default_config_hash: erQSEZF2XUjNmgTl0uNRBzmg18ZGXwUcw2FhApoeuHk
+id: wunderful_content
+theme: wunderful
+region: content
+weight: 0
+provider: null
+plugin: system_main_block
+settings:
+  id: system_main_block
+  label: 'Main page content'
+  label_display: '0'
+  provider: system
+visibility: {  }

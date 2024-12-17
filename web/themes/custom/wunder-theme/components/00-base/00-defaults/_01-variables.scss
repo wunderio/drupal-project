@@ -1,0 +1,35 @@
+// Layout
+$max-width: 95rem; // 1520px
+$content-width: 52rem; // 832px
+$sidebar-width: 20rem; // 320px
+
+// Fonts
+$font-body: 'Public Sans', sans-serif;
+$font-heading: 'Exo 2', sans-serif;
+
+// Typography
+$font-xxl: 2rem;
+$font-xl: 1.5rem;
+$font-l: 1.25rem;
+$font-m: 1.125rem;
+$font-s: 1rem;
+
+// Spacing
+$space: 1rem;
+$space-none: 0;
+$space-4xs: 0.25rem; // calc($space / 4)
+$space-3xs: 0.5rem;  // calc($space / 2)
+$space-2xs: 0.75rem; // calc(($space / 4) * 3)
+$space-xs: 1rem;     // $space
+$space-s: 1.5rem;    // calc($space * 1.5)
+$space-m: 2rem;      // calc($space * 2)
+$space-l: 3rem;      // calc($space * 3)
+$space-xl: 4rem;     // calc($space * 4)
+$space-2xl: 6rem;    // calc($space * 6)
+$space-3xl: 8rem;    // calc($space * 8)
+
+$element-spacing-m: $space-m;
+$element-spacing-l: $space-l;
+
+// Other
+$underline-offset: 2px;

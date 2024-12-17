@@ -1,0 +1,15 @@
+{% stories example with { title: 'Atoms/example/text' } %}
+
+  {% story default with {
+    name: 'Text',
+    args: { text: 'I am a simple storybook story example!' }
+  } %}
+    {# Write any Twig for the "default" story. The `args` above will be made #}
+    {# available as variables for the template 👇 #}
+    {{ include('wunderful:example', {
+      text,
+    }) }}
+  {% endstory %}
+
+{% endstories %}
+

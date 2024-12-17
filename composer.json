@@ -24,6 +24,7 @@
         "drupal/monolog": "^3.0",
         "drupal/purge": "^3.6",
         "drupal/simplei": "^2.1",
+        "drupal/storybook": "^1.0",
         "drupal/varnish_purge": "^2.2",
         "drush/drush": "^12.5",
         "vlucas/phpdotenv": "^5.6",

@@ -1,0 +1,22 @@
+uuid: affb1a29-da4c-4357-afbc-144bc26f6785
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - wunderful
+_core:
+  default_config_hash: VhBzWb7lMRtIOg9G7VSw_0uopi-7zXeHq4vXqqV1HFE
+id: wunderful_breadcrumbs
+theme: wunderful
+region: breadcrumb
+weight: 0
+provider: null
+plugin: system_breadcrumb_block
+settings:
+  id: system_breadcrumb_block
+  label: Breadcrumbs
+  label_display: '0'
+  provider: system
+visibility: {  }

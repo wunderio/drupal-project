@@ -1,0 +1,22 @@
+uuid: 575fb9df-68d9-4f19-b1a1-f39d9b5ac863
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - wunderful
+_core:
+  default_config_hash: eYL19CLDyinGTWYQfBD1DswWzglEotE_kHnHx3AxTXM
+id: wunderful_powered
+theme: wunderful
+region: header
+weight: 0
+provider: null
+plugin: system_powered_by_block
+settings:
+  id: system_powered_by_block
+  label: 'Powered by Drupal'
+  label_display: '0'
+  provider: system
+visibility: {  }

@@ -38,6 +38,7 @@ module:
   purge_ui: 0
   sdc: 0
   serialization: 0
+  storybook: 0
   system: 0
   taxonomy: 0
   text: 0
@@ -52,4 +53,6 @@ module:
 theme:
   claro: 0
   olivero: 0
+  stable9: 0
+  wunderful: 0
 profile: basic
