@@ -136,6 +136,21 @@ workflows:
             branches:
               only: production
 
+      # Storybook deployment.
+      - silta/simple-build-deploy:
+          name: storybook-build-deploy
+          executor: cicd82
+          context: silta_dev
+          release-suffix: storybook
+          build_folder: web/themes/custom/wunder-theme/storybook-static
+          codebase-build:
+            - silta/npm-install-build:
+                build-command: npm run build && npm run build-storybook
+                path: web/themes/custom/wunder-theme
+          filters:
+            branches:
+              only: feature/FEG-14-boilerplate-theme
+
       # This enables validation on dependabot PRs
       # Build job for dependabot environments.
       # Extends the job defined for feature environments.
