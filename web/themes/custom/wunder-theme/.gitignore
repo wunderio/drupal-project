@@ -46,3 +46,5 @@ node_modules
 
 # Ignore the Storybook log file
 *storybook.log
+# Ignore storybook build directory
+storybook-static
