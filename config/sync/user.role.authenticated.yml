@@ -1,0 +1,22 @@
+uuid: 681d62a0-74e5-490f-b622-6b7d56172bea
+langcode: en
+status: true
+dependencies:
+  config:
+    - filter.format.basic_html
+  module:
+    - comment
+    - filter
+    - system
+_core:
+  default_config_hash: OImbxa00zMXfauqT0_rgDc4T8J4MuXZsYBQgePTxkEU
+id: authenticated
+label: 'Authenticated user'
+weight: 1
+is_admin: false
+permissions:
+  - 'access comments'
+  - 'access content'
+  - 'post comments'
+  - 'skip comment approval'
+  - 'use text format basic_html'
