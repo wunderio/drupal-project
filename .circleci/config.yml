@@ -139,7 +139,7 @@ workflows:
       # Storybook deployment.
       - silta/simple-build-deploy:
           name: storybook-build-deploy
-          executor: cicd82
+          executor: silta
           context: silta_dev
           release-suffix: storybook
           build_folder: web/themes/custom/wunder-theme/storybook-static
