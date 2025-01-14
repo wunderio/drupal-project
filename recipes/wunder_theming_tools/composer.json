@@ -1,0 +1,9 @@
+{
+    "name": "drupal_recipe/wunder_theming_tools",
+    "description": "Wunder theming tools recipe",
+    "type": "drupal-recipe",
+    "require": {
+        "drupal/twig_tweak": "^3.4",
+        "drupal/twig_field_value": "^2.0"
+    }
+}
