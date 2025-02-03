@@ -1,0 +1,21 @@
+diff --git a/src/Drush/Commands/StorybookCommands.php b/src/Drush/Commands/StorybookCommands.php
+index 7985c51..c752e72 100644
+--- a/src/Drush/Commands/StorybookCommands.php
++++ b/src/Drush/Commands/StorybookCommands.php
+@@ -125,6 +125,16 @@ final class StorybookCommands extends DrushCommands {
+     if (file_exists($root . DIRECTORY_SEPARATOR . $destination_path)) {
+       $destination_file = new \SplFileInfo($root . DIRECTORY_SEPARATOR . $destination_path);
+       $should_generate = $destination_file->getMTime() < $template_file->getMTime();
++
++      // Get all files in the parent directory of the template file
++      $parent_directory = dirname($template_file->getPathname());
++      $directory_iterator = new \RecursiveDirectoryIterator($parent_directory, \FilesystemIterator::SKIP_DOTS);
++      foreach ($directory_iterator as $file) {
++        if ($file->getMTime() > $destination_file->getMTime()) {
++          $should_generate = TRUE;
++          break;
++        }
++      }
+     }
+     $should_generate = $should_generate || $options['force'];
+     if (!$should_generate) {

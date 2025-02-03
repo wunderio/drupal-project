@@ -1,0 +1,16 @@
+diff --git a/src/Service/StoryRenderer.php b/src/Service/StoryRenderer.php
+index 3cd01e9..6b27148 100644
+--- a/src/Service/StoryRenderer.php
++++ b/src/Service/StoryRenderer.php
+@@ -159,6 +159,11 @@ final class StoryRenderer
+             $this->storyCollector->getAllStories($path),
+         );
+ 
++        // Loop through $stories and set ["args"]["hash"] to something random
++        array_walk($stories, function (&$story) {
++            $story['args']['hash'] = uniqid();
++         });
++
+         return [
+             ...$wrapper_data,
+             'stories' => $stories,
