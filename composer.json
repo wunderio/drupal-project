@@ -97,14 +97,7 @@
             ]
         },
         "composer-exit-on-patch-failure": true,
-        "patches": {
-            "drupal/storybook": {
-                "HMR - watch for changes within directory": "patches/3453898_drupal_storybook_watch_directory_changes.patch"
-            },
-            "e0ipso/twig-storybook" : {
-                "Set arg as random hash to trigger Storybook re-render": "patches/3453898_twig_storybook_set_arg_hash.patch"
-            }
-        },
+        "patches": {},
         "dropin-paths": {
             "web/": [
                 "type:web-dropin",
