@@ -1,7 +1,0 @@
-_core:
-  default_config_hash: f7GkVlVM44Pg_k3Hxvh7Vhj475LsKHrb46oIoi7lngM
-purgers:
-  -
-    instance_id: f94540554c
-    plugin_id: varnish
-    order_index: 2
