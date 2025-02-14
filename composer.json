@@ -19,7 +19,7 @@
         },
         {
             "type": "path",
-            "url": "recipes_installable/wunderful",
+            "url": "recipes/wunderful",
             "options": {
                 "symlink": true
             }
