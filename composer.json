@@ -12,6 +12,17 @@
         {
             "type": "composer",
             "url": "https://packages.drupal.org/8"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/woredeyonas/Drupal-Recipe-Unpack.git"
+        },
+        {
+            "type": "path",
+            "url": "recipes_installable/wunderful",
+            "options": {
+                "symlink": true
+            }
         }
     ],
     "require": {
@@ -26,7 +37,8 @@
         "drupal/simplei": "^2.1",
         "drupal/storybook": "^1.0",
         "drupal/varnish_purge": "^2.2",
-        "drush/drush": "^12.5",
+        "drush/drush": "^13.3",
+        "ewcomposer/unpack": "dev-master",
         "vlucas/phpdotenv": "^5.6",
         "wunderio/drupal-ping": "^2.5"
     },
@@ -49,7 +61,8 @@
             "php-http/discovery": true,
             "phpro/grumphp": true,
             "phpstan/extension-installer": true,
-            "tbachert/spi": true
+            "tbachert/spi": true,
+            "ewcomposer/unpack": true
         },
         "discard-changes": true,
         "process-timeout": 0,

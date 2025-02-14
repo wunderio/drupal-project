@@ -1,9 +1,9 @@
-name: 'Wunder Theming Tools'
+name: 'Wunderful theme & Theming Tools'
 description: 'Installs and configures the most communly used modules for front-end development'
-type: 'Module'
+type: 'Site'
 install:
   - twig_tweak
   - twig_field_value
-config:
-  strict: false
+# config:
+  # strict: false
   # actions:

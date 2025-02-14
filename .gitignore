@@ -43,3 +43,6 @@ node_modules
 
 # Ignore Lando data volumes
 /.lando/data-*
+
+# Ignore recipes that have been installed
+recipes/
