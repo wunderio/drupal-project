@@ -7,21 +7,6 @@
         "drupal/twig_tweak": "^3.4",
         "drupal/twig_field_value": "^2.0"
     },
-    "repositories": [
-        {
-            "type": "package",
-            "package": {
-                "name": "wunderio/wunder-theme-base",
-                "version": "main",
-                "type": "drupal-theme",
-                "source": {
-                    "url": "https://github.com/wunderio/wunder-theme-base",
-                    "type": "git",
-                    "reference": "origin/main"
-                }
-            }
-        }
-    ],
     "extra": {
         "installer-paths": {
             "web/themes/contrib/{$name}": ["type:drupal-theme"]

@@ -18,6 +18,19 @@
             "url": "https://github.com/woredeyonas/Drupal-Recipe-Unpack.git"
         },
         {
+            "type": "package",
+            "package": {
+                "name": "wunderio/wunder-theme-base",
+                "version": "v1.0.0",
+                "type": "drupal-theme",
+                "source": {
+                    "url": "https://github.com/wunderio/wunder-theme-base",
+                    "type": "git",
+                    "reference": "v1.0.0"
+                }
+            }
+        },
+        {
             "type": "path",
             "url": "recipes/wunderful",
             "options": {
