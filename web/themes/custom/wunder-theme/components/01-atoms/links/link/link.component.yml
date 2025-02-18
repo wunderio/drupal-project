@@ -1,0 +1,24 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/10.1.x/core/modules/sdc/src/metadata.schema.json
+name: Link
+description: The default link.
+properties:
+  type: object
+  required:
+    - link__content
+  properties:
+    link__content:
+      type: string
+      title: Link content
+      description: The text content of the link
+      examples:
+        - Press
+        - Submit now
+    link__url:
+      # Since we want to enforce the URI format we cannot use `|default('')` in
+      # the embedding template (since '' is not a valid URI). In this case we
+      # need to manually allow NULL.
+      type:
+        - string
+        - 'null'
+      title: URL
+      format: iri-reference

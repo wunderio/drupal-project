@@ -1,0 +1,177 @@
+/*!********************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./components/style.scss ***!
+  \********************************************************************************************************************************************/
+:root {
+  --c-text: #04131F;
+  --c-text-inverse: white;
+  --c-text-gray: #C7CDD1;
+  --c-link-text: #0064AF;
+  --c-background: white;
+  --c-background-dark: #04131F;
+  --c-background-light: #EDF3F7;
+  --c-background-secondary: #C7CDD1;
+  --c-border: #C7CDD1;
+  --c-accent-main: #0064AF;
+  --c-warning: #ffd239;
+  --c-error: #e4032e;
+  --c-message: #00855f;
+  --c-info: #0063ae;
+  --c-warningLight: #fff0cd;
+  --c-errorLight: #fac6ce;
+  --c-messageLight: #bfe9de;
+  --c-infoLight: #bfe6f6;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --c-text: #04131F;
+    --c-text-inverse: white;
+    --c-background: white;
+  }
+}
+:root [data-theme=default] {
+  --c-text: #04131F;
+  --c-text-inverse: white;
+  --c-text-gray: #C7CDD1;
+  --c-link-text: #0064AF;
+  --c-background: white;
+  --c-background-dark: #04131F;
+  --c-background-light: #EDF3F7;
+  --c-background-secondary: #C7CDD1;
+  --c-border: #C7CDD1;
+  --c-accent-main: #0064AF;
+  --c-warning: #ffd239;
+  --c-error: #e4032e;
+  --c-message: #00855f;
+  --c-info: #0063ae;
+  --c-warningLight: #fff0cd;
+  --c-errorLight: #fac6ce;
+  --c-messageLight: #bfe9de;
+  --c-infoLight: #bfe6f6;
+}
+:root [data-theme=dark] {
+  --c-text: #04131F;
+  --c-text-inverse: white;
+  --c-background: white;
+}
+
+body {
+  font-family: "Public Sans", sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+a {
+  color: var(--c-link-text);
+  font-weight: 600;
+  text-underline-offset: 2px;
+}
+a:hover {
+  color: var(--c-text);
+}
+a:focus {
+  border-radius: 1px;
+  outline: 1px solid currentColor;
+  outline-offset: 3px;
+  text-decoration: none;
+}
+
+.link {
+  color: var(--c-link-text);
+  font-weight: 600;
+  text-underline-offset: 2px;
+}
+.link:hover {
+  color: var(--c-text);
+}
+.link:focus {
+  border-radius: 1px;
+  outline: 1px solid currentColor;
+  outline-offset: 3px;
+  text-decoration: none;
+}
+.link--inverse {
+  color: var(--c-text-inverse);
+  font-weight: 600;
+  text-underline-offset: 2px;
+}
+.link--inverse:hover {
+  color: var(--c-text-gray);
+}
+.link--inverse:focus {
+  border-radius: 1px;
+  outline: 1px solid currentColor;
+  outline-offset: 3px;
+  text-decoration: none;
+}
+
+.button {
+  background: var(--c-accent-main);
+  border: 2px solid;
+  border-color: var(--c-accent-main);
+  border-radius: 5px;
+  color: var(--c-text-inverse);
+  font-family: inherit;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+}
+.button:hover {
+  background: var(--c-background-dark);
+  border-color: var(--c-background-dark);
+  color: var(--c-text-inverse);
+}
+.button:focus {
+  background: var(--c-background-dark);
+  border-color: var(--c-background-dark);
+  color: var(--c-text-inverse);
+  outline: 2px solid var(--c-background-dark);
+  outline-offset: 2px;
+}
+.button--secondary {
+  background: blue;
+  background: var(--c-background-dark);
+  border: 2px solid;
+  border-color: currentColor;
+  border-radius: 5px;
+  color: var(--c-link-text);
+  font-family: inherit;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+}
+.button--secondary:hover {
+  background: var(--c-background);
+  border-color: var(--c-background-dark);
+  color: var(--c-text);
+}
+.button--secondary:focus {
+  background: var(--c-background);
+  border-color: var(--c-background-dark);
+  color: var(--c-text);
+  outline: 2px solid var(--c-background-dark);
+  outline-offset: 2px;
+}
+.button--tertiary {
+  background: var(--c-background-dark);
+  border: 2px solid;
+  border-color: var(--c-background);
+  border-radius: 5px;
+  color: var(--c-link-text);
+  font-family: inherit;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+}
+.button--tertiary:hover {
+  background: var(--c-background-secondary);
+  border-color: var(--c-background-secondary);
+  color: var(--c-text);
+}
+.button--tertiary:focus {
+  background: var(--c-background-secondary);
+  border-color: var(--c-background-secondary);
+  color: var(--c-text);
+  outline: 2px solid var(--c-background-dark);
+  outline-offset: 2px;
+}

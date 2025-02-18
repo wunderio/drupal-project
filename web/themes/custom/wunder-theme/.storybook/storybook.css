@@ -1,0 +1,18 @@
+.sb-story-wrapper {
+  margin-bottom: 4rem;
+}
+
+.sb-story-title {
+  color: gray;
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 1.76px;
+  margin: 0 0 2rem;
+  text-transform: uppercase;
+}
+
+.sb-background-dark {
+  background: #04131F;
+  padding: 1.5rem;
+}

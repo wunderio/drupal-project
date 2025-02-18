@@ -1,0 +1,11 @@
+.button {
+  @include button;
+  &--secondary {
+    background: blue;
+    @include button-secondary;
+  }
+
+  &--tertiary {
+    @include button-tertiary;
+  }
+}

@@ -1,0 +1,17 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/10.1.x/core/modules/sdc/src/metadata.schema.json
+name: Button
+properties:
+  type: object
+  properties:
+    button__content:
+      type: string
+      title: Button content
+      description: The text content of the button
+      examples:
+        - Press
+        - Submit now
+    button__icon_after:
+      type: string
+      title: Icon Type
+      enum:
+        - arrow-up

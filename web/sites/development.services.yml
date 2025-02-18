@@ -4,6 +4,17 @@ parameters:
   twig.config:
     debug: true
     auto_reload: true
+  # CORS configuration - allow Storybook. TODO: subdomain the storybook && set is as allowed origin.
+  # Remember to disable development mode in production!
+  storybook.development: true
+  cors.config:
+    enabled: true
+    allowedHeaders: ['*']
+    allowedMethods: ['*']
+    allowedOrigins: ['*']
+    exposedHeaders: false
+    maxAge: false
+    supportsCredentials: true
 services:
   cache.backend.null:
     class: Drupal\Core\Cache\NullBackendFactory
