@@ -1,0 +1,43 @@
+{
+    "name": "amazeeio/drupal_integrations",
+    "description": "Add this project to any Drupal 9+ distribution based on drupal/core-composer-scaffold to enable it for use on Lagoon.",
+    "type": "drupal-drush",
+    "license": "MIT",
+    "conflict": {
+        "drupal/core": "<9.0"
+    },
+    "scripts": {
+        "test": "phpcs"
+    },
+    "extra": {
+        "drupal-scaffold": {
+            "file-mapping": {
+                "[project-root]/.drush-lock-update": "assets/drush-lock-update",
+                "[project-root]/drush/sites/lagoon.site.yml": "assets/lagoon.site.yml",
+                "[web-root]/sites/default/default.development.services.yml": "assets/default.development.services.yml",
+                "[web-root]/sites/default/settings.lagoon.php": "assets/settings.lagoon.php",
+                "[web-root]/sites/default/settings.php": {
+                    "mode": "replace",
+                    "path": "assets/initial.settings.php",
+                    "overwrite": false
+                }
+            }
+        }
+    },
+    "require-dev": {
+        "drupal/coder": "^8.3",
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0"
+    },
+    "suggest": {
+        "drupal/lagoon_logs": "Zero configuration logging system for Drupal sites running on Lagoon"
+    },
+    "require": {
+        "drupal/core-composer-scaffold": "*"
+    },
+    "config": {
+        "allow-plugins": {
+            "drupal/core-composer-scaffold": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    }
+}

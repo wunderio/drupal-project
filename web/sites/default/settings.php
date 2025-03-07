@@ -98,8 +98,19 @@ if (file_exists(DRUPAL_ROOT . '/sites/default/settings.local.php')) {
   include DRUPAL_ROOT . '/sites/default/settings.local.php';
 }
 
+// Local services file.
+if (file_exists(__DIR__ . '/services.local.yml')) {
+  $settings['container_yamls'][] = __DIR__ . '/services.local.yml';
+}
+
 // Silta cluster configuration overrides.
 // @see: https://github.com/wunderio/charts/blob/master/drupal/files/settings.silta.php
 if (getenv('SILTA_CLUSTER') && file_exists(DRUPAL_ROOT . '/sites/default/settings.silta.php')) {
   include DRUPAL_ROOT . '/sites/default/settings.silta.php';
+}
+
+// Silta cluster configuration overrides.
+// @see: https://github.com/wunderio/charts/blob/master/drupal/files/settings.silta.php
+if (getenv('LAGOON_ENVIRONMENT') && file_exists(DRUPAL_ROOT . '/sites/default/settings.lagoon.php')) {
+  include DRUPAL_ROOT . '/sites/default/settings.lagoon.php';
 }

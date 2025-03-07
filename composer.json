@@ -16,11 +16,13 @@
     ],
     "require": {
         "php": ">=8.3",
+        "amazeeio/drupal_integrations": "^0.5.0",
         "composer/installers": "^2.3",
         "cweagans/composer-patches": "^1.7",
         "drupal/admin_toolbar": "^3.5",
         "drupal/core-composer-scaffold": "^10.3",
         "drupal/core-recommended": "^10.3",
+        "drupal/lagoon_logs": "^3.0",
         "drupal/monolog": "^3.0",
         "drupal/purge": "^3.6",
         "drupal/simplei": "^2.1",
@@ -63,7 +65,8 @@
                 "web-root": "web/"
             },
             "file-mapping": {
-                "[web-root]/sites/development.services.yml": false
+                "[web-root]/sites/development.services.yml": false,
+                "[web-root]/sites/default/all.settings.php": "assets/all.settings.php"
             }
         },
         "installer-paths": {

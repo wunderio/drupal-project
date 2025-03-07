@@ -1,0 +1,68 @@
+name: Drupal test routine
+
+on:
+  push:
+    branches:
+      - 'main'
+      - 'dev'
+      - 'test/dev'
+  pull_request:
+    branches:
+      - 'main'
+
+jobs:
+  composer-test-suite:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Composer install
+      run: |
+        composer install -n --prefer-dist
+        composer validate
+    - name: phpcs checks
+      run: |
+        ./vendor/bin/phpcs
+
+  drupal-test-suite:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Create full set of envvars
+      uses: FranzDiebold/github-env-vars-action@v2
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        repository: lagoon-examples/drupal-base
+        path: drupal-base
+        ref: main
+    - name: Report versions
+      run: |
+        docker version
+        docker compose version
+        node -v
+        yarn -v
+    - name: Add drupal-integrations override
+      working-directory: drupal-base
+      run: |
+        composer config repositories.amazeeio/drupal_integrations '{"type": "github", "url": "http://github.com/amazeeio/drupal-integrations"}'
+        composer config github-oauth.github.com ${{ secrets.GITHUB_TOKEN }}
+        composer config platform.php 8.3.1
+        composer require --no-install amazeeio/drupal_integrations:dev-${{ env.CI_ACTION_REF_NAME }}
+    - name: Pull all images
+      working-directory: drupal-base
+      run: |
+        docker compose pull --ignore-pull-failures
+    - name: Install test harness
+      working-directory: drupal-base
+      run: |
+        yarn add leia-parser mocha chai@4 command-line-test
+    - name: Generate test files
+      working-directory: drupal-base
+      run: |
+        yarn leia "TESTING*.md" test -r 2 -s 'Start up tests' -t 'Verification commands' -c 'Destroy tests' --split-file
+    - name: Run docker compose tests
+      working-directory: drupal-base
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        yarn mocha --timeout 900000 test/*compose*.func.js

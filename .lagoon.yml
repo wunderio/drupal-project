@@ -1,0 +1,44 @@
+# https://docs.lagoon.sh/concepts-basics/lagoon-yml/
+
+docker-compose-yaml: docker-compose.yml
+
+project: drupal-base
+
+tasks:
+  pre-rollout:
+    # - run:
+    #     name: drush sql-dump
+    #     # Takes a pre-rollout backup of production sites only.
+    #     command: mkdir -p /app/web/sites/default/files/private/ && drush sql-dump --ordered-dump --gzip --result-file=/app/web/sites/default/files/private/pre-deploy-dump.sql.gz || true
+    #     service: cli
+    #     when: LAGOON_ENVIRONMENT_TYPE=="production"
+
+  post-rollout:
+    - run:
+        name: drush updb
+        # This will only run if the database exists.
+        command: |
+          if [[ $(drush status --field=Database) == "Connected" ]]; then drush -y updb; fi
+        service: cli
+        shell: bash
+    # - run:
+    #     name: drush cim
+    #     # Enable once config sync has been setup.
+    #     command: drush -y cim
+    #     service: cli
+    #     shell: bash
+    - run:
+        name: drush cr
+        # This will only run if the database exists.
+        command: |
+          if [[ $(drush status --field=Database) == "Connected" ]]; then drush -y cr; fi
+        service: cli
+        shell: bash
+
+environments:
+  main:
+    cronjobs:
+      - name: drush hourly cron
+        schedule: "M * * * *"
+        command: drush cron
+        service: cli
