@@ -72,12 +72,12 @@ This project supports two local development environments: DDEV and Lando. Choose
 
 | Service | URL/Command |
 |---------|-------------|
-| Web server | https://drupal-project.ddev.site |
-| Adminer | https://drupal-project.ddev.site:9101 or `ddev adminer` |
-| Elasticsearch | https://drupal-project.ddev.site:9002 |
-| Kibana | https://drupal-project.ddev.site:5601 |
-| Mailpit | https://drupal-project.ddev.site:8026 or `ddev mailpit` |
-| Varnish | Default on web server. For direct access: https://novarnish.drupal-project.ddev.site |
+| Web server | <https://drupal-project.ddev.site> |
+| Adminer | <https://drupal-project.ddev.site:9101> or `ddev adminer` |
+| Elasticsearch | <https://drupal-project.ddev.site:9002> |
+| Kibana | <https://drupal-project.ddev.site:5601> |
+| Mailpit | <https://drupal-project.ddev.site:8026> or `ddev mailpit` |
+| Varnish | Default on web server. For direct access: <https://novarnish.drupal-project.ddev.site> |
 | Drush | `ddev drush @local st` |
 | SSH | `ddev ssh (-s <service>)` |
 
@@ -122,16 +122,16 @@ DDEV automatically configures these services:
 
 | Service | URL/Command |
 |---------|-------------|
-| Web server | https://drupal-project.lndo.site |
-| Adminer | http://adminer.drupal-project.lndo.site |
-| Elasticsearch | http://localhost:9200 or http://elasticsearch.lndo.site |
-| Kibana | http://localhost:5601 or http://kibana.lndo.site |
-| Mailpit | http://mail.lndo.site |
-| Varnish | https://varnish.drupal-project.lndo.site |
+| Web server | <https://drupal-project.lndo.site> |
+| Adminer | <http://adminer.drupal-project.lndo.site> |
+| Elasticsearch | <http://localhost:9200> or <http://elasticsearch.lndo.site> |
+| Kibana | <http://localhost:5601> or <http://kibana.lndo.site> |
+| Mailpit | <http://mail.lndo.site> |
+| Varnish | <https://varnish.drupal-project.lndo.site> |
 | Drush | `lando drush @local st` |
 | SSH | `lando ssh (-s <service>)` |
 
-#### Lndo setup instructions
+#### Lando setup instructions
 
 1. Install [Lando](https://github.com/lando/lando/releases)
 2. Configure your project:
