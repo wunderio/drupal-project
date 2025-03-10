@@ -1,8 +1,7 @@
-
-# Values in this file override the default values of our helm chart.
+# Default Silta environment configuration.
 #
-# See https://github.com/wunderio/charts/blob/master/drupal/values.yaml
-# for all possible options.
+# Override the default values of Wunder's Drupal Helm chart.
+# @see: https://github.com/wunderio/charts/blob/master/drupal/values.yaml
 
 php:
   drupalCoreVersion: "10"
@@ -13,19 +12,21 @@ php:
       # This will avoid running all cron jobs at the same time.
       schedule: '~ 0 31 2 *'
 
-# Configure reference data that will be used when creating new environments.
+# Reference data configuration.
 referenceData:
-  # The name of the environment from which reference data will be copied.
+  # Configure reference data source for new environments.
   referenceEnvironment: 'main'
 
+# Enable MailHog in non-production environments.
 mailhog:
   enabled: true
 
+# MariaDB configuration.
 mariadb:
   master:
     persistence:
-      # Specify the size of the persistent volume (PV) for database storage.
-      # If you need to change this on an existing deployment, request assistance from the ops team.
+      # Database storage disk space allocation.
+      # Request assistance from Ops team to change this on an existing deployment.
       size: 1G
     resources:
       requests:
@@ -82,7 +83,7 @@ mariadb:
       socket=/opt/bitnami/mariadb/tmp/mysql.sock
       pid-file=/opt/bitnami/mariadb/tmp/mysqld.pid
 
-# Configure Google Filestore volume for files storage.
+# Configure Google Filestore for public and private files.
 mounts:
   public-files:
     enabled: true
@@ -95,7 +96,7 @@ mounts:
     mountPath: /app/private
     storageClassName: nfs-shared
 
+# Varnish service configuration.
+# @see: https://github.com/wunderio/silta/blob/master/docs/silta-examples.md#using-varnish
 varnish:
-  # See https://github.com/wunderio/silta/blob/master/docs/silta-examples.md#using-varnish
-  # to configure varnish for Your site correctly.
   enabled: true

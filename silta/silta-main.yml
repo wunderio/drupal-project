@@ -1,4 +1,7 @@
-# Overrides used for main branch.
+# Main environment configuration.
+#
+# Override the default values of Wunder's Drupal Helm chart and silta.yml.
+# @see: https://github.com/wunderio/charts/blob/master/drupal/values.yaml
 
 php:
   cron:

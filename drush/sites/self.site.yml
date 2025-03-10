@@ -20,11 +20,10 @@ main:
   root: /app/web
   uri: https://main.${PROJECT}.dev.wdr.io
 
-#prod:
-#  host: production-shell.client-PROJECTNAME
-#  ssh:
-#    options: -J www-admin@ssh.finland.wdr.io
-#  user: www-admin
-#  root: /app/web
-#  uri: https://www.domain.com
-
+prod:
+  host: production-shell.${REPOSITORY}
+  ssh:
+    options: -J www-admin@ssh.finland.wdr.io
+  user: www-admin
+  root: /app/web
+  uri: https://production.${PROJECT}.finland.wdr.io
