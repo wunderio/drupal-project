@@ -35,6 +35,10 @@ tooling:
     description: "Regenerates fresh PHPUnit configuration."
     cmd:
       - appserver: /app/.lando/phpunit.sh
+  syncdb:
+    description: "Synchronizes local database with remote environment"
+    cmd:
+      - appserver: /app/scripts/syncdb.sh
   varnishadm:
     description: "Runs varnishadm commands"
     service: varnish
