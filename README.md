@@ -60,46 +60,109 @@ The following secret variables are defined in the `silta/silta.secrets` file for
 
 - `TEST_KEY` - Secret key for testing purposes.
 
-## Local environment
+## Local development
 
-- **Appserver**: <https://drupal-project.lndo.site>
-- **Adminer**: <http://adminer.drupal-project.lndo.site>
-- **Elasticsearch**:
-  - <http://localhost:9200>
-  - <http://elasticsearch.lndo.site>
-- **Kibana**:
-  - <http://localhost:5601>
-  - <http://kibana.lndo.site>
-- **Mailpit**: <http://mail.lndo.site>
-- **Varnish**: <https://varnish.drupal-project.lndo.site>
-- **Drush alias**: `lando drush @local st`
-- **SSH**: `lando ssh (-s <service>)`
+This project supports two local development environments: DDEV and Lando. Choose the one that best fits your workflow.
 
-### [Setup](https://docs.lando.dev/getting-started/installation.html)
+### DDEV environment
 
-1. Install the latest [Lando](https://github.com/lando/lando/releases) and read the [documentation](https://docs.lando.dev/).
-2. Update your project name and other Lando [Drupal 10 recipe](https://docs.lando.dev/drupal/) parameters in `.lando.yml`.
-3. Run `lando start`.
+[DDEV](https://ddev.com/get-started/) provides a containerized development environment with all necessary services preconfigured.
 
-### [Services](https://docs.lando.dev/core/v3/services.html)
+#### DDEV access points
 
-- **Adminer**: Uses [Adminer database management tool](https://github.com/dehy/docker-adminer).
-- **Chrome**: Uses the [selenium/standalone-chrome](https://hub.docker.com/r/selenium/standalone-chrome/) image. Uncomment the service definition in `.lando.yml` to enable.
-- **Elasticsearch**: Uses the official [Elasticsearch image](https://hub.docker.com/r/elastic/elasticsearch). Uncomment the service definition in `.lando.yml` to enable. Requires [at least 4 GiB of memory](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html).
-- **Kibana**: Uses the official [Kibana image](https://hub.docker.com/r/elastic/kibana). Uncomment the service definition in `.lando.yml` to enable.
-- **Mailpit**: Uses the custom [Mailpit service](https://mailpit.axllent.org/).
-- **Node**: Uses Lando's [Node service](https://docs.lando.dev/node/).
-- **Varnish**: Uses Lando's [Varnish service](https://docs.lando.dev/varnish/). Uncomment the service definition in `.lando.yml` to enable.
+| Service | URL/Command |
+|---------|-------------|
+| Web server | https://drupal-project.ddev.site |
+| Adminer | https://drupal-project.ddev.site:9101 or `ddev adminer` |
+| Elasticsearch | https://drupal-project.ddev.site:9002 |
+| Kibana | https://drupal-project.ddev.site:5601 |
+| Mailpit | https://drupal-project.ddev.site:8026 or `ddev mailpit` |
+| Varnish | Default on web server. For direct access: https://novarnish.drupal-project.ddev.site |
+| Drush | `ddev drush @local st` |
+| SSH | `ddev ssh (-s <service>)` |
 
-### [Tools](https://docs.lando.dev/core/v3/tooling.html)
+#### DDEV setup instructions
 
-- **`lando`**: Lists available tools and commands.
-- **`lando drupal <arguments>`**: Run Drupal core scripts with arguments.
-- **`lando grumphp <commands>`**: Run [GrumPHP](https://github.com/phpro/grumphp) code quality checks.
-- **`lando npm <commands>`**: Run [npm](https://www.npmjs.com/) commands.
-- **`lando phpunit <commands>`**: Run [PHPUnit](https://phpunit.de/) commands.
-- **`lando varnishadm <commands>`**: Run [varnishadm](https://varnish-cache.org/docs/6.0/reference/varnishadm.html) commands.
-- **`lando xdebug <mode>`**: Load [Xdebug](https://xdebug.org/) in the selected [mode(s)](https://xdebug.org/docs/all_settings#mode).
+1. Install [DDEV](https://ddev.com/get-started/)
+   - DDEV recommends Orbstack, but Docker Desktop and [Rancher Desktop](https://rancherdesktop.io/) are also compatible
+2. Configure your project:
+   - Update project settings in `.ddev/config.yaml`
+3. Start the environment and install dependencies:
+
+   ```bash
+   ddev start
+   ddev composer install
+   ```
+
+#### DDEV services
+
+DDEV automatically configures these services:
+
+- **Adminer**: Database management via [ddev-adminer](https://github.com/ddev/ddev-adminer)
+- **Elasticsearch**: Search functionality via [ddev-elasticsearch](https://github.com/ddev/ddev-elasticsearch)
+- **Kibana**: Elasticsearch visualization via [ddev-kibana](https://github.com/JanoPL/ddev-kibana/)
+- **Mailpit**: Email testing via DDEV's [built-in service](https://ddev.readthedocs.io/en/stable/users/usage/developer-tools/#email-capture-and-review-mailpit)
+- **Node**: JavaScript tooling
+- **Varnish**: Caching via [ddev-varnish](https://github.com/ddev/ddev-varnish)
+
+#### DDEV common commands
+
+- `ddev` - Display available commands
+- `ddev grumphp <commands>` - Run code quality checks
+- `ddev npm <commands>` - Execute npm commands
+- `ddev phpunit <commands>` - Run test suites
+- `ddev varnishadm <commands>` - Manage Varnish cache
+- `ddev xdebug <mode>` - Configure Xdebug debugging modes
+
+### Lando environment
+
+[Lando](https://docs.lando.dev/) offers another containerized development option with a focus on simplicity and flexibility.
+
+#### Lando access points
+
+| Service | URL/Command |
+|---------|-------------|
+| Web server | https://drupal-project.lndo.site |
+| Adminer | http://adminer.drupal-project.lndo.site |
+| Elasticsearch | http://localhost:9200 or http://elasticsearch.lndo.site |
+| Kibana | http://localhost:5601 or http://kibana.lndo.site |
+| Mailpit | http://mail.lndo.site |
+| Varnish | https://varnish.drupal-project.lndo.site |
+| Drush | `lando drush @local st` |
+| SSH | `lando ssh (-s <service>)` |
+
+#### Lndo setup instructions
+
+1. Install [Lando](https://github.com/lando/lando/releases)
+2. Configure your project:
+   - Update project settings in `.lando.yml`
+3. Start the environment:
+
+   ```bash
+   lando start
+   ```
+
+#### Lando services
+
+Lando configures these services:
+
+- **Adminer**: Database management via [docker-adminer](https://github.com/dehy/docker-adminer)
+- **Chrome**: Browser testing via [selenium/standalone-chrome](https://hub.docker.com/r/selenium/standalone-chrome/) (requires uncommenting in `.lando.yml`)
+- **Elasticsearch**: Search functionality (requires uncommenting in `.lando.yml` and at least 4GB memory)
+- **Kibana**: Elasticsearch visualization (requires uncommenting in `.lando.yml`)
+- **Mailpit**: Email testing via [Mailpit](https://mailpit.axllent.org/)
+- **Node**: JavaScript tooling
+- **Varnish**: Caching (requires uncommenting in `.lando.yml`)
+
+#### Lando common commands
+
+- `lando` - Display available commands
+- `lando drupal <arguments>` - Run Drupal core scripts
+- `lando grumphp <commands>` - Run code quality checks
+- `lando npm <commands>` - Execute npm commands
+- `lando phpunit <commands>` - Run test suites
+- `lando varnishadm <commands>` - Manage Varnish cache
+- `lando xdebug <mode>` - Configure Xdebug debugging modes
 
 ## Development tips
 
