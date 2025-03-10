@@ -145,9 +145,28 @@ cleanup() {
 }
 trap cleanup EXIT
 
-# Test SSH connection before proceeding
+# Test SSH connection and SSH agent status before proceeding
+check_ssh_agent() {
+    if ! ssh-add -l &>/dev/null; then
+        echo -e "${YELLOW}No SSH agent detected or no keys loaded.${NC}"
+        echo -e "${GREEN}To avoid multiple passphrase prompts, you should:${NC}"
+        echo "1. Start the SSH agent:   eval \$(ssh-agent -s)"
+        echo "2. Add your SSH key:      ssh-add ~/.ssh/id_rsa  # or your key path"
+        echo -e "${YELLOW}Would you like to continue anyway? (y/n)${NC}"
+        read -p "" -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            echo -e "${GREEN}Operation cancelled.${NC}"
+            exit 0
+        fi
+    fi
+}
+
 echo -e "${GREEN}Testing SSH connection to ${YELLOW}${env}${GREEN}...${NC}"
-if ! $ssh_command "echo 'Connection successful'" > /dev/null 2>&1; then
+check_ssh_agent
+
+# Test SSH connection - allow passphrase prompt to be visible
+if ! $ssh_command "echo 'Connection successful'" 2>&1 | grep -q "Connection successful"; then
     echo -e "${RED}Failed to establish SSH connection to ${env}. Check your credentials and network.${NC}"
     exit 1
 fi
