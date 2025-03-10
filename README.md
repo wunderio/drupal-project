@@ -177,10 +177,36 @@ This project is maintained by [Wunder](https://wunder.io/). Contributions from t
 
 ### Commit message validation and ticketing system integration
 
-We use JIRA and GitHub issues for tracking tasks. Commit messages must include a valid ticket ID except for merge commits. Use the following format:
+We follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification for commit messages, with an additional requirement for ticket IDs. Each commit message must include a valid ticket ID (except for merge commits) and follow the conventional commits format:
 
-- JIRA: `[PROJECTKEY-123]: Description`
-- GitHub: `[GH-123]: Description`
+```bash
+[PROJECTKEY-123]: (feat) Add new feature description
+
+- Detailed change description
+- Another relevant detail
+
+Refs: file1.ext, file2.ext
+```
+
+Types include (used within parentheses):
+
+- feat: New feature (correlates with MINOR in semantic versioning)
+- fix: Bug fix (correlates with PATCH in semantic versioning)
+- docs: Documentation changes
+- style: Changes not affecting code meaning
+- refactor: Code changes neither fixing bugs nor adding features
+- perf: Performance improvements
+- test: Adding or correcting tests
+- build: Build system or dependency changes
+- ci: CI configuration changes
+- chore: Other changes not modifying src or test files
+
+Breaking changes must be indicated by appending a ! after the type/scope or including "BREAKING CHANGE:" in the footer.
+
+Ticket ID formats:
+
+- JIRA: `[PROJECTKEY-123]: (type) Description`
+- GitHub: `GH-123: (type) Description`
 
 We leverage [autolinked references](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/autolinked-references-and-urls) to automatically convert ticket IDs into clickable links for easy navigation. This enhances traceability and accessibility across platforms.
 
