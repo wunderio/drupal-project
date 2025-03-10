@@ -57,16 +57,21 @@ alwaysApply: true
 - When proposing code changes, always include a git commit message following the format defined in Git Commits section
 
 ## Git Commits
-Prefix commit message with JIRA ticket number from branch name.
+Prefix commit message with JIRA ticket number from branch name, following [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification.
 Format commit messages using the following types:
 
-- feat: New feature
-- fix: Bug fix
-- docs: Documentation
-- style: Formatting
-- refactor: Code restructure
-- test: Testing
-- chore: Maintenance
+- feat: New feature (correlates with MINOR in semantic versioning)
+- fix: Bug fix (correlates with PATCH in semantic versioning)
+- docs: Documentation changes
+- style: Changes that do not affect the meaning of the code
+- refactor: Code changes that neither fix a bug nor add a feature
+- perf: Performance improvements
+- test: Adding missing tests or correcting existing tests
+- build: Changes that affect the build system or external dependencies
+- ci: Changes to CI configuration files and scripts
+- chore: Other changes that don't modify src or test files
+
+Breaking changes must be indicated by appending a ! after the type/scope or including "BREAKING CHANGE:" in the footer.
 
 When providing commit messages, always use Cursor's code block feature (the code block button in the editor or triple backticks in markdown). This creates a copyable code block with the "Copy" button that allows for one-click copying with exact formatting including hyphens. Always provide just the commit message itself without any surrounding explanations:
 
