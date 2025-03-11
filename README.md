@@ -62,7 +62,7 @@ The following secret variables are defined in the `silta/silta.secrets` file for
 
 ## Local development
 
-This project supports two local development environments: DDEV and Lando. Choose the one that best fits your workflow.
+This project supports two local development environments: DDEV (preferred) and Lando. Choose the one that best fits your workflow.
 
 ### DDEV environment
 
@@ -113,8 +113,10 @@ DDEV automatically configures these services:
 - `ddev phpunit <commands>` - Run test suites
 - `ddev varnishadm <commands>` - Manage Varnish cache
 - `ddev xdebug <mode>` - Configure Xdebug debugging modes
+- `ddev syncdb [environment]` - Sync database from remote environment (requires VPN and `ddev auth ssh`, see `scripts/syncdb.sh` for details)
 
-### Lando environment
+<details>
+<summary>### Lando environment (legacy)</summary>
 
 [Lando](https://docs.lando.dev/) offers another containerized development option with a focus on simplicity and flexibility.
 
@@ -163,6 +165,9 @@ Lando configures these services:
 - `lando phpunit <commands>` - Run test suites
 - `lando varnishadm <commands>` - Manage Varnish cache
 - `lando xdebug <mode>` - Configure Xdebug debugging modes
+- `lando syncdb [environment]` - Sync database from remote environment (requires VPN, see `scripts/syncdb.sh` for details)
+
+</details>
 
 ## Development tips
 
