@@ -12,11 +12,14 @@ This project is a tailored fork of the popular [drupal-composer template](https:
 
 2. **Clone and customize the repository**
    Clone the new project locally and update its details:
-   - Update `README.md` with the project details.
-   - Update `composer.json` with the project name.
-   - Modify the `silta/silta*` files [values](https://github.com/wunderio/charts/blob/master/drupal/values.yaml).
-   - Adjust `grumphp.yml` tasks, including updating the project name in the `git_commit_message` regex.
-   - Adjust the `lando` configuration in `.lando.yml`.
+   - Update `README.md` with the project details
+   - Update `composer.json` with the project name
+   - Modify the `silta/silta*` files [values](https://github.com/wunderio/charts/blob/master/drupal/values.yaml)
+   - Adjust `grumphp.yml` tasks, including updating the project name in the `git_commit_message` regex
+   - Configure local development environment:
+     - For DDEV: Update project settings in `.ddev/config.yaml`
+     - For Lando: Update project settings in `.lando.yml`
+   - Update project name in `scripts/syncdb.sh` for database synchronization
 
 3. **Set up CircleCI**
    - Log in to [CircleCI](https://app.circleci.com/) using your GitHub account.
@@ -86,9 +89,7 @@ This project supports two local development environments: DDEV (preferred) and L
 
 1. Install [DDEV](https://ddev.com/get-started/)
    - DDEV recommends Orbstack, but Docker Desktop and [Rancher Desktop](https://rancherdesktop.io/) are also compatible
-2. Configure your project:
-   - Update project settings in `.ddev/config.yaml`
-3. Start the environment and install dependencies:
+2. Start the environment and install dependencies:
 
    ```bash
    ddev start
@@ -130,9 +131,7 @@ This project supports two local development environments: DDEV (preferred) and L
 #### Lando setup instructions
 
 1. Install [Lando](https://github.com/lando/lando/releases)
-2. Configure your project:
-   - Update project settings in `.lando.yml`
-3. Start the environment:
+2. Start the environment:
 
    ```bash
    lando start
