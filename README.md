@@ -68,18 +68,19 @@ This project supports two local development environments: DDEV (preferred) and L
 
 [DDEV](https://ddev.com/get-started/) provides a containerized development environment with all necessary services preconfigured.
 
-#### DDEV access points
+#### DDEV services and access points
 
-| Service | URL/Command |
-|---------|-------------|
-| Web server | <https://drupal-project.ddev.site> |
-| Adminer | <https://drupal-project.ddev.site:9101> or `ddev adminer` |
-| Elasticsearch | <https://drupal-project.ddev.site:9002> |
-| Kibana | <https://drupal-project.ddev.site:5601> |
-| Mailpit | <https://drupal-project.ddev.site:8026> or `ddev mailpit` |
-| Varnish | Default on web server. For direct access: <https://novarnish.drupal-project.ddev.site> |
-| Drush | `ddev drush @local st` |
-| SSH | `ddev ssh (-s <service>)` |
+| Service | Description | Access |
+|---------|-------------|---------|
+| Web server | Primary web service | <https://drupal-project.ddev.site> |
+| Adminer | Database management via [ddev-adminer](https://github.com/ddev/ddev-adminer) | <https://drupal-project.ddev.site:9101> or `ddev adminer` |
+| Elasticsearch | Search functionality via [ddev-elasticsearch](https://github.com/ddev/ddev-elasticsearch) | <https://drupal-project.ddev.site:9002> |
+| Kibana | Elasticsearch visualization via [ddev-kibana](https://github.com/JanoPL/ddev-kibana/) | <https://drupal-project.ddev.site:5601> |
+| Mailpit | Email testing via [built-in service](https://ddev.readthedocs.io/en/stable/users/usage/developer-tools/#email-capture-and-review-mailpit) | <https://drupal-project.ddev.site:8026> or `ddev mailpit` |
+| Varnish | Caching via [ddev-varnish](https://github.com/ddev/ddev-varnish) | Default on web server. Direct: <https://novarnish.drupal-project.ddev.site> |
+| Drush | Drupal CLI tool | `ddev drush @local st` |
+| SSH | Container shell access | `ddev ssh (-s <service>)` |
+| Node | JavaScript tooling | Included in web container |
 
 #### DDEV setup instructions
 
@@ -93,17 +94,6 @@ This project supports two local development environments: DDEV (preferred) and L
    ddev start
    ddev composer install
    ```
-
-#### DDEV services
-
-DDEV automatically configures these services:
-
-- **Adminer**: Database management via [ddev-adminer](https://github.com/ddev/ddev-adminer)
-- **Elasticsearch**: Search functionality via [ddev-elasticsearch](https://github.com/ddev/ddev-elasticsearch)
-- **Kibana**: Elasticsearch visualization via [ddev-kibana](https://github.com/JanoPL/ddev-kibana/)
-- **Mailpit**: Email testing via DDEV's [built-in service](https://ddev.readthedocs.io/en/stable/users/usage/developer-tools/#email-capture-and-review-mailpit)
-- **Node**: JavaScript tooling
-- **Varnish**: Caching via [ddev-varnish](https://github.com/ddev/ddev-varnish)
 
 #### DDEV common commands
 
@@ -122,18 +112,20 @@ DDEV automatically configures these services:
 
 [Lando](https://docs.lando.dev/) offers another containerized development option with a focus on simplicity and flexibility.
 
-#### Lando access points
+#### Lando services and access points
 
-| Service | URL/Command |
-|---------|-------------|
-| Web server | <https://drupal-project.lndo.site> |
-| Adminer | <http://adminer.drupal-project.lndo.site> |
-| Elasticsearch | <http://localhost:9200> or <http://elasticsearch.lndo.site> |
-| Kibana | <http://localhost:5601> or <http://kibana.lndo.site> |
-| Mailpit | <http://mail.lndo.site> |
-| Varnish | <https://varnish.drupal-project.lndo.site> |
-| Drush | `lando drush @local st` |
-| SSH | `lando ssh (-s <service>)` |
+| Service | Description | Access |
+|---------|-------------|---------|
+| Web server | Primary web service | <https://drupal-project.lndo.site> |
+| Adminer | Database management via [docker-adminer](https://github.com/dehy/docker-adminer) | <http://adminer.drupal-project.lndo.site> |
+| Elasticsearch | Search functionality via Elasticsearch (uncomment in `.lando.yml` to enable) | <http://localhost:9200> or <http://elasticsearch.lndo.site> |
+| Kibana | Elasticsearch visualization (uncomment in `.lando.yml` to enable) | <http://localhost:5601> or <http://kibana.lndo.site> |
+| Mailpit | Email testing via [Mailpit](https://mailpit.axllent.org/) | <http://mail.lndo.site> |
+| Varnish | Caching via Varnish | <https://varnish.drupal-project.lndo.site> |
+| Drush | Drupal CLI tool | `lando drush @local st` |
+| SSH | Container shell access | `lando ssh (-s <service>)` |
+| Node | JavaScript tooling | Included in web container |
+| Chrome | Browser testing via [selenium/standalone-chrome](https://hub.docker.com/r/selenium/standalone-chrome/) | Available in web container |
 
 #### Lando setup instructions
 
@@ -145,18 +137,6 @@ DDEV automatically configures these services:
    ```bash
    lando start
    ```
-
-#### Lando services
-
-Lando configures these services:
-
-- **Adminer**: Database management via [docker-adminer](https://github.com/dehy/docker-adminer)
-- **Chrome**: Browser testing via [selenium/standalone-chrome](https://hub.docker.com/r/selenium/standalone-chrome/) (requires uncommenting in `.lando.yml`)
-- **Elasticsearch**: Search functionality (requires uncommenting in `.lando.yml` and at least 4GB memory)
-- **Kibana**: Elasticsearch visualization (requires uncommenting in `.lando.yml`)
-- **Mailpit**: Email testing via [Mailpit](https://mailpit.axllent.org/)
-- **Node**: JavaScript tooling
-- **Varnish**: Caching (requires uncommenting in `.lando.yml`)
 
 #### Lando common commands
 
