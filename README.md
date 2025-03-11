@@ -78,7 +78,10 @@ The following secret variables are defined in the `silta/silta.secrets` file for
 ### [Setup](https://docs.lando.dev/getting-started/installation.html)
 
 1. Install the latest [Lando](https://github.com/lando/lando/releases) and read the [documentation](https://docs.lando.dev/).
-2. Update your project name and other Lando [Drupal 10 recipe](https://docs.lando.dev/drupal/) parameters in `.lando.yml`.
+2. Update your project name in:
+   - `.lando.yml` - Update the `name` field and service URLs
+   - `scripts/syncdb.sh` - Update the `PROJECT_NAME` variable
+   - Other Lando [Drupal 10 recipe](https://docs.lando.dev/drupal/) parameters as needed.
 3. Run `lando start`.
 
 ### [Services](https://docs.lando.dev/core/v3/services.html)
@@ -98,6 +101,7 @@ The following secret variables are defined in the `silta/silta.secrets` file for
 - **`lando grumphp <commands>`**: Run [GrumPHP](https://github.com/phpro/grumphp) code quality checks.
 - **`lando npm <commands>`**: Run [npm](https://www.npmjs.com/) commands.
 - **`lando phpunit <commands>`**: Run [PHPUnit](https://phpunit.de/) commands.
+- **`lando syncdb [environment] [options]`**: Sync database from remote environments. See [syncdb.sh](scripts/syncdb.sh) for options and usage details.
 - **`lando varnishadm <commands>`**: Run [varnishadm](https://varnish-cache.org/docs/6.0/reference/varnishadm.html) commands.
 - **`lando xdebug <mode>`**: Load [Xdebug](https://xdebug.org/) in the selected [mode(s)](https://xdebug.org/docs/all_settings#mode).
 
