@@ -116,7 +116,9 @@ DDEV automatically configures these services:
 - `ddev syncdb [environment]` - Sync database from remote environment (requires VPN and `ddev auth ssh`, see `scripts/syncdb.sh` for details)
 
 <details>
-<summary>### Lando environment (legacy)</summary>
+<summary>Lando environment (legacy)</summary>
+
+### Lando environment
 
 [Lando](https://docs.lando.dev/) offers another containerized development option with a focus on simplicity and flexibility.
 
