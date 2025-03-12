@@ -74,7 +74,8 @@ This project supports two local development environments: DDEV (preferred) and L
 #### DDEV setup instructions
 
 1. Install [DDEV](https://ddev.com/get-started/)
-2. Start the environment and set up your project:
+2. Ensure Docker is running on your system
+3. Start the environment and set up your project:
 
    ```bash
    # Start the DDEV environment

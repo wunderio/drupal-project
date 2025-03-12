@@ -29,5 +29,13 @@ corepack_enable: false
 hooks:
   post-start:
     - exec: "composer install"
-    - exec: "elasticsearch-plugin install analysis-icu analysis-ukrainian"
+    - exec: |
+        plugins=(analysis-icu analysis-ukrainian)
+        for plugin in "${plugins[@]}"; do
+          if ! elasticsearch-plugin list | grep -q "^$plugin\b"; then
+            elasticsearch-plugin install "$plugin"
+          else
+            echo "Plugin $plugin is already installed"
+          fi
+        done
       service: elasticsearch
