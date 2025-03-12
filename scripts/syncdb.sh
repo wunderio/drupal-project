@@ -3,6 +3,7 @@
 # Usage:
 #   ./scripts/syncdb.sh [environment] [options]
 #   lando syncdb [environment] [options]
+#   ddev syncdb [environment] [options]
 #
 # Parameters:
 #   environment: 'main' (default) or 'production'
@@ -28,21 +29,22 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-# Check if running inside a container
-if [ -f "/.dockerenv" ] || [ -f "/run/.containerenv" ]; then
-  IN_CONTAINER=true
-else
-  IN_CONTAINER=false
-fi
-
 # Define temporary directory and files
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-if [ "$IN_CONTAINER" = true ] && [ -d "/app" ]; then
-  # When running inside container, force use of /app path
+
+# Determine project root based on environment
+if [ "${LANDO:-}" = "ON" ]; then
+  # Lando environment
   PROJECT_ROOT="/app"
+  echo -e "${GREEN}Running in Lando environment${NC}"
+elif [ "${IS_DDEV_PROJECT:-}" = "true" ]; then
+  # DDEV environment
+  PROJECT_ROOT="/var/www/html"
+  echo -e "${GREEN}Running in DDEV environment${NC}"
 else
-  # When running from host, determine relative path
+  # When running from host machine
   PROJECT_ROOT="$( cd "${SCRIPT_DIR}/.." && pwd )"
+  echo -e "${GREEN}Running on host machine${NC}"
 fi
 
 TMP_DIR="${PROJECT_ROOT}/tmp"
@@ -54,12 +56,17 @@ backup_file="${TMP_DIR}/db-backup-$(date +%Y%m%d%H%M%S).sql"
 mkdir -p "${TMP_DIR}"
 
 # Determine which local environment we're using and set the appropriate drush command
-if [ "$IN_CONTAINER" = true ]; then
-  # If we're already inside a container, use drush directly
-  echo -e "${GREEN}Running inside container, using 'drush' directly${NC}"
+if [ "${LANDO:-}" = "ON" ]; then
+  # Lando environment
   DRUSH="drush"
+  echo -e "${GREEN}Using 'drush' directly in Lando environment${NC}"
+elif [ "${IS_DDEV_PROJECT:-}" = "true" ]; then
+  # DDEV environment
+  DRUSH="drush"
+  echo -e "${GREEN}Using 'drush' directly in DDEV environment${NC}"
 elif command -v ddev >/dev/null 2>&1 && [ -f "${PROJECT_ROOT}/.ddev/config.yaml" ]; then
-  echo -e "${GREEN}Detected DDEV environment, using 'ddev drush'${NC}"
+  # Host with DDEV available
+  echo -e "${GREEN}Using DDEV from host, running 'ddev drush'${NC}"
   # Check if DDEV is running
   if ! ddev status >/dev/null 2>&1; then
     echo -e "${YELLOW}DDEV is not running. Starting DDEV...${NC}"
@@ -67,7 +74,8 @@ elif command -v ddev >/dev/null 2>&1 && [ -f "${PROJECT_ROOT}/.ddev/config.yaml"
   fi
   DRUSH="ddev drush"
 elif command -v lando >/dev/null 2>&1 && [ -f "${PROJECT_ROOT}/.lando.yml" ]; then
-  echo -e "${GREEN}Detected Lando environment, using 'lando drush'${NC}"
+  # Host with Lando available
+  echo -e "${GREEN}Using Lando from host, running 'lando drush'${NC}"
 
   # Check if Lando is running
   if ! lando list 2>/dev/null | grep -q "RUNNING"; then
@@ -85,6 +93,7 @@ elif command -v lando >/dev/null 2>&1 && [ -f "${PROJECT_ROOT}/.lando.yml" ]; th
 
   DRUSH="lando drush"
 else
+  # Direct drush command as fallback
   echo -e "${YELLOW}No container environment detected, using 'drush' directly${NC}"
   DRUSH="drush"
 fi
@@ -115,6 +124,7 @@ while [[ $# -gt 0 ]]; do
       echo "Usage:"
       echo "  ./scripts/syncdb.sh [environment] [options]"
       echo "  lando syncdb [environment] [options]"
+      echo "  ddev syncdb [environment] [options]"
       echo ""
       echo "  environment: 'main' (default) or 'production'"
       echo "  options:"
@@ -149,14 +159,39 @@ trap cleanup EXIT
 check_ssh_agent() {
     if ! ssh-add -l &>/dev/null; then
         echo -e "${YELLOW}No SSH agent detected or no keys loaded.${NC}"
-        echo -e "${GREEN}To avoid multiple passphrase prompts, you should:${NC}"
-        echo "1. Start the SSH agent:   eval \$(ssh-agent -s)"
-        echo "2. Add your SSH key:      ssh-add ~/.ssh/id_rsa  # or your key path"
+
+        if [ "${IS_DDEV_PROJECT:-}" = "true" ]; then
+            # DDEV-specific instructions
+            echo -e "${GREEN}When using DDEV, please run the following commands on your host machine:${NC}"
+            echo ""
+            echo "1. Start SSH agent:     eval \$(ssh-agent -s)"
+            echo "2. Add your SSH key:    ssh-add ~/.ssh/id_rsa  # or your specific key path"
+            echo "3. Share with DDEV:     ddev auth ssh"
+        elif [ "${LANDO:-}" = "ON" ]; then
+            # Lando-specific instructions
+            echo -e "${GREEN}When using Lando, please run the following on your host machine:${NC}"
+            echo ""
+            echo "1. Start SSH agent:     eval \$(ssh-agent -s)"
+            echo "2. Add your SSH key:    ssh-add ~/.ssh/id_rsa  # or your specific key path"
+            echo "3. Restart Lando with:  lando rebuild -y"
+        else
+            # Generic instructions for host machine
+            echo -e "${GREEN}To avoid multiple passphrase prompts, you should:${NC}"
+            echo "1. Start the SSH agent:   eval \$(ssh-agent -s)"
+            echo "2. Add your SSH key:      ssh-add ~/.ssh/id_rsa  # or your key path"
+        fi
+
         echo -e "${YELLOW}Would you like to continue anyway? (y/n)${NC}"
         read -p "" -n 1 -r
         echo
         if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-            echo -e "${GREEN}Operation cancelled.${NC}"
+            if [ "${IS_DDEV_PROJECT:-}" = "true" ]; then
+                echo -e "${GREEN}Operation cancelled. Please run 'ddev auth ssh' before trying again.${NC}"
+            elif [ "${LANDO:-}" = "ON" ]; then
+                echo -e "${GREEN}Operation cancelled. Please add your SSH keys and restart Lando before trying again.${NC}"
+            else
+                echo -e "${GREEN}Operation cancelled.${NC}"
+            fi
             exit 0
         fi
     fi
@@ -202,7 +237,7 @@ fi
 
 # Process the dump file to handle MariaDB compatibility
 echo -e "${GREEN}Processing dump file...${NC}"
-# @see: https://mariadb.org/mariadb-dump-file-compatibility-change.
+# @see: <https://mariadb.org/mariadb-dump-file-compatibility-change>
 tail -n +2 "$dump_file" > "$processed_dump_file"
 
 # Import the processed dump

@@ -1,0 +1,33 @@
+name: drupal-project
+type: drupal
+docroot: web
+php_version: "8.3"
+webserver_type: nginx-fpm
+xdebug_enabled: false
+additional_hostnames: []
+additional_fqdns: []
+database:
+  type: mariadb
+  version: "10.11"
+use_dns_when_possible: true
+composer_version: "2"
+nodejs_version: "20"
+# Prevents DDEV from managing settings.php and other Drupal settings files.
+disable_settings_management: true
+web_environment:
+  - DB_NAME=db
+  - DB_USER=db
+  - DB_PASS=db
+  - DB_HOST=db
+  - DRUSH_OPTIONS_URI=https://drupal-project.ddev.site
+  - ENVIRONMENT_NAME=ddev
+  - EXEC_GRUMPHP_COMMAND=ddev php
+  - HASH_SALT=notsosecurehash
+  - ELASTICSEARCH_HOST=elasticsearch
+
+corepack_enable: false
+hooks:
+  post-start:
+    - exec: "composer install"
+    - exec: "elasticsearch-plugin install analysis-icu analysis-ukrainian"
+      service: elasticsearch
