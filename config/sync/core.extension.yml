@@ -31,12 +31,19 @@ module:
   page_cache: 0
   path: 0
   path_alias: 0
+  purge: 0
+  purge_processor_lateruntime: 0
+  purge_queuer_coretags: 0
+  purge_tokens: 0
+  purge_ui: 0
   system: 0
   taxonomy: 0
   text: 0
   toolbar: 0
   update: 0
   user: 0
+  varnish_purge_tags: 0
+  varnish_purger: 0
   views_ui: 0
   views: 10
   standard: 1000

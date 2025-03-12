@@ -43,8 +43,8 @@ $settings['file_scan_ignore_directories'] = [
 
 // Varnish Purge configuration.
 if (getenv('VARNISH_ADMIN_HOST')) {
-  $config['varnish_purger.settings.f94540554c']['hostname'] = trim(getenv('VARNISH_ADMIN_HOST'));
-  $config['varnish_purger.settings.f94540554c']['port'] = '80';
+  $config['varnish_purger.settings.c6013ef2d0']['hostname'] = trim(getenv('VARNISH_ADMIN_HOST'));
+  $config['varnish_purger.settings.c6013ef2d0']['port'] = getenv('VARNISH_ADMIN_PORT') ? trim(getenv('VARNISH_ADMIN_PORT')) : '80';
 }
 
 // Symfony Mailer configuration.
