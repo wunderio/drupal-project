@@ -104,7 +104,7 @@ ddev describe
 - `ddev syncdb [environment]` - Sync database from remote environment (requires VPN and `ddev auth ssh`, see `scripts/syncdb.sh` for details)
 
 <details>
-<summary>Lando environment (legacy)</summary>
+<summary>Lando environment</summary>
 
 ### Lando environment
 
@@ -149,10 +149,18 @@ ddev describe
 
 ## Development tips
 
+<details>
+<summary>Drupal core updates</summary>
+
 ### Drupal core updates
 
 - [Updating Drupal core](https://www.drupal.org/docs/updating-drupal/updating-drupal-core-via-composer).
 - [Altering scaffold files](https://www.drupal.org/docs/develop/using-composer/using-drupals-composer-scaffold#toc_4) (e.g., `robots.txt`, `.htaccess`).
+
+</details>
+
+<details>
+<summary>Varnish and Purge configuration</summary>
 
 ### Varnish and Purge configuration
 
@@ -194,6 +202,10 @@ ddev describe
    Varnish should now be configured to handle caching and purging when content is updated.
 
 **Note:** The default Purge setup uses the `purge_processor_lateruntime` module, which empties the purge queue during page requests. This works well for most sites needing immediate cache clearing.
+</details>
+
+<details>
+<summary>Running tests</summary>
 
 ### Running tests
 
@@ -206,6 +218,7 @@ Use `lando phpunit` to run PHPUnit commands:
 - Run one test class: `lando phpunit path/to/your/class/file.php`
 - List groups: `lando phpunit --list-groups`
 - Run all tests in a particular group: `lando phpunit --group Groupname`
+</details>
 
 ### Secrets handling
 
@@ -220,6 +233,9 @@ See the corresponding `secret_key_env` values in the `.circleci/config.yml` file
 ## Contributing
 
 This project is maintained by [Wunder](https://wunder.io/). Contributions from the community are welcome.
+
+<details>
+<summary>Commit message validation and ticketing system integration</summary>
 
 ### Commit message validation and ticketing system integration
 
@@ -257,6 +273,7 @@ Ticket ID formats:
 We leverage [autolinked references](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/autolinked-references-and-urls) to automatically convert ticket IDs into clickable links for easy navigation. This enhances traceability and accessibility across platforms.
 
 Validation rules are implemented via the GrumPHP `git_commit_message` component. See `grumphp.yml` for configuration details.
+</details>
 
 ### Git workflow
 
