@@ -71,25 +71,35 @@ This project supports two local development environments: DDEV (preferred) and L
 
 [DDEV](https://ddev.com/get-started/) provides a containerized development environment with all necessary services preconfigured.
 
+#### DDEV setup instructions
+
+1. Install [DDEV](https://ddev.com/get-started/)
+2. Start the environment and set up your project:
+
+   ```bash
+   # Start the DDEV environment
+   ddev start
+
+   # Authenticate SSH for database syncing
+   ddev auth ssh
+
+   # Synchronize local database with a remote environment
+   # See `scripts/syncdb.sh` for options
+   ddev syncdb
+
+   # Get a one-time login link for admin access
+   ddev drush uli
+   ```
+
 #### DDEV services and access points
 
 The project can be accessed at <https://drupal-project.ddev.site>
 
 For a complete list of all available services, URLs, and ports, use:
 
-```bash
-ddev describe
-```
-
-#### DDEV setup instructions
-
-1. Install [DDEV](https://ddev.com/get-started/)
-   - DDEV recommends Orbstack, but Docker Desktop and [Rancher Desktop](https://rancherdesktop.io/) are also compatible
-2. Start the environment:
-
-   ```bash
-   ddev start
-   ```
+  ```bash
+  ddev describe
+  ```
 
 #### DDEV common commands
 
