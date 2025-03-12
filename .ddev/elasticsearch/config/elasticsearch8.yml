@@ -8,8 +8,11 @@ cluster.name: "docker-cluster"
 # https://www.elastic.co/guide/en/elasticsearch/reference/current/important-settings.html#network.host
 network.host: 0.0.0.0
 
-# Disable security features
-# https://www.elastic.co/guide/en/elasticsearch/reference/current/security-settings.html#general-security-settings
+# Security settings
 xpack.security.enabled: false
 xpack.security.autoconfiguration.enabled: false
 xpack.security.enrollment.enabled: false
+
+# CORS settings
+http.cors.enabled: true
+http.cors.allow-origin: "*"

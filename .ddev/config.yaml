@@ -22,4 +22,10 @@ web_environment:
   - ENVIRONMENT_NAME=ddev
   - EXEC_GRUMPHP_COMMAND=ddev php
   - HASH_SALT=notsosecurehash
+  - ELASTICSEARCH_HOST=elasticsearch
+
 corepack_enable: false
+hooks:
+  post-start:
+    - exec: "elasticsearch-plugin install analysis-icu analysis-ukrainian"
+      service: elasticsearch
