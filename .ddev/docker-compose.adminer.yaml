@@ -2,29 +2,47 @@
 services:
   adminer:
     container_name: ddev-${DDEV_SITENAME}-adminer
-    build:
-      context: './adminer'
+    image: ${ADMINER_DOCKER_IMAGE:-adminer:standalone}
     environment:
-      # Use the line below to change the adminer theme.
-      # - ADMINER_DESIGN=nette
-      - ADMINER_DEFAULT_SERVER=db
-      - ADMINER_PLUGINS=tables-filter
+      - ADMINER_DEFAULT_DRIVER=${ADMINER_DEFAULT_DRIVER:-${DDEV_DATABASE_FAMILY:-server}}
+      - ADMINER_DEFAULT_SERVER=${ADMINER_DEFAULT_SERVER:-db}
+      - ADMINER_DEFAULT_DB=${ADMINER_DEFAULT_DB:-db}
+      - ADMINER_DEFAULT_USERNAME=${ADMINER_DEFAULT_USERNAME:-db}
+      - ADMINER_DEFAULT_PASSWORD=${ADMINER_DEFAULT_PASSWORD:-db}
+      - ADMINER_PLUGINS=${ADMINER_PLUGINS:-tables-filter}
+      - ADMINER_DESIGN=${ADMINER_DESIGN:-}
       - VIRTUAL_HOST=$DDEV_HOSTNAME
       - HTTP_EXPOSE=9100:8080
       - HTTPS_EXPOSE=9101:8080
-      - DDEV_DBIMAGE
-      - DDEV_DB_NAME=db
-      - DDEV_DB_USER=db
-      - DDEV_DB_PASS=db
     labels:
       com.ddev.site-name: ${DDEV_SITENAME}
       com.ddev.approot: $DDEV_APPROOT
     volumes:
-    - ".:/mnt/ddev_config"
-    - "ddev-global-cache:/mnt/ddev-global-cache"
+      - ".:/mnt/ddev_config"
+      - "ddev-global-cache:/mnt/ddev-global-cache"
     depends_on:
-    - db
+      - db
+    configs:
+      - source: adminer-index.php
+        target: /var/www/html/index.php
 
-  web:
-    links:
-      - adminer:adminer
+configs:
+  adminer-index.php:
+    content: |
+      <?php
+        if (!count($$_GET)) {
+          if ($$_ENV['ADMINER_DEFAULT_DRIVER'] === 'mysql') {
+            $$_ENV['ADMINER_DEFAULT_DRIVER'] = 'server';
+          } else if ($$_ENV['ADMINER_DEFAULT_DRIVER'] === 'postgres') {
+            $$_ENV['ADMINER_DEFAULT_DRIVER'] = 'pgsql';
+          }
+          $$_POST['auth'] = [
+            'driver' => $$_ENV['ADMINER_DEFAULT_DRIVER'],
+            'server' => $$_ENV['ADMINER_DEFAULT_SERVER'],
+            'db' => $$_ENV['ADMINER_DEFAULT_DB'],
+            'username' => $$_ENV['ADMINER_DEFAULT_USERNAME'],
+            'password' => $$_ENV['ADMINER_DEFAULT_PASSWORD'],
+          ];
+        }
+        include './adminer.php';
+      ?>
