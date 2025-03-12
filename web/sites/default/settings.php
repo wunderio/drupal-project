@@ -32,6 +32,9 @@ $settings['config_sync_directory'] = '../config/sync';
 // @see: https://github.com/wunderio/charts/blob/master/drupal/files/silta.services.yml
 $settings['container_yamls'][] = DRUPAL_ROOT . '/sites/services.yml';
 
+// Enable state cache for Drupal 10 performance
+$settings['state_cache'] = TRUE;
+
 // The default list of directories that will be ignored by Drupal's file API.
 $settings['file_scan_ignore_directories'] = [
   'node_modules',
