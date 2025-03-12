@@ -85,11 +85,10 @@ ddev describe
 
 1. Install [DDEV](https://ddev.com/get-started/)
    - DDEV recommends Orbstack, but Docker Desktop and [Rancher Desktop](https://rancherdesktop.io/) are also compatible
-2. Start the environment and install dependencies:
+2. Start the environment:
 
    ```bash
    ddev start
-   ddev composer install
    ```
 
 #### DDEV common commands

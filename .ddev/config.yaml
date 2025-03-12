@@ -28,5 +28,6 @@ web_environment:
 corepack_enable: false
 hooks:
   post-start:
+    - exec: "composer install"
     - exec: "elasticsearch-plugin install analysis-icu analysis-ukrainian"
       service: elasticsearch
