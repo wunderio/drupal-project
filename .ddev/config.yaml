@@ -32,7 +32,7 @@ hooks:
     - exec: |
         plugins=(analysis-icu analysis-ukrainian)
         for plugin in "${plugins[@]}"; do
-          if ! elasticsearch-plugin list | grep -q "^$plugin$"; then
+          if ! elasticsearch-plugin list | grep -q "^$plugin\b"; then
             elasticsearch-plugin install "$plugin"
           else
             echo "Plugin $plugin is already installed"
