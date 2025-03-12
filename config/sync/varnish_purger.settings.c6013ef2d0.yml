@@ -8,7 +8,7 @@ invalidationtype: tag
 hostname: localhost
 port: 80
 path: /
-request_method: PURGE
+request_method: BAN
 scheme: http
 verify: '1'
 headers:
