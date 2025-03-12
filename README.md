@@ -12,11 +12,14 @@ This project is a tailored fork of the popular [drupal-composer template](https:
 
 2. **Clone and customize the repository**
    Clone the new project locally and update its details:
-   - Update `README.md` with the project details.
-   - Update `composer.json` with the project name.
-   - Modify the `silta/silta*` files [values](https://github.com/wunderio/charts/blob/master/drupal/values.yaml).
-   - Adjust `grumphp.yml` tasks, including updating the project name in the `git_commit_message` regex.
-   - Adjust the `lando` configuration in `.lando.yml`.
+   - Update `README.md` with the project details
+   - Update `composer.json` with the project name
+   - Modify the `silta/silta*` files [values](https://github.com/wunderio/charts/blob/master/drupal/values.yaml)
+   - Adjust `grumphp.yml` tasks, including updating the project name in the `git_commit_message` regex
+   - Configure local development environment:
+     - For DDEV: Update project settings in `.ddev/config.yaml`
+     - For Lando: Update project settings in `.lando.yml`
+   - Update project name in `scripts/syncdb.sh` for database synchronization
 
 3. **Set up CircleCI**
    - Log in to [CircleCI](https://app.circleci.com/) using your GitHub account.
@@ -60,53 +63,134 @@ The following secret variables are defined in the `silta/silta.secrets` file for
 
 - `TEST_KEY` - Secret key for testing purposes.
 
-## Local environment
+## Local development
 
-- **Appserver**: <https://drupal-project.lndo.site>
-- **Adminer**: <http://adminer.drupal-project.lndo.site>
-- **Elasticsearch**:
-  - <http://localhost:9200>
-  - <http://elasticsearch.lndo.site>
-- **Kibana**:
-  - <http://localhost:5601>
-  - <http://kibana.lndo.site>
-- **Mailpit**: <http://mail.lndo.site>
-- **Varnish**: <https://varnish.drupal-project.lndo.site>
-- **Drush alias**: `lando drush @local st`
-- **SSH**: `lando ssh (-s <service>)`
+This project supports two local development environments: DDEV (preferred) and Lando. Choose the one that best fits your workflow.
 
-### [Setup](https://docs.lando.dev/getting-started/installation.html)
+### DDEV environment
 
-1. Install the latest [Lando](https://github.com/lando/lando/releases) and read the [documentation](https://docs.lando.dev/).
-2. Update your project name and other Lando [Drupal 10 recipe](https://docs.lando.dev/drupal/) parameters in `.lando.yml`.
-3. Run `lando start`.
+[DDEV](https://ddev.com/get-started/) provides a containerized development environment with all necessary services preconfigured.
 
-### [Services](https://docs.lando.dev/core/v3/services.html)
+#### DDEV setup instructions
 
-- **Adminer**: Uses [Adminer database management tool](https://github.com/dehy/docker-adminer).
-- **Chrome**: Uses the [selenium/standalone-chrome](https://hub.docker.com/r/selenium/standalone-chrome/) image. Uncomment the service definition in `.lando.yml` to enable.
-- **Elasticsearch**: Uses the official [Elasticsearch image](https://hub.docker.com/r/elastic/elasticsearch). Uncomment the service definition in `.lando.yml` to enable. Requires [at least 4 GiB of memory](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html).
-- **Kibana**: Uses the official [Kibana image](https://hub.docker.com/r/elastic/kibana). Uncomment the service definition in `.lando.yml` to enable.
-- **Mailpit**: Uses the custom [Mailpit service](https://mailpit.axllent.org/).
-- **Node**: Uses Lando's [Node service](https://docs.lando.dev/node/).
-- **Varnish**: Uses Lando's [Varnish service](https://docs.lando.dev/varnish/). Uncomment the service definition in `.lando.yml` to enable.
+1. Install [DDEV](https://ddev.com/get-started/)
+2. Ensure Docker is running on your system
+3. Start the environment and set up your project:
 
-### [Tools](https://docs.lando.dev/core/v3/tooling.html)
+   ```bash
+   # Start the DDEV environment
+   ddev start
 
-- **`lando`**: Lists available tools and commands.
-- **`lando drupal <arguments>`**: Run Drupal core scripts with arguments.
-- **`lando grumphp <commands>`**: Run [GrumPHP](https://github.com/phpro/grumphp) code quality checks.
-- **`lando npm <commands>`**: Run [npm](https://www.npmjs.com/) commands.
-- **`lando phpunit <commands>`**: Run [PHPUnit](https://phpunit.de/) commands.
-- **`lando varnishadm <commands>`**: Run [varnishadm](https://varnish-cache.org/docs/6.0/reference/varnishadm.html) commands.
-- **`lando xdebug <mode>`**: Load [Xdebug](https://xdebug.org/) in the selected [mode(s)](https://xdebug.org/docs/all_settings#mode).
+   # Authenticate SSH for database syncing
+   ddev auth ssh
+
+   # Synchronize local database with a remote environment
+   # See `scripts/syncdb.sh` for options
+   ddev syncdb
+
+   # Get a one-time login link for admin access
+   ddev drush uli
+   ```
+
+#### DDEV services and access points
+
+The project can be accessed at <https://drupal-project.ddev.site>
+
+For a complete list of all available services, URLs, and ports, use:
+
+  ```bash
+  ddev describe
+  ```
+
+#### DDEV common commands
+
+- `ddev` - Display available commands
+- `ddev adminer` - Launch Adminer database management interface
+- `ddev grumphp <commands>` - Run code quality checks
+- `ddev mailpit` - Open Mailpit email testing interface
+- `ddev npm <commands>` - Execute npm commands
+- `ddev phpunit <commands>` - Run test suites
+- `ddev varnishadm <commands>` - Manage Varnish cache
+- `ddev xdebug <mode>` - Configure Xdebug debugging modes
+- `ddev syncdb [environment]` - Sync database from remote environment (requires VPN and `ddev auth ssh`, see `scripts/syncdb.sh` for details)
+
+<details>
+<summary>Lando environment</summary>
+
+### Lando environment
+
+[Lando](https://docs.lando.dev/) offers another containerized development option with a focus on simplicity and flexibility.
+
+#### Lando services and access points
+
+| Service | Description | Access |
+|---------|-------------|---------|
+| Web server | Primary web service | <https://drupal-project.lndo.site> |
+| Adminer | Database management via [docker-adminer](https://github.com/dehy/docker-adminer) | <http://adminer.drupal-project.lndo.site> |
+| Elasticsearch | Search functionality via Elasticsearch (uncomment in `.lando.yml` to enable) | <http://localhost:9200> or <http://elasticsearch.lndo.site> |
+| Kibana | Elasticsearch visualization (uncomment in `.lando.yml` to enable) | <http://localhost:5601> or <http://kibana.lndo.site> |
+| Mailpit | Email testing via [Mailpit](https://mailpit.axllent.org/) | <http://mail.lndo.site> |
+| Varnish | Caching via Varnish | <https://varnish.drupal-project.lndo.site> |
+| Drush | Drupal CLI tool | `lando drush @local st` |
+| SSH | Container shell access | `lando ssh (-s <service>)` |
+| Node | JavaScript tooling | Included in web container |
+| Chrome | Browser testing via [selenium/standalone-chrome](https://hub.docker.com/r/selenium/standalone-chrome/) | Available in web container |
+
+#### Lando setup instructions
+
+1. Install [Lando](https://github.com/lando/lando/releases)
+2. Start the environment:
+
+   ```bash
+   lando start
+   ```
+
+#### Lando common commands
+
+- `lando` - Display available commands
+- `lando drupal <arguments>` - Run Drupal core scripts
+- `lando grumphp <commands>` - Run code quality checks
+- `lando npm <commands>` - Execute npm commands
+- `lando phpunit <commands>` - Run test suites
+- `lando varnishadm <commands>` - Manage Varnish cache
+- `lando xdebug <mode>` - Configure Xdebug debugging modes
+- `lando syncdb [environment]` - Sync database from remote environment (requires VPN, see `scripts/syncdb.sh` for details)
+
+</details>
 
 ## Development tips
+
+<details>
+<summary>Cursor AI Code Editor</summary>
+
+### Cursor AI Code Editor
+
+This project uses [Cursor](https://docs.cursor.com/) as the recommended AI-powered IDE. Cursor enhances development productivity through AI-assisted coding features while maintaining compatibility with VSCode extensions and settings.
+
+#### Project-specific AI Rules
+
+- Rules are stored in `@.cursor/rules/` directory
+- Main configuration file: `@.cursor/rules/common.mdc`
+- Rules provide AI with project-specific context about:
+  - File organization and key project files
+  - Development environment setup
+  - Code standards and technology stack
+  - Git workflow and commit message formatting
+
+</details>
+
+<details>
+<summary>Drupal core updates</summary>
 
 ### Drupal core updates
 
 - [Updating Drupal core](https://www.drupal.org/docs/updating-drupal/updating-drupal-core-via-composer).
 - [Altering scaffold files](https://www.drupal.org/docs/develop/using-composer/using-drupals-composer-scaffold#toc_4) (e.g., `robots.txt`, `.htaccess`).
+
+</details>
+
+<details>
+<summary>Varnish and Purge configuration</summary>
 
 ### Varnish and Purge configuration
 
@@ -148,6 +232,10 @@ The following secret variables are defined in the `silta/silta.secrets` file for
    Varnish should now be configured to handle caching and purging when content is updated.
 
 **Note:** The default Purge setup uses the `purge_processor_lateruntime` module, which empties the purge queue during page requests. This works well for most sites needing immediate cache clearing.
+</details>
+
+<details>
+<summary>Running tests</summary>
 
 ### Running tests
 
@@ -160,6 +248,7 @@ Use `lando phpunit` to run PHPUnit commands:
 - Run one test class: `lando phpunit path/to/your/class/file.php`
 - List groups: `lando phpunit --list-groups`
 - Run all tests in a particular group: `lando phpunit --group Groupname`
+</details>
 
 ### Secrets handling
 
@@ -175,16 +264,46 @@ See the corresponding `secret_key_env` values in the `.circleci/config.yml` file
 
 This project is maintained by [Wunder](https://wunder.io/). Contributions from the community are welcome.
 
+<details>
+<summary>Commit message validation and ticketing system integration</summary>
+
 ### Commit message validation and ticketing system integration
 
-We use JIRA and GitHub issues for tracking tasks. Commit messages must include a valid ticket ID except for merge commits. Use the following format:
+We follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification for commit messages, with an additional requirement for ticket IDs. Each commit message must include a valid ticket ID (except for merge commits) and follow the conventional commits format:
 
-- JIRA: `[PROJECTKEY-123]: Description`
-- GitHub: `[GH-123]: Description`
+```bash
+[PROJECTKEY-123]: (feat) Add new feature description
+
+- Detailed change description
+- Another relevant detail
+
+Refs: file1.ext, file2.ext
+```
+
+Types include (used within parentheses):
+
+- feat: New feature (correlates with MINOR in semantic versioning)
+- fix: Bug fix (correlates with PATCH in semantic versioning)
+- docs: Documentation changes
+- style: Changes not affecting code meaning
+- refactor: Code changes neither fixing bugs nor adding features
+- perf: Performance improvements
+- test: Adding or correcting tests
+- build: Build system or dependency changes
+- ci: CI configuration changes
+- chore: Other changes not modifying src or test files
+
+Breaking changes must be indicated by appending a ! after the type/scope or including "BREAKING CHANGE:" in the footer.
+
+Ticket ID formats:
+
+- JIRA: `[PROJECTKEY-123]: (type) Description`
+- GitHub: `GH-123: (type) Description`
 
 We leverage [autolinked references](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/autolinked-references-and-urls) to automatically convert ticket IDs into clickable links for easy navigation. This enhances traceability and accessibility across platforms.
 
 Validation rules are implemented via the GrumPHP `git_commit_message` component. See `grumphp.yml` for configuration details.
+</details>
 
 ### Git workflow
 
