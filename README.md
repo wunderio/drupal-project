@@ -73,17 +73,13 @@ This project supports two local development environments: DDEV (preferred) and L
 
 #### DDEV services and access points
 
-| Service | Description | Access |
-|---------|-------------|---------|
-| Web server | Primary web service | <https://drupal-project.ddev.site> |
-| Adminer | Database management via [ddev-adminer](https://github.com/ddev/ddev-adminer) | <https://drupal-project.ddev.site:9101> or `ddev adminer` |
-| Elasticsearch | Search functionality via [ddev-elasticsearch](https://github.com/ddev/ddev-elasticsearch) | <https://drupal-project.ddev.site:9002> |
-| Kibana | Elasticsearch visualization via [ddev-kibana](https://github.com/JanoPL/ddev-kibana/) | <https://drupal-project.ddev.site:5601> |
-| Mailpit | Email testing via [built-in service](https://ddev.readthedocs.io/en/stable/users/usage/developer-tools/#email-capture-and-review-mailpit) | <https://drupal-project.ddev.site:8026> or `ddev mailpit` |
-| Varnish | Caching via [ddev-varnish](https://github.com/ddev/ddev-varnish) | Default on web server. Direct: <https://novarnish.drupal-project.ddev.site> |
-| Drush | Drupal CLI tool | `ddev drush @local st` |
-| SSH | Container shell access | `ddev ssh (-s <service>)` |
-| Node | JavaScript tooling | Included in web container |
+The project can be accessed at <https://drupal-project.ddev.site>
+
+For a complete list of all available services, URLs, and ports, use:
+
+```bash
+ddev describe
+```
 
 #### DDEV setup instructions
 
@@ -99,7 +95,9 @@ This project supports two local development environments: DDEV (preferred) and L
 #### DDEV common commands
 
 - `ddev` - Display available commands
+- `ddev adminer` - Launch Adminer database management interface
 - `ddev grumphp <commands>` - Run code quality checks
+- `ddev mailpit` - Open Mailpit email testing interface
 - `ddev npm <commands>` - Execute npm commands
 - `ddev phpunit <commands>` - Run test suites
 - `ddev varnishadm <commands>` - Manage Varnish cache
