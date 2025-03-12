@@ -94,8 +94,8 @@ Refs: file1.ext, file2.ext
 ### Git Diff for Commit Messages
 When creating commit messages, always analyze the actual changes using `git diff` for the specific file(s) modified:
 
+- **Use `git diff --staged | cat` as the default approach** to see all staged changes. This ensures you capture all modifications intended for the commit.
 - Use `git diff <filename>` to see specific changes to a file
-- Use `git diff --staged` to see all staged changes
 - Review the diff output to identify:
   - What functionality was added, modified, or removed
   - Which files were affected
