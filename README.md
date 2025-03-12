@@ -160,6 +160,25 @@ For a complete list of all available services, URLs, and ports, use:
 ## Development tips
 
 <details>
+<summary>Cursor AI Code Editor</summary>
+
+### Cursor AI Code Editor
+
+This project uses [Cursor](https://docs.cursor.com/) as the recommended AI-powered IDE. Cursor enhances development productivity through AI-assisted coding features while maintaining compatibility with VSCode extensions and settings.
+
+#### Project-specific AI Rules
+
+- Rules are stored in `@.cursor/rules/` directory
+- Main configuration file: `@.cursor/rules/common.mdc`
+- Rules provide AI with project-specific context about:
+  - File organization and key project files
+  - Development environment setup
+  - Code standards and technology stack
+  - Git workflow and commit message formatting
+
+</details>
+
+<details>
 <summary>Drupal core updates</summary>
 
 ### Drupal core updates
