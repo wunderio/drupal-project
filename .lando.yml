@@ -1,5 +1,5 @@
 name: drupal-project
-recipe: drupal10
+recipe: drupal11
 
 config:
   php: "8.3"
@@ -96,7 +96,7 @@ services:
       image: drupalci/webdriver-chromedriver:production
       command: chromedriver --log-path=/tmp/chromedriver.log --verbose --whitelisted-ips=
   database:
-    type: "mariadb:10.6.18"
+    type: "mariadb:10.6.20"
     # Assign a static port if you need to access the database from your host machine.
     # @see: https://docs.lando.dev/guides/external-access.html
     # portforward: 34567
