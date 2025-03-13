@@ -163,6 +163,44 @@ For a complete list of all available services, URLs, and ports, use:
 ## Development tips
 
 <details>
+<summary>Code quality tools</summary>
+
+### Code quality tools
+
+This project includes several tools to maintain code quality and consistency across the codebase.
+
+#### Markdown Linting
+
+Markdown files can be checked and automatically fixed using the following npm scripts:
+
+```bash
+# Check markdown files for linting issues
+ddev npm run lint:md
+
+# Automatically fix markdown linting issues where possible
+ddev npm run lint:md:fix
+```
+
+Markdown linting rules are configured in `.markdownlint.json` at the project root.
+
+#### JavaScript and CSS Linting
+
+The project also includes linting for JavaScript and CSS files:
+
+```bash
+# Check JavaScript files
+ddev npm run lint:js
+
+# Check CSS/SCSS files
+ddev npm run lint:css
+
+# Run all linting (JS, CSS, and Markdown)
+ddev npm run lint
+```
+
+</details>
+
+<details>
 <summary>Cursor AI Code Editor</summary>
 
 ### Cursor AI Code Editor
