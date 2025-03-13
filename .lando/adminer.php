@@ -15,7 +15,7 @@ function adminer_object()
      * Overwrite top left 'logo' link to landing page of Adminer app.
      *
      * By default, it would open link to Adminer home page. Let's also preselect
-     * Drupal 10 db.
+     * Drupal db.
      */
     function name() {
       return '<a href="' . '/?username=&db=' . getenv('DB_NAME') . '" id="h1">Adminer</a>';
@@ -47,7 +47,7 @@ function adminer_object()
       Adminer::loginForm();
       $original_form = ob_get_clean();
 
-      // Preselect Drupal 10 db.
+      // Preselect Drupal db.
       $original_form = str_replace('name="auth[db]" value=""', 'name="auth[db]" value="' . getenv('DB_NAME') . '"', $original_form);
 
       // Add id attribute to the submit button to target it with js in next
