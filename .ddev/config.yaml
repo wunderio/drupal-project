@@ -24,6 +24,8 @@ web_environment:
   - EXEC_GRUMPHP_COMMAND=ddev php
   - HASH_SALT=notsosecurehash
   - ELASTICSEARCH_HOST=elasticsearch
+  - VARNISH_ADMIN_HOST=varnish
+  - VARNISH_ADMIN_PORT=80
 
 corepack_enable: false
 hooks:
