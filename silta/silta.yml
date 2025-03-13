@@ -4,7 +4,7 @@
 # @see: https://github.com/wunderio/charts/blob/master/drupal/values.yaml
 
 php:
-  drupalCoreVersion: "10"
+  drupalCoreVersion: "11"
   cron:
     drupal:
       # Disable cron jobs in feature environments by using non-existing date.
