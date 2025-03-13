@@ -11,11 +11,12 @@
   "license": "MIT",
   "scripts": {
     "build": "echo 'No build command specified in package.json'",
-    "lint": "npm run lint:js && npm run lint:css",
+    "lint": "npm run lint:js && npm run lint:css && npm run lint:md",
     "lint:js": "eslint --no-error-on-unmatched-pattern './web/themes/custom/' './web/modules/custom/'",
+    "lint:md": "markdownlint './*.md' './.cursor/**/*.md' './silta/**/*.md' './web/modules/custom/**/*.md' './web/themes/custom/**/*.md' --ignore node_modules",
+    "lint:md:fix": "markdownlint --fix './*.md' './.cursor/**/*.md' './silta/**/*.md' './web/modules/custom/**/*.md' './web/themes/custom/**/*.md' --ignore node_modules",
     "lint:css": "stylelint --allow-empty-input './web/themes/custom/**/*.{css,scss,sass}' './web/modules/custom/**/*.{css,scss,sass}'"
   },
-  "dependencies": {},
   "devDependencies": {
     "eslint": "^8.8.0",
     "eslint-config-airbnb": "^19.0.4",
@@ -25,6 +26,7 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-yml": "^1.0.0",
+    "markdownlint-cli": "^0.44.0",
     "prettier": "2.7.0",
     "stylelint": "^14.3.0",
     "stylelint-config-prettier": "^9.0.3",
