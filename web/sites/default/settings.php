@@ -27,6 +27,9 @@ $settings['file_public_path']  = 'sites/default/files';
 // Location of the site configuration files.
 $settings['config_sync_directory'] = '../config/sync';
 
+// Stage File Proxy origin site.
+$config['stage_file_proxy.settings']['origin'] = 'https://production.drupal-project.finland.wdr.io';
+
 // Load services definition file.
 // Note: settings.silta.php defines Monolog services override via silta.services.yml.
 // @see: https://github.com/wunderio/charts/blob/master/drupal/files/silta.services.yml
