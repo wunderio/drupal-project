@@ -3,7 +3,6 @@ _core:
 module:
   admin_toolbar: 0
   admin_toolbar_tools: 0
-  announcements_feed: 0
   automated_cron: 0
   block: 0
   block_content: 0
@@ -11,9 +10,9 @@ module:
   ckeditor5: 0
   comment: 0
   config: 0
+  config_split: 0
   contextual: 0
   datetime: 0
-  dblog: 0
   dynamic_page_cache: 0
   editor: 0
   field: 0
