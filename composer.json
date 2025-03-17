@@ -19,15 +19,18 @@
         "composer/installers": "^2.3",
         "cweagans/composer-patches": "^1.7",
         "drupal/admin_toolbar": "^3.5",
+        "drupal/config_split": "^2.0",
         "drupal/core-composer-scaffold": "^11.1",
         "drupal/core-recommended": "^11.1",
         "drupal/monolog": "^3.0",
         "drupal/purge": "^3.6",
         "drupal/simplei": "^3.0",
+        "drupal/stage_file_proxy": "^3.1",
         "drupal/varnish_purge": "^2.3",
         "drush/drush": "^13.3",
         "vlucas/phpdotenv": "^5.6",
-        "wunderio/drupal-ping": "^2.5"
+        "wunderio/drupal-ping": "^2.5",
+        "wunderio/updates_log": "^2.5"
     },
     "require-dev": {
         "drupal/core-dev": "^11.1",

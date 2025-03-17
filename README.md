@@ -20,6 +20,8 @@ This project is a tailored fork of the popular [drupal-composer template](https:
      - For DDEV: Update project settings in `.ddev/config.yaml`
      - For Lando: Update project settings in `.lando.yml`
    - Update project name in `scripts/syncdb.sh` for database synchronization
+   - Adjust `web/sites/default/settings.php` settings (`stage_file_proxy` etc)
+   - Adjust `config_split` settings for silta (default), production, main, local environments
 
 3. **Set up CircleCI**
    - Log in to [CircleCI](https://app.circleci.com/) using your GitHub account.
@@ -88,8 +90,11 @@ This project supports two local development environments: DDEV (preferred) and L
   # See `scripts/syncdb.sh` for options
   ddev syncdb
 
+  # Apply configuration changes
+  ddev drush deploy
+
   # Get a one-time login link for admin access
-  drush uli
+  ddev drush uli
   ```
 
 Note: All commands in the DDEV section should be run within the DDEV environment using `ddev` prefix (e.g., `ddev drush uli`), or by using `ddev ssh` to access the container shell first.
