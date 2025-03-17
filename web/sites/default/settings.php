@@ -24,9 +24,6 @@ $settings['hash_salt'] = getenv('HASH_SALT');
 // Public files path.
 $settings['file_public_path']  = 'sites/default/files';
 
-// Location of the site configuration files.
-$settings['config_sync_directory'] = '../config/sync';
-
 // Stage File Proxy origin site.
 $config['stage_file_proxy.settings']['origin'] = 'https://production.drupal-project.finland.wdr.io';
 
@@ -61,21 +58,39 @@ if (!empty($smtp_address_parts[0]) && !empty($smtp_address_parts[1])) {
   ];
 }
 
+// Location of the site configuration files.
+$settings['config_sync_directory'] = '../config/sync';
+
+// Default config_split settings to cover feature environments in Silta.
+// Overrides for production, main and local environments
+// are defined in environment-specific settings sections below.
+$config['config_split.config_split.silta']['status'] = TRUE;
+$config['config_split.config_split.production']['status'] = FALSE;
+$config['config_split.config_split.main']['status'] = FALSE;
+$config['config_split.config_split.local']['status'] = FALSE;
+
 // Environment-specific settings.
 $env = getenv('ENVIRONMENT_NAME');
 switch ($env) {
   case 'production':
     $settings['simple_environment_indicator'] = 'DarkRed Production';
+    $config['config_split.config_split.production']['status'] = TRUE;
+    $config['config_split.config_split.silta']['status'] = FALSE;
     break;
 
   case 'main':
     $settings['simple_environment_indicator'] = 'DarkBlue Stage';
+    $config['config_split.config_split.main']['status'] = TRUE;
+    $config['config_split.config_split.silta']['status'] = FALSE;
     break;
 
   case 'ddev':
   case 'local':
   case 'lando':
     $settings['simple_environment_indicator'] = 'DarkGreen Local';
+    $config['config_split.config_split.local']['status'] = TRUE;
+    $config['config_split.config_split.silta']['status'] = FALSE;
+
     // Skip file system permissions hardening.
     $settings['skip_permissions_hardening'] = TRUE;
     // Skip trusted host pattern.
