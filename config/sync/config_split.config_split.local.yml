@@ -11,6 +11,7 @@ no_patching: false
 storage: folder
 folder: ../config/local
 module:
+  announcements_feed: 0
   dblog: 0
   stage_file_proxy: 0
 theme: {  }
