@@ -20,9 +20,8 @@ This project is a tailored fork of the popular [drupal-composer template](https:
      - For DDEV: Update project settings in `.ddev/config.yaml`
      - For Lando: Update project settings in `.lando.yml`
    - Update project name in `scripts/syncdb.sh` for database synchronization
-   - Adjust `web/sites/default/settings.php` for environment-specific configurations:
-     - Update Config Split settings for different environments (production, main, local)
-     - Configure Stage File Proxy origin URL
+   - Adjust `web/sites/default/settings.php` settings (`stage_file_proxy` etc)
+   - Adjust `config_split` settings for silta (default), production, main, local environments
 
 3. **Set up CircleCI**
    - Log in to [CircleCI](https://app.circleci.com/) using your GitHub account.
