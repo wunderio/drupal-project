@@ -88,8 +88,11 @@ This project supports two local development environments: DDEV (preferred) and L
   # See `scripts/syncdb.sh` for options
   ddev syncdb
 
+  # Apply configuration changes
+  ddev drush deploy
+
   # Get a one-time login link for admin access
-  drush uli
+  ddev drush uli
   ```
 
 Note: All commands in the DDEV section should be run within the DDEV environment using `ddev` prefix (e.g., `ddev drush uli`), or by using `ddev ssh` to access the container shell first.
