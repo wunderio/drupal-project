@@ -11,6 +11,7 @@ module:
   ckeditor5: 0
   comment: 0
   config: 0
+  config_split: 0
   contextual: 0
   datetime: 0
   dblog: 0
