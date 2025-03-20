@@ -32,7 +32,7 @@ corepack_enable: false
 hooks:
   post-start:
     - exec: "composer install"
-    - exec: "npm install"
+    - exec: "npm ci"
     - exec: |
         plugins=(analysis-icu)
         for plugin in "${plugins[@]}"; do
