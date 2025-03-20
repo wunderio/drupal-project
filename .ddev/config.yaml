@@ -34,7 +34,7 @@ hooks:
     - exec: "composer install"
     - exec: "npm install"
     - exec: |
-        plugins=(analysis-icu analysis-ukrainian)
+        plugins=(analysis-icu)
         for plugin in "${plugins[@]}"; do
           if ! elasticsearch-plugin list | grep -q "^$plugin\b"; then
             elasticsearch-plugin install "$plugin"
