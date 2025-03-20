@@ -26,6 +26,7 @@ web_environment:
   - ELASTICSEARCH_HOST=elasticsearch
   - VARNISH_ADMIN_HOST=varnish
   - VARNISH_ADMIN_PORT=80
+  - SMTP_ADDRESS=localhost:1025
 
 corepack_enable: false
 hooks:
