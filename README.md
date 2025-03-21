@@ -126,33 +126,33 @@ For a complete list of all available services, URLs, and ports, use:
 
 #### DDEV Elasticsearch configuration
 
-This project includes Elasticsearch with the `analysis-icu` plugin for Unicode/multilingual text processing support.
+This project includes Elasticsearch service for robust full-text search capabilities. It's automatically set up during DDEV initialization.
 
-**Configuration and customization:**
+##### Plugins configuration
 
-Plugins are defined in `.ddev/docker-compose.elasticsearch8.yaml` as environment variables. You can install multiple plugins by adding them as space-separated values:
+- Pre-configured with `analysis-icu` for Unicode/multilingual text processing
+- Additional plugins can be defined in `.ddev/docker-compose.elasticsearch8.yaml`
 
 ```yaml
 services:
   elasticsearch:
     environment:
-      - ELASTICSEARCH_PLUGINS=analysis-icu analysis-ukrainian
+      - ELASTICSEARCH_PLUGINS=analysis-icu  # Space-separated plugin list
 ```
 
-The installation process:
-1. Plugin names are defined as space-separated values
-2. A post-start hook installs missing plugins and sets permissions
-3. Elasticsearch restarts automatically if needed
-
-**Useful commands:**
+##### Useful commands
 
 ```bash
+# Check Elasticsearch status
+ddev exec -s elasticsearch "curl -s localhost:9200"
+
 # List installed plugins
 ddev exec -s elasticsearch "bin/elasticsearch-plugin list"
-
-# View detailed plugin information
-ddev exec -s elasticsearch "curl -s localhost:9200/_nodes/plugins?pretty"
 ```
+
+##### Web interface
+
+Elasticvue is included for visualization and management at <http://drupal-project.ddev.site:9005>
 
 </details>
 
