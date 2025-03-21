@@ -33,10 +33,13 @@ hooks:
   post-start:
     - exec: "composer install"
     - exec: "npm ci"
-    - exec-host: "ddev exec -s elasticsearch /mnt/ddev_config/elasticsearch/elasticsearch-setup.sh"
     - exec-host: |
-        if [ -f /tmp/elasticsearch_needs_restart ]; then
-          echo "Restarting Elasticsearch to apply plugin changes..."
-          ddev restart elasticsearch
-          rm /tmp/elasticsearch_needs_restart
+        # Run the Elasticsearch plugin setup script
+        ddev exec -s elasticsearch /mnt/ddev_config/elasticsearch/elasticsearch-setup.sh
+
+        # Check for the restart marker file
+        if [ -f .ddev/elasticsearch/restart_needed ]; then
+          echo "Elasticsearch plugins installed. Restarting elasticsearch container..."
+          docker restart ddev-${DDEV_SITENAME}-elasticsearch
+          rm .ddev/elasticsearch/restart_needed
         fi

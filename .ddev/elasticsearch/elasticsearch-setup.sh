@@ -16,14 +16,23 @@ for plugin in $ELASTICSEARCH_PLUGINS; do
 
     # Install plugin
     echo "Installing $plugin plugin..."
-    bin/elasticsearch-plugin install "$plugin" && \
-    chown -R elasticsearch:root "/usr/share/elasticsearch/plugins/$plugin" && \
-    chmod -R 755 "/usr/share/elasticsearch/plugins/$plugin" && \
-    echo "✓ Plugin $plugin installed successfully" && \
-    needs_restart=true
+    if bin/elasticsearch-plugin install "$plugin"; then
+        chown -R elasticsearch:root "/usr/share/elasticsearch/plugins/$plugin" && \
+        chmod -R 755 "/usr/share/elasticsearch/plugins/$plugin" && \
+        echo "✓ Plugin $plugin installed successfully" && \
+        needs_restart=true
+    else
+        echo "✗ Failed to install plugin $plugin"
+        exit 1
+    fi
 done
 
 # Signal for restart if needed
-[ "$needs_restart" = true ] && echo "New plugins were installed. Elasticsearch needs to be restarted." && touch /tmp/elasticsearch_needs_restart
+if [ "$needs_restart" = true ]; then
+    echo "New plugins were installed. Elasticsearch needs to be restarted."
+
+    # Create a marker file in the mounted config directory (visible to host)
+    touch /mnt/ddev_config/elasticsearch/restart_needed
+fi
 
 exit 0
