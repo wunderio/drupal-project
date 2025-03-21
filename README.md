@@ -122,6 +122,41 @@ For a complete list of all available services, URLs, and ports, use:
 - `ddev syncdb [environment]` - Sync database from remote environment (requires VPN and `ddev auth ssh`, see `scripts/syncdb.sh` for details)
 
 <details>
+<summary>DDEV Elasticsearch configuration</summary>
+
+#### DDEV Elasticsearch configuration
+
+This project includes Elasticsearch with the `analysis-icu` plugin for Unicode/multilingual text processing support.
+
+**Configuration and customization:**
+
+Plugins are defined in `.ddev/docker-compose.elasticsearch8.yaml` as environment variables. You can install multiple plugins by adding them as space-separated values:
+
+```yaml
+services:
+  elasticsearch:
+    environment:
+      - ELASTICSEARCH_PLUGINS=analysis-icu analysis-ukrainian
+```
+
+The installation process:
+1. Plugin names are defined as space-separated values
+2. A post-start hook installs missing plugins and sets permissions
+3. Elasticsearch restarts automatically if needed
+
+**Useful commands:**
+
+```bash
+# List installed plugins
+ddev exec -s elasticsearch "bin/elasticsearch-plugin list"
+
+# View detailed plugin information
+ddev exec -s elasticsearch "curl -s localhost:9200/_nodes/plugins?pretty"
+```
+
+</details>
+
+<details>
 <summary>Lando environment</summary>
 
 ### Lando environment

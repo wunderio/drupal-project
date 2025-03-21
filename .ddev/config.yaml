@@ -33,13 +33,10 @@ hooks:
   post-start:
     - exec: "composer install"
     - exec: "npm ci"
-    - exec: |
-        plugins=(analysis-icu)
-        for plugin in "${plugins[@]}"; do
-          if ! elasticsearch-plugin list | grep -q "^$plugin\b"; then
-            elasticsearch-plugin install "$plugin"
-          else
-            echo "Plugin $plugin is already installed"
-          fi
-        done
-      service: elasticsearch
+    - exec-host: "ddev exec -s elasticsearch /mnt/ddev_config/elasticsearch/elasticsearch-setup.sh"
+    - exec-host: |
+        if [ -f /tmp/elasticsearch_needs_restart ]; then
+          echo "Restarting Elasticsearch to apply plugin changes..."
+          ddev restart elasticsearch
+          rm /tmp/elasticsearch_needs_restart
+        fi
