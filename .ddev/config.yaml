@@ -26,18 +26,20 @@ web_environment:
   - ELASTICSEARCH_HOST=elasticsearch
   - VARNISH_ADMIN_HOST=varnish
   - VARNISH_ADMIN_PORT=80
+  - SMTP_ADDRESS=localhost:1025
 
 corepack_enable: false
 hooks:
   post-start:
     - exec: "composer install"
-    - exec: |
-        plugins=(analysis-icu analysis-ukrainian)
-        for plugin in "${plugins[@]}"; do
-          if ! elasticsearch-plugin list | grep -q "^$plugin\b"; then
-            elasticsearch-plugin install "$plugin"
-          else
-            echo "Plugin $plugin is already installed"
-          fi
-        done
-      service: elasticsearch
+    - exec: "npm ci"
+    - exec-host: |
+        # Run the Elasticsearch plugin setup script
+        ddev exec -s elasticsearch /mnt/ddev_config/elasticsearch/elasticsearch-setup.sh
+
+        # Check for the restart marker file
+        if [ -f .ddev/elasticsearch/restart_needed ]; then
+          echo "Elasticsearch plugins installed. Restarting elasticsearch container..."
+          docker restart ddev-${DDEV_SITENAME}-elasticsearch
+          rm .ddev/elasticsearch/restart_needed
+        fi

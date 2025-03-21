@@ -1,4 +1,3 @@
-#ddev-generated
 # This file contains the configuration settings for Elasticsearch 8.
 # For more information, see https://www.elastic.co/guide/en/elasticsearch/reference/current/settings.html
 
@@ -8,7 +7,8 @@ cluster.name: "docker-cluster"
 # https://www.elastic.co/guide/en/elasticsearch/reference/current/important-settings.html#network.host
 network.host: 0.0.0.0
 
-# Security settings
+# Disable security features
+# https://www.elastic.co/guide/en/elasticsearch/reference/current/security-settings.html#general-security-settings
 xpack.security.enabled: false
 xpack.security.autoconfiguration.enabled: false
 xpack.security.enrollment.enabled: false
