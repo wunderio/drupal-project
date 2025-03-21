@@ -122,6 +122,41 @@ For a complete list of all available services, URLs, and ports, use:
 - `ddev syncdb [environment]` - Sync database from remote environment (requires VPN and `ddev auth ssh`, see `scripts/syncdb.sh` for details)
 
 <details>
+<summary>DDEV Elasticsearch configuration</summary>
+
+#### DDEV Elasticsearch configuration
+
+This project includes Elasticsearch service for robust full-text search capabilities. It's automatically set up during DDEV initialization.
+
+##### Plugins configuration
+
+- Pre-configured with `analysis-icu` for Unicode/multilingual text processing
+- Additional plugins can be defined in `.ddev/docker-compose.elasticsearch8.yaml`
+
+```yaml
+services:
+  elasticsearch:
+    environment:
+      - ELASTICSEARCH_PLUGINS=analysis-icu  # Space-separated plugin list
+```
+
+##### Useful commands
+
+```bash
+# Check Elasticsearch status
+ddev exec -s elasticsearch "curl -s localhost:9200"
+
+# List installed plugins
+ddev exec -s elasticsearch "bin/elasticsearch-plugin list"
+```
+
+##### Web interface
+
+Elasticvue is included for visualization and management at <http://drupal-project.ddev.site:9005>
+
+</details>
+
+<details>
 <summary>Lando environment</summary>
 
 ### Lando environment
