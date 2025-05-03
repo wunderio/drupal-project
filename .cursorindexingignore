@@ -1,0 +1,80 @@
+# Drupal generated files and directories
+web/sites/*/files/
+web/sites/*/private/
+web/sites/*/translations/
+web/sites/*/tmp/
+web/sites/simpletest/
+web/sites/default/settings.local.php
+web/sites/*/services*.yml
+web/core/
+
+# Vendor directories and dependencies
+vendor/
+node_modules/
+web/libraries/
+web/modules/contrib/
+web/themes/contrib/
+
+# Database dumps and large binary files
+*.sql
+*.sql.gz
+*.sqlite
+*.tar
+*.tar.gz
+*.zip
+*.bz2
+*.pdf
+*.doc
+*.docx
+*.ppt
+*.pptx
+*.xls
+*.xlsx
+*.mp4
+*.mp3
+*.avi
+*.mov
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+*.ttf
+*.eot
+*.woff
+*.woff2
+
+# Environment-specific configuration files
+.env
+.env.*
+!.env.example
+.editorconfig
+
+# Temporary files, logs, and cache files
+tmp/
+temp/
+.sass-cache/
+*.log
+logs/
+*.cache
+.eslintcache
+.cache/
+.phpunit.result.cache
+.phpunit.cache/
+
+# IDE and Editor files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Sensitive deployment files
+silta/*.secrets
+
+# Lando and DDEV files
+.lando/data-mailpit/
+
+# Package lock files (large files with minimal value for indexing)
+composer.lock
+package-lock.json
+yarn.lock

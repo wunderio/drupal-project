@@ -17,7 +17,7 @@ grumphp:
         'The commit must start with the JIRA or GitHub issue number': '/^[A-Z][A-Z0-9_]+-[1-9][0-9]*: /'
     php_compatibility:
       run_on: '%grumphp.run_on_paths%'
-      testVersion: '8.2'
+      testVersion: '8.3'
     check_file_permissions: ~
     php_check_syntax:
       run_on: '%grumphp.run_on_paths%'
@@ -40,4 +40,4 @@ grumphp:
     - Wunderio\GrumPHP\Task\YamlLint\YamlLintExtensionLoader
     - Wunderio\GrumPHP\Task\JsonLint\JsonLintExtensionLoader
   git_hook_variables:
-    EXEC_GRUMPHP_COMMAND: lando php
+    EXEC_GRUMPHP_COMMAND: ${EXEC_GRUMPHP_COMMAND}

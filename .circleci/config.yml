@@ -12,15 +12,15 @@ executors:
 
 # Define shared branch filters as reusable anchors.
 branch-filters:
-  &ignored-branches
-  branches:
-    ignore:
-      - production
-      - main
-      - /dependabot\/.*/
-      # Remove the following filters from actual project configuration.
-      - /^10\..*/
-      - /^11\..*/
+  ignored-branches: &ignored-branches
+    branches:
+      ignore:
+        - production
+        - main
+        - /dependabot\/.*/
+        # Remove the following filters from actual project configuration.
+        - /^10\..*/
+        - /^11\..*/
 
 workflows:
   commit:

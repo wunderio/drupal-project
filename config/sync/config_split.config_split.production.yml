@@ -1,0 +1,18 @@
+uuid: fb379d3e-c4c8-4c1d-93f7-f0a22c0d3500
+langcode: en
+status: true
+dependencies: {  }
+id: production
+label: Production
+description: 'Production configuration'
+weight: 0
+stackable: false
+no_patching: false
+storage: folder
+folder: ../config/production
+module:
+  updates_log: 0
+  monolog: 0
+theme: {  }
+complete_list: {  }
+partial_list: {  }

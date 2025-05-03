@@ -1,0 +1,14 @@
+#!/bin/bash
+## Description: Sync database from remote environment
+## Usage: syncdb [environment] [options]
+## Example: ddev syncdb main --force
+## ExecRaw: true
+##
+## Options:
+##   --force        Skip confirmation prompts
+##   --backup       Create a backup of the local database before overwriting
+##   --no-sanitize  Skip database sanitization
+
+# Just call the main syncdb.sh script with all arguments
+cd /var/www/html
+./scripts/syncdb.sh "$@"

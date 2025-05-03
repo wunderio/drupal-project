@@ -1,5 +1,5 @@
 name: drupal-project
-recipe: drupal10
+recipe: drupal11
 
 config:
   php: "8.3"
@@ -36,6 +36,10 @@ tooling:
     description: "Regenerates fresh PHPUnit configuration."
     cmd:
       - appserver: /app/.lando/phpunit.sh
+  syncdb:
+    description: "Synchronizes local database with remote environment"
+    cmd:
+      - appserver: /app/scripts/syncdb.sh
   varnishadm:
     description: "Runs varnishadm commands"
     service: varnish
@@ -75,10 +79,12 @@ services:
       environment:
         # Database credentials are defined in the .lando/.env file
         # to be available in both the adminer and appserver containers.
-        HASH_SALT: notsosecurehash
-        ENVIRONMENT_NAME: lando
         DRUSH_OPTIONS_URI: https://drupal-project.lndo.site
         SMTP_ADDRESS: mailpit:1025
+        ENVIRONMENT_NAME: lando
+        EXEC_GRUMPHP_COMMAND: "lando php"
+        HASH_SALT: notsosecurehash
+        ELASTICSEARCH_HOST: elasticsearch
         VARNISH_ADMIN_HOST: varnish
         # Support debugging with XDEBUG 3.
         XDEBUG_MODE:
@@ -91,23 +97,25 @@ services:
       image: drupalci/webdriver-chromedriver:production
       command: chromedriver --log-path=/tmp/chromedriver.log --verbose --whitelisted-ips=
   database:
-    type: "mariadb:10.6.18"
+    type: "mariadb:10.6.20"
     # Assign a static port if you need to access the database from your host machine.
     # @see: https://docs.lando.dev/guides/external-access.html
     # portforward: 34567
   # elasticsearch:
   #   type: lando
   #   services:
-  #     image: "docker.elastic.co/elasticsearch/elasticsearch:7.17.0"
+  #     image: "docker.elastic.co/elasticsearch/elasticsearch:8.10.2"
   #     command: "/bin/tini -- /usr/local/bin/docker-entrypoint.sh eswrapper"
   #     user: elasticsearch
   #     environment:
   #       ES_JAVA_OPTS: "-Xms512m -Xmx512m"
   #       discovery.type: "single-node"
   #       bootstrap.memory_lock: "true"
-  #       # Allow CORS requests.
   #       http.cors.enabled: "true"
-  #       http.cors.allow-origin: "*"
+  #       http.cors.allow-origin: "'*'"
+  #       # Disable authentication in local development
+  #       xpack.security.enabled: "false"
+  #       xpack.security.enrollment.enabled: "false"
   #     ulimits:
   #       memlock:
   #         soft: "-1"
@@ -118,14 +126,14 @@ services:
   #       - esdata:/usr/share/elasticsearch/data
   #   # Install ES plugins.
   #   build_as_root:
-  #     - elasticsearch-plugin install analysis-icu analysis-ukrainian
+  #     - elasticsearch-plugin install analysis-icu
   #   volumes:
   #     esdata:
   #       driver: local
   # kibana:
   #   type: lando
   #   services:
-  #     image: "docker.elastic.co/kibana/kibana:7.17.0"
+  #     image: "docker.elastic.co/kibana/kibana:8.10.2"
   #     command: "/bin/tini -- /usr/local/bin/kibana-docker"
   #     user: kibana
   #     ports:

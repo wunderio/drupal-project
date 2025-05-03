@@ -1,6 +1,6 @@
 {
     "name": "wunderio/drupal-project",
-    "description": "Wunder's template for Drupal 10 projects.",
+    "description": "Wunder's template for Drupal projects.",
     "type": "project",
     "license": "GPL-2.0-or-later",
     "homepage": "https://www.drupal.org/project/drupal",
@@ -43,20 +43,23 @@
         "composer/installers": "^2.3",
         "cweagans/composer-patches": "^1.7",
         "drupal/admin_toolbar": "^3.5",
-        "drupal/core-composer-scaffold": "^10.3",
-        "drupal/core-recommended": "^10.3",
+        "drupal/config_split": "^2.0",
+        "drupal/core-composer-scaffold": "^11.1",
+        "drupal/core-recommended": "^11.1",
         "drupal/monolog": "^3.0",
         "drupal/purge": "^3.6",
-        "drupal/simplei": "^2.1",
+        "drupal/simplei": "^3.0",
         "drupal/storybook": "^1.0",
-        "drupal/varnish_purge": "^2.2",
+        "drupal/stage_file_proxy": "^3.1",
+        "drupal/varnish_purge": "^2.3",
         "drush/drush": "^13.3",
         "ewcomposer/unpack": "dev-master",
         "vlucas/phpdotenv": "^5.6",
-        "wunderio/drupal-ping": "^2.5"
+        "wunderio/drupal-ping": "^2.5",
+        "wunderio/updates_log": "^2.5"
     },
     "require-dev": {
-        "drupal/core-dev": "^10.3",
+        "drupal/core-dev": "^11.1",
         "wunderio/code-quality": "^3.0"
     },
     "conflict": {

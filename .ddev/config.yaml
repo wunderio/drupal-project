@@ -1,0 +1,45 @@
+name: drupal-project
+type: drupal11
+docroot: web
+php_version: "8.3"
+webserver_type: nginx-fpm
+xdebug_enabled: false
+additional_hostnames: []
+additional_fqdns: []
+database:
+  type: mariadb
+  version: "10.6"
+use_dns_when_possible: true
+composer_version: "2"
+nodejs_version: "20"
+# Prevents DDEV from managing settings.php and other Drupal settings files.
+disable_settings_management: true
+web_environment:
+  - DB_NAME=db
+  - DB_USER=db
+  - DB_PASS=db
+  - DB_HOST=db
+  - DRUSH_OPTIONS_URI=https://drupal-project.ddev.site
+  - ENVIRONMENT_NAME=ddev
+  - EXEC_GRUMPHP_COMMAND=ddev php
+  - HASH_SALT=notsosecurehash
+  - ELASTICSEARCH_HOST=elasticsearch
+  - VARNISH_ADMIN_HOST=varnish
+  - VARNISH_ADMIN_PORT=80
+  - SMTP_ADDRESS=localhost:1025
+
+corepack_enable: false
+hooks:
+  post-start:
+    - exec: "composer install"
+    - exec: "npm ci"
+    - exec-host: |
+        # Run the Elasticsearch plugin setup script
+        ddev exec -s elasticsearch /mnt/ddev_config/elasticsearch/elasticsearch-setup.sh
+
+        # Check for the restart marker file
+        if [ -f .ddev/elasticsearch/restart_needed ]; then
+          echo "Elasticsearch plugins installed. Restarting elasticsearch container..."
+          docker restart ddev-${DDEV_SITENAME}-elasticsearch
+          rm .ddev/elasticsearch/restart_needed
+        fi

@@ -3,9 +3,6 @@
 <ruleset name="Drupal Custom">
     <description>Drupal coding standard</description>
 
-    <!-- Set ignore warnings. -->
-    <!-- <config name="ignore_warnings_on_exit" value="1" />  -->
-
     <file>.</file>
 
     <!-- exclude vendor code -->

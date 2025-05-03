@@ -1,0 +1,9 @@
+name: elasticsearch
+repository: ddev/ddev-elasticsearch
+version: v0.3.2
+install_date: "2025-03-21T10:53:19+02:00"
+project_files:
+    - elasticsearch/
+    - docker-compose.elasticsearch8.yaml
+global_files: []
+removal_actions: []

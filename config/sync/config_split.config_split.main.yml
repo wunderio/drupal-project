@@ -1,0 +1,19 @@
+uuid: 35befd00-8e63-45fd-9dc8-67908fdc1fcb
+langcode: en
+status: true
+dependencies: {  }
+id: main
+label: Main
+description: 'Main configuration'
+weight: 0
+stackable: false
+no_patching: false
+storage: folder
+folder: ../config/main
+module:
+  stage_file_proxy: 0
+  updates_log: 0
+  monolog: 0
+theme: {  }
+complete_list: {  }
+partial_list: {  }
