@@ -22,4 +22,6 @@ web_environment:
   - DRUSH_OPTIONS_URI=https://drupal-project.ddev.site
   - ENVIRONMENT_NAME=ddev
   - HASH_SALT=notsosecurehash
+  - VARNISH_ADMIN_HOST=varnish
+  - VARNISH_ADMIN_PORT=80
 corepack_enable: false
