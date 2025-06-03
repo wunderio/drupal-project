@@ -18,7 +18,7 @@ referenceData:
   referenceEnvironment: 'main'
 
 # Enable MailHog in non-production environments.
-mailhog:
+mailpit:
   enabled: true
 
 # MariaDB configuration.
