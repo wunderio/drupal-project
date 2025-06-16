@@ -54,7 +54,7 @@ nginx:
 #   enabled: false
 
 # Disable MailHog in production.
-mailhog:
+mailpit:
   enabled: false
 
 # MariaDB configuration.
