@@ -52,8 +52,6 @@ workflows:
             - silta/npm-install-build
           context: silta_dev
           requires:
-            - validate
-            - analyze
             - approve-deployment
           filters:
             <<: *ignored-branches
