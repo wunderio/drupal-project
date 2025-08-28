@@ -53,8 +53,8 @@ nginx:
 # basicauth:
 #   enabled: false
 
-# Disable MailHog in production.
-mailhog:
+# Disable Mailpit in production.
+mailpit:
   enabled: false
 
 # MariaDB configuration.

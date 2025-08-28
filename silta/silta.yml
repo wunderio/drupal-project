@@ -17,8 +17,8 @@ referenceData:
   # Configure reference data source for new environments.
   referenceEnvironment: 'main'
 
-# Enable MailHog in non-production environments.
-mailhog:
+# Enable Mailpit in non-production environments.
+mailpit:
   enabled: true
 
 # MariaDB configuration.
