@@ -22,12 +22,14 @@ services:
       - "ddev-global-cache:/mnt/ddev-global-cache"
     depends_on:
       - db
+    command: ["php", "-S", "[::]:8080", "-t", "/var/www/html", "ddev-adminer.php"]
     configs:
-      - source: adminer-index.php
-        target: /var/www/html/index.php
+      - source: ddev-adminer.php
+        target: /var/www/html/ddev-adminer.php
+        mode: "0444"
 
 configs:
-  adminer-index.php:
+  ddev-adminer.php:
     content: |
       <?php
         if (!count($$_GET)) {
@@ -44,5 +46,5 @@ configs:
             'password' => $$_ENV['ADMINER_DEFAULT_PASSWORD'],
           ];
         }
-        include './adminer.php';
+        include './index.php';
       ?>

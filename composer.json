@@ -34,7 +34,8 @@
     },
     "require-dev": {
         "drupal/core-dev": "^11.1",
-        "wunderio/code-quality": "^3.0"
+        "wunderio/code-quality": "^3.0",
+        "wunderio/ddev-drupal": "^0.5.0"
     },
     "conflict": {
         "drupal/drupal": "*"
@@ -51,7 +52,8 @@
             "php-http/discovery": true,
             "phpro/grumphp": true,
             "phpstan/extension-installer": true,
-            "tbachert/spi": true
+            "tbachert/spi": true,
+            "wunderio/ddev-drupal": true
         },
         "discard-changes": true,
         "process-timeout": 0,

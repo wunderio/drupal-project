@@ -2,7 +2,7 @@
 services:
   varnish:
     container_name: ddev-${DDEV_SITENAME}-varnish
-    image: varnish:6.0
+    image: ${VARNISH_DOCKER_IMAGE:-varnish:6.0}
     # These labels ensure this service is discoverable by ddev.
     labels:
       com.ddev.site-name: ${DDEV_SITENAME}
@@ -15,8 +15,8 @@ services:
       - VIRTUAL_HOST=$DDEV_HOSTNAME
       # This defines the ports the service should be accessible from at
       # sitename.ddev.site.
-      - HTTPS_EXPOSE=443:80,8026:8025
-      - HTTP_EXPOSE=80:80,8025:8025
+      - HTTPS_EXPOSE=${DDEV_ROUTER_HTTPS_PORT}:80,${DDEV_MAILPIT_HTTPS_PORT}:8025
+      - HTTP_EXPOSE=${DDEV_ROUTER_HTTP_PORT}:80,${DDEV_MAILPIT_PORT}:8025
     volumes:
       # This exposes a mount to the host system `.ddev/varnish` directory where
       # your default.vcl should be.
@@ -24,7 +24,7 @@ services:
       - ".:/mnt/ddev_config"
     depends_on:
       - web
-    # Add mailhog support
+    # Add mailpit support
     expose:
       - "8025"
     entrypoint:
