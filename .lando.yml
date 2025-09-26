@@ -11,10 +11,6 @@ config:
     database: .lando/my.cnf
 
 tooling:
-  composer:
-    description: "Runs Composer commands"
-    cmd:
-      - appserver: /usr/local/bin/composer
   drupal:
     description: "Runs Drupal core script with provided arguments"
     cmd:
