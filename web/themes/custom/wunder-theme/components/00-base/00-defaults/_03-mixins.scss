@@ -1,0 +1,163 @@
+// Typography Mixins
+@mixin body-text {
+  font-family: $font-body;
+  font-size: $font-m;
+  line-height: 1.6;
+  margin: 0;
+}
+
+@mixin layout {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: $max-width;
+}
+
+@mixin link(
+  $color: link-text,
+  $hover-color: text,
+  $font-weight: 600,
+  $underline-offset: $underline-offset
+) {
+  color: clr($color);
+  font-weight: $font-weight;
+  text-underline-offset: $underline-offset;
+
+  &:hover {
+    color: clr($hover-color);
+  }
+
+  &:focus {
+    border-radius: 1px;
+    outline: 1px solid currentColor;
+    outline-offset: 3px;
+    text-decoration: none;
+  }
+}
+
+@mixin link-inverse($font-weight: 600) {
+  @include link(
+    $color: text-inverse,
+    $hover-color: text-gray,
+    $font-weight: $font-weight
+  );
+}
+
+// Button Mixins
+@mixin button(
+  $bg: clr(accent-main),
+  $border: 2px solid,
+  $border-color: clr(accent-main),
+  $color: clr(text-inverse),
+  $hover-bg: clr(background-dark),
+  $hover-border-color: clr(background-dark),
+  $hover-color: clr(text-inverse),
+  $focus-outline-color: clr(background-dark),
+  $padding-top: 0.75rem
+) {
+  background: $bg;
+  border: $border;
+  border-color: $border-color;
+  border-radius: 5px;
+  color: $color;
+  font-family: inherit;
+  font-weight: 600;
+  padding: $padding-top 1rem;
+  cursor: pointer;
+
+  &:hover {
+    background: $hover-bg;
+    border-color: $hover-border-color;
+    color: $hover-color;
+  }
+
+  &:focus {
+    background: $hover-bg;
+    border-color: $hover-border-color;
+    color: $hover-color;
+    outline: 2px solid $focus-outline-color;
+    outline-offset: 2px;
+  }
+}
+
+@mixin button-secondary {
+  @include button(
+    $bg: clr(background-dark),
+    $border: 2px solid,
+    $border-color: currentColor,
+    $color: clr(link-text),
+    $hover-bg: clr(background),
+    $hover-border-color: clr(background-dark),
+    $hover-color: clr(text)
+  );
+}
+
+@mixin button-tertiary {
+  @include button(
+    $bg: clr(background-dark),
+    $border: 2px solid,
+    $border-color: clr(background),
+    $color: clr(link-text),
+    $hover-bg: clr(background-secondary),
+    $hover-border-color: clr(background-secondary),
+    $hover-color: clr(text)
+  );
+}
+
+@mixin list-reset($margin: 0, $padding: 0, $list-style: none) {
+  margin: $margin;
+  padding: $padding;
+  list-style: $list-style;
+}
+
+// Header Styles
+$heading-color: currentcolor;
+
+@mixin heading(
+  $font-size,
+  $line-height,
+  $margin,
+  $svg-size
+) {
+  font-family: $font-heading;
+  font-weight: 600;
+  font-style: normal;
+  font-size: $font-size;
+  line-height: $line-height;
+  margin: $margin;
+  letter-spacing: normal;
+  width: auto;
+  color: $heading-color;
+
+  &__link {
+    color: inherit;
+
+    &:hover {
+      color: inherit;
+    }
+  }
+
+  svg {
+    width: $svg-size;
+    height: $svg-size;
+  }
+}
+
+@mixin heading-xl {
+  @include heading(3rem, 133.33%, 0 0 0.5em, $space-s);
+}
+
+@mixin heading-large {
+  @include heading(2.25rem, 140%, 0 0 0.5em, $space-s);
+}
+
+@mixin heading-medium {
+  @include heading(2rem, 131.25%, 3rem 0 1rem, $space-s);
+}
+
+@mixin heading-small {
+  @include heading(1.5rem, 150%, 2rem 0 0.5em, $space-xs);
+}
+
+@mixin heading-xs {
+  @include heading(1.5rem, 150%, 2rem 0 0.5em, $space-s);
+}

@@ -1,0 +1,10 @@
+{% set link__base_class = 'link' %}
+{% set link__modifiers = link__modifiers|default([]) %}
+
+<a class="{{ link__base_class }} 
+    {% if link__modifiers is defined %}
+        {{ link__modifiers | join(' ') }}
+    {% endif %}" 
+   href="{{ link__url }}">
+   {{ link__content }}
+</a>

@@ -1,0 +1,15 @@
+{
+    "name": "drupal_recipe/wunderful",
+    "description": "A recipe to install Wunderful theme & theming tools",
+    "type": "drupal-recipe",
+    "version": "1.0",
+    "require": {
+        "drupal/twig_tweak": "^3.4",
+        "drupal/twig_field_value": "^2.0"
+    },
+    "extra": {
+        "installer-paths": {
+            "web/themes/contrib/{$name}": ["type:drupal-theme"]
+        }
+    }
+}

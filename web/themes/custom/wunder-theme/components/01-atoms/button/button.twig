@@ -1,0 +1,13 @@
+{% set button__base_class = button__base_class|default('button') %}
+{% set button__modifiers = button__modifiers|default([]) %}
+{% set button__modifiers_class =  button__modifiers_class|default([]) %}
+    {# {% set button__modifiers = button__base_class ~ '--' ~ button__modifiers|default([]) %} #}
+{% if button__modifiers is defined %}
+  {% for modifier in button__modifiers %}
+    {% set button__modifiers_class = button__modifiers_class ~ ' ' ~ button__base_class ~ '--' ~ modifier %}
+  {% endfor %}
+{% endif %}
+
+<button {{ attributes.addClass(button__base_class, button__modifiers_class) }}>
+  {{ button_content }}
+</button>

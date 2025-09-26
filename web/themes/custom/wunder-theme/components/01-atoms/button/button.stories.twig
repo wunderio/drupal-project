@@ -1,0 +1,36 @@
+{# components/01-atoms/links/link/link.stories.twig #}
+{% stories link with {
+  title: 'Atoms/button'
+} %}
+  {% story default with {
+    name: 'Button',
+    args: {
+      button_content : 'Click me!',
+    }
+  } %}
+
+    <div class="sb-story-wrapper">
+      <h2 class="sb-story-title">Primary button</h2>
+      {{ include('wunderful:button', {
+        button__content,
+      }) }}
+    </div>
+
+    <div class="sb-story-wrapper">
+      <h2 class="sb-story-title">Secondary button</h2>
+      {{ include('wunderful:button', {
+        button__content,
+        button__modifiers: ['secondary'],
+      }) }}
+    </div>
+
+    <div class="sb-story-wrapper">
+      <h2 class="sb-story-title">Tertiary button</h2>
+      {{ include('wunderful:button', {
+        button__content,
+        button__modifiers: ['tertiary'],
+      }) }}
+    </div>
+  {% endstory %}
+
+{% endstories %}

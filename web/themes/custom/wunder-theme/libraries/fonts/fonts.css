@@ -1,0 +1,61 @@
+@font-face {
+  font-family: 'Public Sans';
+  src: url('../../assets/fonts/PublicSans/PublicSans-Regular.ttf')
+    format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Public Sans';
+  src: url('../../assets/fonts/PublicSans/PublicSans-Italic.ttf')
+    format('truetype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Public Sans';
+  src: url('../../assets/fonts/PublicSans/PublicSans-Bold.ttf')
+    format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Public Sans';
+  src: url('../../assets/fonts/PublicSans/PublicSans-BoldItalic.ttf')
+    format('truetype');
+  font-weight: bold;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Public Sans';
+  src: url('../../assets/fonts/PublicSans/PublicSans-SemiBold.ttf')
+    format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Public Sans';
+  src: url('../../assets/fonts/PublicSans/PublicSans-SemiBoldItalic.ttf')
+    format('truetype');
+  font-weight: 600;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Exo 2';
+  src: url('../../assets/fonts/Exo2/Exo2-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Exo 2';
+  src: url('../../assets/fonts/Exo2/Exo2-SemiBoldItalic.ttf') format('truetype');
+  font-weight: 600;
+  font-style: italic;
+}
