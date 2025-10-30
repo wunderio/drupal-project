@@ -4,6 +4,8 @@ This project is a tailored fork of the popular [drupal-composer template](https:
 
 ## Getting started
 
+Before starting, see docs/README.md for upgrade guides and additional documentation.
+
 1. **Create a new project repository**
   Click "[Use this template](https://github.com/wunderio/drupal-project/generate)" to generate a new project:
    - Select the correct owner.
