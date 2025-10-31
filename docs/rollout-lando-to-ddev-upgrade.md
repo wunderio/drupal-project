@@ -64,9 +64,9 @@ Setting up the DDEV for your project as a local development environment is a lit
 
 See the images below for an example of a DDEV project. The project in question is Raisio.
 
-![](/home/joonasheinonen-wunder/Desktop/development/drupal-project/docs/images/rollout_lando_to_ddev_img_0.png)
+![](images/rollout_lando_to_ddev_img_0.png)
 
-![](/home/joonasheinonen-wunder/Desktop/development/drupal-project/docs/images/rollout_lando_to_ddev_img_1.png)
+![](images/rollout_lando_to_ddev_img_1.png)
 
 ## 3. Lando tooling -> DDEV commands
 
@@ -78,7 +78,7 @@ As DDEV is not configured in a single yaml-file, but instead in `.ddev`-folder, 
 
 The commands are located in the `.ddev`-folder's `commands` subfolder. DDEV automatically generates 3 folders where you can create commands: `db`, `host` and `web`.
 
-![](/home/joonasheinonen-wunder/Desktop/development/drupal-project/docs/images/rollout_lando_to_ddev_img_2.png)
+![](images/rollout_lando_to_ddev_img_2.png)
 
 In Lando, toolings were used to execute different actions in the local development environment, e.g. Codeception tests. These toolings are placed in .lando.yml-configuration file under the toolings section.
 
@@ -121,8 +121,8 @@ In Lando projects, there might be custom sh or bash files that contain custom co
 
 In order for you to integrate these to DDEV environment, you just need to copy the sh-files from the lando folder to your DDEV commands folder. Please take a look at the next 2 screenshots from Raisio project:
 
-![](/home/joonasheinonen-wunder/Desktop/development/drupal-project/docs/images/rollout_lando_to_ddev_img_3.png)
-![](/home/joonasheinonen-wunder/Desktop/development/drupal-project/docs/images/rollout_lando_to_ddev_img_4.png)
+![](images/rollout_lando_to_ddev_img_3.png)
+![](images/rollout_lando_to_ddev_img_4.png)
 
 These scripts may not be directly run as they were in .lando-directory. As an example, see the file **sapi** in DDEV web commands folder, as it was copied directly from .lando-directory:
 
