@@ -135,7 +135,7 @@ class AddClassTest extends UnitTestCase {
    *
    * @see self::testAddWithDataProvider()
    */
-  public function addDataProvider() {
+  public static function addDataProvider() : array {
     return [
       [5, 2, 3],
       [50, 20, 30],
@@ -154,7 +154,7 @@ class AddClassTest extends UnitTestCase {
    *
    * @see self::testAddWithBadDataProvider()
    */
-  public function addBadDataProvider() {
+  public static function addBadDataProvider() : array {
     $bad_data = [];
     // Set up an array with data that should cause add()
     // to throw an exception.
