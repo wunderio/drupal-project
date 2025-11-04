@@ -58,15 +58,66 @@ Setting up the DDEV for your project as a local development environment is a lit
 ### 2.1 Steps to be taken
 
 1. To commence, `cd` into the existing project directory. Ensure that you’re in the actual Drupal root, as this might not always be the root of the project.
-2. Run `ddev config` to initialize a DDEV project. 
-3. Run `ddev start` to spin up the project. 
+2. Run `ddev config` to initialize a DDEV project.
+3. Run `ddev start` to spin up the project.
 4. Run `ddev launch` to launch the project in a web browser. This is the same command as `lando start` in Lando environment.
 
 See the images below for an example of a DDEV project. The project in question is Raisio.
 
-![](images/rollout_lando_to_ddev_img_0.png)
+```
+client-fi-raisio/                  ← 🔹 Project root. Keep in mind that project root may be the same as Drupal root.
+│
+├── .circleci/
+├── .github/
+├── .lando/
+├── .vscode/
+├── docs/
+│
+├── drupal/                        ← 📦 Drupal root for this project (custom layout)
+│   ├── .ddev/                     ← ⚙️ DDEV config folder (**must be inside Drupal root**)
+│   ├── conf/                      ← (Optional project-specific config)
+│   ├── config/                    ← Drupal config sync
+│   ├── content/                   ← Content files (optional)
+│   ├── drush/                     ← ✅ Drush config folder
+│   │   └── drush.yml              ← ✅ Drush config file (e.g. preserve uids in sql-sanitize)
+│   ├── files/                     ← Public files directory (sites/default/files)
+│   ├── modules/
+│   ├── profiles/
+│   ├── themes/
+│   ├── sites/                     ← Classic Drupal `sites/` folder (default, etc.)
+│   ├── index.php
+│   └── settings.php (within sites/default/)
+│
+├── README.md
+└── composer.json
+```
 
-![](images/rollout_lando_to_ddev_img_1.png)
+```
+drupal/                     ← Drupal root
+└── .ddev/                  ← ⚙️ DDEV configuration directory
+    ├── .dbimageBuild/              ← (Used for custom DB image builds)
+    ├── .homeadditions/             ← Host-side files added to container home directories
+    ├── .webimageBuild/             ← (Used for custom web image builds)
+    ├── addon-metadata/             ← Metadata for DDEV custom addons
+    ├── apache/                     ← Apache config overrides (optional)
+    ├── commands/                   ← Custom DDEV commands (e.g. `ddev syncdb`)
+    ├── db-build/                   ← Custom provisioning scripts for db service
+    ├── db.snapshots/               ← Local DB snapshot storage (if snapshots used)
+    ├── homeadditions/              ← Home directory customization
+    ├── mysql/                      ← MySQL/MariaDB config or init scripts
+    ├── nginx_full/                 ← Nginx config for "full" site mode
+    ├── php/                        ← PHP overrides (e.g. php.ini, PHP extensions)
+    ├── providers/                  ← Mapping providers or CMS-specific integrations
+    ├── traefik/                    ← Traefik config overrides and templates
+    ├── web-build/                  ← Scripts/configs run during container build
+    ├── web-entrypoint.d/           ← Commands run when the web container starts
+    ├── xhprof/                     ← Optional config for performance profiling with XHProf
+    │
+    ├── .ddev-docker-compose-base.yaml     ← Base services (extend or override docker-compose)
+    ├── .ddev-docker-compose-full.yaml     ← Full docker-compose extensions (auto-generated/used with Xdebug, etc.)
+    ├── .gitignore                          ← Ensures correct exclusions in version control
+    └── config.yaml                         ← 🧠 Main DDEV configuration file (project type, name, router, php_version, etc.)
+```
 
 ## 3. Lando tooling -> DDEV commands
 
@@ -78,7 +129,16 @@ As DDEV is not configured in a single yaml-file, but instead in `.ddev`-folder, 
 
 The commands are located in the `.ddev`-folder's `commands` subfolder. DDEV automatically generates 3 folders where you can create commands: `db`, `host` and `web`.
 
-![](images/rollout_lando_to_ddev_img_2.png)
+```
+.ddev/
+└── commands/                           ← 💡 DDEV custom commands (executed via `ddev <command>`)
+    ├── db/                             ← 🧠 Scoped to `ddev db <command>`
+    │   └── (e.g., import-db, dump-db)
+    ├── host/                           ← 💻 Executes on host (outside container)
+    │   └── (e.g., pre-build steps, git utilities)
+    └── web/                            ← 🌐 Executes inside web container
+        └── (e.g., php testing, linting)
+```
 
 In Lando, toolings were used to execute different actions in the local development environment, e.g. Codeception tests. These toolings are placed in .lando.yml-configuration file under the toolings section.
 
@@ -121,8 +181,27 @@ In Lando projects, there might be custom sh or bash files that contain custom co
 
 In order for you to integrate these to DDEV environment, you just need to copy the sh-files from the lando folder to your DDEV commands folder. Please take a look at the next 2 screenshots from Raisio project:
 
-![](images/rollout_lando_to_ddev_img_3.png)
-![](images/rollout_lando_to_ddev_img_4.png)
+```
+client-fi-raisio/
+├── .circleci/
+├── .github/
+├── .lando/                     ← ❌ Legacy (Lando-specific, now unused with DDEV)
+│   ├── sapi.sh
+│   ├── syncdb.sh
+│   └── xdebug.sh
+│
+├── drupal/                     ← Drupal root
+│   └── .ddev/
+│       ├── commands/
+│       │   ├── host/           ← ✅ DDEV host commands executed on host machine
+│       │   │   ├── syncdb
+│       │   │   ├── sapi
+│       │   │   └── xdebug
+│       │   └── web/            ← DDEV web container commands
+│       ├── config.yaml
+│       └── ...
+└── ...
+```
 
 These scripts may not be directly run as they were in .lando-directory. As an example, see the file **sapi** in DDEV web commands folder, as it was copied directly from .lando-directory:
 
@@ -157,7 +236,7 @@ cd /var/www/html/web
 drush search-api:rebuild-tracker
 
 # # Index all search items.
-drush search-api:index 
+drush search-api:index
 ```
 
 As we moved to a DDEV environment, the project root is bound to `/var/www/html`, not `/app`. This is why the `/app/drupal/web` was changed to `/var/www/html`, as was done in the example code. Now running `ddev sapi` will result in a successfully run shell script.
