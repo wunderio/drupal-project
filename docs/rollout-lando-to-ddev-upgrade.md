@@ -2,13 +2,30 @@
 
 This document describes the process of upgrading Lando to DDEV as the local development environment for Wunder’s projects.
 
-## 1. Installing DDEV
+## 1. Prerequisites for DDEV installation
+
+Before installing DDEV into your system, make sure that the following are valid with your system, both MacOS and Ubuntu:
+ - RAM: 8 GB
+ - Storage: 256GB
+
+Specific requirements for MacOS:
+ - MacOS Sonoma 14 or higher.
+ - OrbStack or Lima or Docker Desktop or Rancher Desktop or Colima.
+
+Once these are done, the next steps will be:
+ - Install Docker with recommended settings.
+ - Install DDEV for Linux. (See chapter 2. Installing DDEV)
+ - Launch the project. (See also chapter 3. Setting up the DDEV for a project)
+
+## 2. Installing DDEV
 
 #### Install DDEV to your machine. Available for both Ubuntu and Apple.
 
 As Lando is getting outdated, we’re moving towards DDEV as a better and up-to-date solution for local development. Installing DDEV is a quite straightforward process. This document provides steps on how to install DDEV on your local machine and to integrate old Lando environments into DDEV environments.
 
-### 1.1 DDEV installation for Linux
+### 2.1 DDEV installation for Linux
+
+Before the installation, remember to run lando poweroff -y to shutdown any lando processes in your system.
 
 To install DDEV for Ubuntu Debian, follow these steps:
 
@@ -32,7 +49,7 @@ sudo apt-get update && sudo apt-get install -y ddev
 mkcert -install
 ```
 
-### 1.2 DDEV installation for Apple
+### 2.2 DDEV installation for Apple
 
 To install DDEV for Apple Homebrew, follow these steps:
 
@@ -50,19 +67,20 @@ Or alternatively:
 curl -fsSL https://ddev.com/install.sh | bash
 ddev start
 ```
-## 2. Setting up the DDEV for a project
+## 3. Setting up the DDEV for a project
 
 #### Set up the DDEV for your project.
-Setting up the DDEV for your project as a local development environment is a little trickier than the installation. Ensure the root of your actual Drupal project, as depending on the project, it might not be in the actual root of the project, but, e.g., in a subdirectory called `drupal/`.
 
-### 2.1 Steps to be taken
+Setting up the DDEV for your project as a local development environment is a little trickier than the installation. Ensure the root of your actual Drupal project, as depending on the project, it might not be in the actual root of the project, but, e.g., in a subdirectory called drupal/.
+
+### 3.1 Steps to be taken
 
 1. To commence, `cd` into the existing project directory. Ensure that you’re in the actual Drupal root, as this might not always be the root of the project.
 2. Run `ddev config` to initialize a DDEV project.
 3. Run `ddev start` to spin up the project.
 4. Run `ddev launch` to launch the project in a web browser. This is the same command as `lando start` in Lando environment.
 
-See the images below for an example of a DDEV project. The project in question is Raisio.
+See the folder structures below for an example of a DDEV project. The project in question is Raisio.
 
 ```
 client-fi-raisio/                  ← 🔹 Project root. Keep in mind that project root may be the same as Drupal root.
@@ -119,13 +137,13 @@ drupal/                     ← Drupal root
     └── config.yaml                         ← 🧠 Main DDEV configuration file (project type, name, router, php_version, etc.)
 ```
 
-## 3. Lando tooling -> DDEV commands
+## 4. Lando tooling -> DDEV commands
 
-#### The DDEV commands perform the same function as the toolings in Lando.
+#### The DDEV commands perform the same function as the toolings in Lando. They both allow adding custom commands e.g. lando syncdb.
+As DDEV is not configured in a single yaml-file, but instead in .ddev-folder, the integration of tooling is a bit different in DDEV than in Lando.
 
-As DDEV is not configured in a single yaml-file, but instead in `.ddev`-folder, the integration of tooling is a bit different in DDEV than in Lando.
 
-### 3.1 Commands in DDEV
+### 4.1 Commands in DDEV
 
 The commands are located in the `.ddev`-folder's `commands` subfolder. DDEV automatically generates 3 folders where you can create commands: `db`, `host` and `web`.
 
@@ -140,7 +158,7 @@ The commands are located in the `.ddev`-folder's `commands` subfolder. DDEV auto
         └── (e.g., php testing, linting)
 ```
 
-In Lando, toolings were used to execute different actions in the local development environment, e.g. Codeception tests. These toolings are placed in .lando.yml-configuration file under the toolings section.
+In Lando, toolings were used to execute different actions in the local development environment, e.g. Codeception tests. These toolings are placed in the .lando.yml-configuration file under the toolings section.
 
 Below is an example of a Codeception tooling (taken from Raisio’s `.lando.yml`):
 
@@ -153,9 +171,9 @@ toolings:
     dir: "/app/drupal"
 ```
 
-The command files are bash files. They’re marked as bash files, and their documentation consists of description, usage and example. You may also add a see part for relevant documentation, e.g. a documentation related to the said bash file.
+In DDEV, the command files are bash files. They’re marked as bash files, and their documentation consists of description, usage and example. You may also add a see part for relevant documentation, e.g. a documentation related to the said bash file.
 
-Below is an example command for [Codeception](https://codeception.com/) tests:
+Below is an equivalent DDEV example command for [Codeception](https://codeception.com/) tests that would be located in .ddev/commands/web/codeception.sh
 
 ```shell
 #!/bin/bash
@@ -176,10 +194,11 @@ cd /var/www/html
 ./vendor/bin/codecept --env=ddev "$@"
 ```
 
-### 3.2 sh-files in Lando and in DDEV
+### 4.2 sh-files in Lando and in DDEV
+
 In Lando projects, there might be custom sh or bash files that contain custom commands to perform different actions, e.g. database synchronisation from the cloud environment.
 
-In order for you to integrate these to DDEV environment, you just need to copy the sh-files from the lando folder to your DDEV commands folder. Please take a look at the next 2 screenshots from Raisio project:
+In order for you to integrate these to DDEV environment, you just need to copy the sh-files from the lando folder to your DDEV commands folder. Please take a look at the next 2 example folder structures from Raisio project:
 
 ```
 client-fi-raisio/
@@ -241,8 +260,223 @@ drush search-api:index
 
 As we moved to a DDEV environment, the project root is bound to `/var/www/html`, not `/app`. This is why the `/app/drupal/web` was changed to `/var/www/html`, as was done in the example code. Now running `ddev sapi` will result in a successfully run shell script.
 
+```
+├── drupal/
+├── host/
+│   ├── README.txt
+│   └── syncdb                  ← Syncdb is a special file for database synchronization. Place it under host folder.
+└── web/
+│   ├── ...
+│   ├── sapi                    ← Move sapi.sh as sapi to web folder.
+│   ├── xdebug                  ← Move xdebug.sh as xdebug to web folder.
+│   └── ...
+└── ...
+```
+
+You also have a file called `syncdb` that was converted into a DDEV command. It should be placed in the host folder where it can be used to synchronize the database from the remote environment with the local environment. After having placed it, you may run it via `ddev syncdb <environment>`. Usually, the environments used are either master, main or production.
+
+Below is an example of `syncdb`:
+```shell
+#!/bin/bash
+
+## Description: Synchronize local database with a remote environment using fast import
+## Usage: syncdb [environment] [options]
+## Example: ddev syncdb main --backup
+##
+## Parameters:
+##   environment: 'main' (default) or 'production'
+##   options:##     --help: Display help information
+##     --force: Skip confirmation prompts
+##     --backup: Create a backup of the local database before overwriting
+##     --no-sanitize: Skip database sanitization
+##
+## IMPORTANT: This command only syncs FROM remote environments TO your local environment.
+## It will NEVER modify remote environments as enforced by drush/Commands/PolicyCommands.php
+
+# Set your project name here. Replace client-name with your client name, e.g. luvn, etc.
+PROJECT_NAME="client-fi-<client-name>"
+
+# Exit on error, unset variables, and enable debug output
+set -eu
+
+# Show script execution
+if VERBOSE is setif [[ "${VERBOSE:-}" == "true" ]]; then
+  set -x
+fi
+
+# Define colors for better output
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
+# Define temporary directory and files
+TMP_DIR="/tmp"
+dump_file="${TMP_DIR}/dump.sql.gz"
+backup_file="${TMP_DIR}/db-backup-$(date +%Y%m%d%H%M%S).sql"
+
+# Create temporary directory if it doesn't exist
+mkdir -p "${TMP_DIR}"
+
+# Set drush command for DDEV
+DRUSH="ddev drush"
+
+# Default options
+env="main"
+force=false
+backup=false
+sanitize=true
+
+# Function to display help information
+show_help() {
+  echo "Usage:"
+  echo "  ddev syncdb [environment] [options]"
+  echo ""
+  echo "Description:"
+  echo "  Synchronize local database with a remote environment using fast import"
+  echo "  Uses compressed dumps and DDEV's native import for optimal performance"
+  echo ""
+  echo "  environment: 'main' (default) or 'production'"
+  echo "  options:"
+  echo "    --help: Display this help message"
+  echo "    --force: Skip confirmation prompts"
+  echo "    --backup: Create a backup of the local database before overwriting"
+  echo "    --no-sanitize: Skip database sanitization"
+  echo ""
+  echo "Examples:"
+  echo "  ddev syncdb main"
+  echo "  ddev syncdb production --backup"
+  echo "  ddev syncdb --force --no-sanitize"
+}
+
+# Process command line arguments
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    main|production)
+      env="$1"
+      ;;
+    --force)
+      force=true
+      ;;
+    --backup)
+      backup=true
+      ;;
+    --no-sanitize)
+      sanitize=false
+      ;;
+    --help|-h)
+      show_help
+      exit 0
+      ;;
+    *)
+      echo -e "${RED}Error: Unknown option '$1'${NC}"
+      show_help
+      exit 1
+      ;;
+  esac
+  shift
+done
+
+# Determine the SSH command based on the environment parameter
+echo -e "${GREEN}Using environment: ${YELLOW}${env}${NC}"
+if [ "$env" == "main" ]; then
+  ssh_command="ssh www-admin@main-shell.${PROJECT_NAME} -J www-admin@ssh.dev.wdr.io"
+elif [ "$env" == "production" ]; then
+  ssh_command="ssh www-admin@production-shell.${PROJECT_NAME} -J www-admin@ssh.finland.wdr.io"
+else
+  echo -e "${RED}Invalid environment. Please specify 'main' or 'production'.${NC}"
+  exit 1
+fi
+
+# Cleanup function to remove temporary files
+cleanup() {
+  echo -e "${GREEN}Cleaning up temporary files...${NC}"
+  rm -f "$dump_file"
+}
+
+trap cleanup EXIT
+
+# Test SSH connection and SSH agent status before proceeding
+check_ssh_agent() {
+  if ! ssh-add -l &>/dev/null; then
+    echo -e "${YELLOW}No SSH agent detected or no keys loaded.${NC}"
+    echo -e "${GREEN}When using DDEV, please run the following commands on your host machine:${NC}"
+    echo ""
+    echo "1. Start SSH agent:     eval \$(ssh-agent -s)"
+    echo "2. Add your SSH key:    ssh-add ~/.ssh/id_rsa  # or your specific key path"
+    echo "3. Share with DDEV:     ddev auth ssh"
+
+    echo -e "${YELLOW}Would you like to continue anyway? (y/n)${NC}"
+    read -p "" -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+      echo -e "${GREEN}Operation cancelled. Please run 'ddev auth ssh' before trying again.${NC}"
+      exit 0
+    fi
+  fi
+}
+
+echo -e "${GREEN}Testing SSH connection to ${YELLOW}${env}${GREEN}...${NC}"
+check_ssh_agent
+
+# Test SSH connection - allow passphrase prompt to be visible
+if ! $ssh_command "echo 'Connection successful'" 2>&1 | grep -q "Connection successful"; then
+  echo -e "${RED}Failed to establish SSH connection to ${env}. Check your credentials and network.${NC}"
+  exit 1
+fi
+
+# Confirmation before proceeding
+if [ "$force" != "true" ]; then
+  echo -e "${YELLOW}WARNING: This will overwrite your local database with data from ${env}.${NC}"
+  read -p "Do you want to continue? (y/n) " -n 1 -r
+  echo
+  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo -e "${GREEN}Operation cancelled.${NC}"
+    exit 0
+  fi
+fi
+
+# Backup local database if requested
+if [ "$backup" == "true" ]; then
+  echo -e "${GREEN}Creating backup of local database...${NC}"
+  if ! $DRUSH sql-dump > "$backup_file"; then
+    echo -e "${RED}Failed to create local database backup.${NC}"
+    exit 1
+  fi
+  echo -e "${GREEN}Local database backup created at ${YELLOW}${backup_file}${NC}"
+fi
+
+# Create a compressed database dump file
+echo -e "${GREEN}Creating compressed database dump from ${YELLOW}${env}${GREEN} environment...${NC}"
+if ! $ssh_command "drush sql-dump --gzip" > "$dump_file"; then
+  echo -e "${RED}Failed to create database dump from ${env}.${NC}"
+  exit 1
+fi
+
+# Import the dump using DDEV's fast import method
+# This bypasses Drush's slow stdin processing and uses direct MySQL import
+# Performance improvement: ~10x faster for large databases
+echo -e "${GREEN}Importing database from ${YELLOW}${env}${GREEN} using fast import...${NC}"
+if ! ddev import-db --file="$dump_file"; then
+  echo -e "${RED}Failed to import database.${NC}"
+  exit 1
+fi
+
+# Sanitize the database and clear caches
+if [ "$sanitize" == "true" ]; then
+  echo -e "${GREEN}Sanitizing database...${NC}"
+  if ! $DRUSH sqlsan -y; then
+    echo -e "${YELLOW}Warning: Database sanitization failed.${NC}"
+  fi
+fi
+
+echo -e "${GREEN}Clearing caches...${NC}"$DRUSH cc drush$DRUSH crecho -e "${GREEN}Database sync from ${YELLOW}${env}${GREEN} completed successfully!${NC}"
+```
+
 ## Sources cited:
 
  - **DDEV Installation.** https://docs.ddev.com/en/stable/users/install/ddev-installation/
  - **Starting a Project.** https://docs.ddev.com/en/stable/users/project/
  - **Commands.** https://docs.ddev.com/en/stable/users/usage/commands/#add-on
+ - **Get started with DDEV.** https://docs.ddev.com/en/stable/
+ - **Docker Installation.**  https://docs.ddev.com/en/stable/users/install/docker-installation/
