@@ -1,0 +1,5 @@
+# Add local alias.
+# Docs at https://github.com/drush-ops/drush/blob/master/examples/example.site.yml
+local:
+  root: ${env.LANDO_WEBROOT}
+  uri: ${env.DRUSH_OPTIONS_URI}

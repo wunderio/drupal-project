@@ -1,7 +1,7 @@
 #ddev-generated
 # This is the second half of the trick that puts varnish "in front of" the web
-# container, just by switching the names.
+# container, by switching all hostnames with "novarnish" subdomain prefix.
 services:
   web:
     environment:
-    - VIRTUAL_HOST=novarnish.drupal-project.ddev.site
+    - VIRTUAL_HOST=novarnish.${DDEV_PROJECT}.${DDEV_TLD}
