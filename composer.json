@@ -12,6 +12,30 @@
         {
             "type": "composer",
             "url": "https://packages.drupal.org/8"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/woredeyonas/Drupal-Recipe-Unpack.git"
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "wunderio/wunder-theme-base",
+                "version": "v1.0.0",
+                "type": "drupal-theme",
+                "source": {
+                    "url": "https://github.com/wunderio/wunder-theme-base",
+                    "type": "git",
+                    "reference": "v1.0.0"
+                }
+            }
+        },
+        {
+            "type": "path",
+            "url": "recipes/wunderful",
+            "options": {
+                "symlink": true
+            }
         }
     ],
     "require": {
@@ -25,9 +49,11 @@
         "drupal/monolog": "^3.0",
         "drupal/purge": "^3.6",
         "drupal/simplei": "^3.0",
+        "drupal/storybook": "^1.0",
         "drupal/stage_file_proxy": "^3.1",
         "drupal/varnish_purge": "^2.3",
         "drush/drush": "^13.3",
+        "ewcomposer/unpack": "dev-master",
         "vlucas/phpdotenv": "^5.6",
         "wunderio/drupal-ping": "^2.5",
         "wunderio/updates_log": "^2.5"
@@ -51,7 +77,8 @@
             "php-http/discovery": true,
             "phpro/grumphp": true,
             "phpstan/extension-installer": true,
-            "tbachert/spi": true
+            "tbachert/spi": true,
+            "ewcomposer/unpack": true
         },
         "discard-changes": true,
         "process-timeout": 0,

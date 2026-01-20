@@ -1,0 +1,7 @@
+body {
+  @include body-text;
+}
+
+a {
+  @include link;
+}

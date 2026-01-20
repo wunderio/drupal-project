@@ -7,6 +7,7 @@ config:
   webroot: web
   xdebug: off
   config:
+    vhosts: .lando/nginx.conf
     php: .lando/php.ini
     database: .lando/my.cnf
 

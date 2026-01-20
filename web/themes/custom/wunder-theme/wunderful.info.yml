@@ -1,0 +1,19 @@
+name: Wunder theme
+type: theme
+description: Theme using Storybook and Single directory components.
+base theme: stable9
+core_version_requirement: ^9 || ^10
+dependencies:
+  - drupal:storybook (^3.0)
+libraries:
+  - wunderful/global
+  - wunderful/fonts
+regions:
+  header: Header
+  breadcrumb: Breadcrumb
+  content_top: Content Top
+  hero: Hero
+  content: Content
+  content_bottom: Content Bottom
+  sidebar: Sidebar
+  footer: Footer

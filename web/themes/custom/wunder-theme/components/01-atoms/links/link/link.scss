@@ -1,0 +1,7 @@
+.link {
+  @include link;
+
+  &--inverse {
+    @include link-inverse;
+  }
+}

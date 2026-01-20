@@ -1,0 +1,40 @@
+{
+  "name": "drupal-theme",
+  "version": "1.0.0",
+  "scripts": {
+    "storybook": "storybook dev -p 6006 --no-open",
+    "build-storybook": "storybook build",
+    "webpack": "webpack --watch --config ./webpack/webpack.config.js --mode=development",
+    "develop": "concurrently --raw \"npm run webpack\" \"npm run storybook\"",
+    "build": "webpack --config ./webpack/webpack.config.js --mode=production",
+    "sass-prod": "sass components/style.scss dist/style.css --no-source-map --style=compressed --update",
+    "sass-dev": "sass --watch components/style.scss:dist/style.css --source-map --style=expanded --update"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@chromatic-com/storybook": "^2.0.2",
+    "@storybook/addon-essentials": "^8.3.4",
+    "@storybook/addon-links": "^8.3.4",
+    "@storybook/addon-styling-webpack": "^1.0.0",
+    "@storybook/addon-webpack5-compiler-swc": "^1.0.5",
+    "@storybook/blocks": "^8.3.4",
+    "@storybook/server": "^8.3.4",
+    "@storybook/server-webpack5": "^8.3.4",
+    "@storybook/test": "^8.3.4",
+    "@storybook/web-components": "^8.3.4",
+    "@storybook/web-components-webpack5": "^8.3.4",
+    "concurrently": "^8.2.2",
+    "css-loader": "^7.1.2",
+    "lit": "^3.2.0",
+    "mini-css-extract-plugin": "^2.9.1",
+    "sass": "^1.77.8",
+    "sass-loader": "^16.0.1",
+    "storybook": "^8.3.4",
+    "style-loader": "^4.0.0",
+    "webpack": "^5.94.0",
+    "webpack-cli": "^5.1.4"
+  }
+}

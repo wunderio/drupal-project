@@ -1,0 +1,11 @@
+global:
+  css:
+    theme:
+      dist/style.css: {}
+  dependencies:
+    - core/drupal
+
+fonts:
+  css:
+    theme:
+      libraries/fonts/fonts.css: {}

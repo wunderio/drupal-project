@@ -1,0 +1,15 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/10.1.x/core/modules/sdc/src/metadata.schema.json
+name: Example
+description: The simple text example.
+properties:
+  type: object
+  required:
+    - text
+  properties:
+    text:
+      type: string
+      title: Text
+      description: The text content
+      examples:
+        - Press
+        - Submit now
