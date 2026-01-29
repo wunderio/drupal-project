@@ -66,7 +66,7 @@ The following secret variables are defined in the `silta/silta.secrets` file for
 
 ## Local development
 
-This project supports one local development environment: DDEV (preferred).
+This project uses DDEV for local development.
 
 ### DDEV environment
 
