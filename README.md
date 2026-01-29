@@ -86,7 +86,7 @@ This project supports one local development environment: DDEV (preferred).
   ddev auth ssh
 
   # Synchronize local database with a remote environment
-  # See `.ddev/wunderio/core/tooling-syncdb.sh` for options
+  # Synchronization is provided by [ddev-wunderio-drupal](github.com/wunderio/ddev-wunderio-drupal)
   ddev syncdb
 
   # Apply configuration changes
@@ -118,7 +118,7 @@ For a complete list of all available services, URLs, and ports, use:
 - `ddev phpunit <commands>` - Run test suites
 - `ddev varnishadm <commands>` - Manage Varnish cache
 - `ddev xdebug <mode>` - Configure Xdebug debugging modes
-- `ddev syncdb [environment]` - Sync database from remote environment (requires VPN and `ddev auth ssh`, see `.ddev/wunderio/core/tooling-syncdb.sh` for options)
+- `ddev syncdb [environment]` - Sync database from remote environment (requires VPN and `ddev auth ssh`, provided by [ddev-wunderio-drupal](github.com/wunderio/ddev-wunderio-drupal))
 
 <details>
 <summary>DDEV Elasticsearch configuration</summary>
