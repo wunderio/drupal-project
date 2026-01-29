@@ -22,7 +22,6 @@ alwaysApply: true
 
 ## Key Project Files
 - **Configuration & Setup**
-  - @.lando.yml - Local development environment configuration (Lando)
   - @.ddev/config.yaml - Local development environment configuration (DDEV)
   - @composer.json - PHP dependencies and project configuration
   - @README.md - Project documentation and setup instructions
@@ -38,8 +37,6 @@ alwaysApply: true
   - @silta/silta-prod.yml - Production environment specific configuration
 
 - **Utilities & Scripts**
-  - @scripts/syncdb.sh - Database synchronization tool (supports both DDEV and Lando)
-  - @.lando/xdebug.sh - Xdebug configuration script for Lando
   - DDEV commands:
     - `ddev start` - Start the development environment
     - `ddev composer install` - Install PHP dependencies
@@ -133,9 +130,6 @@ When creating commit messages, always analyze the actual changes using `git diff
   - DDEV for local development (containerized environment with Nginx, PHP, MariaDB)
     - Additional services: Adminer, Elasticsearch, Kibana, Mailpit, Varnish
     - Configuration in @.ddev/config.yaml and related service files
-  - Lando for local development (containerized environment with Nginx, PHP, MariaDB)
-    - Additional services: Adminer, Elasticsearch, Kibana, Mailpit, Varnish
-    - Configuration in @.lando.yml
   - Silta deployment system (Wunder's Kubernetes deployment solution) [@wunderio/silta](https://github.com/wunderio/silta)
   - Helm charts for Kubernetes orchestration
   - Docker containerization (Nginx and PHP containers)

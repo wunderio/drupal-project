@@ -86,7 +86,6 @@ switch ($env) {
 
   case 'ddev':
   case 'local':
-  case 'lando':
     $settings['simple_environment_indicator'] = 'DarkGreen Local';
     $config['config_split.config_split.local']['status'] = TRUE;
     $config['config_split.config_split.silta']['status'] = FALSE;

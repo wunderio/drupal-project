@@ -2,8 +2,8 @@
 
 ## Description: run the Drupal core script with provided arguments
 ## Usage: drupal <arguments>
-## Example: lando drupal generate-theme my-theme
+## Example: ddev drupal generate-theme my-theme
 
-cd ${LANDO_WEBROOT}
+cd ${DDEV_APPROOT}/${DDEV_DOCROOT}
 
 php core/scripts/drupal "$@"
