@@ -18,7 +18,7 @@ This project is a tailored fork of the popular [drupal-composer template](https:
    - Adjust `grumphp.yml` tasks, including updating the project name in the `git_commit_message` regex
    - Configure local development environment:
      - For DDEV: Update project settings in `.ddev/config.yaml`
-   - Update project name in `scripts/out.sh` for database synchronization
+   - For database synchronization, see [ddev-wunderio-drupal](github.com/wunderio/ddev-wunderio-drupal)
    - Adjust `web/sites/default/settings.php` settings (`stage_file_proxy` etc)
    - Adjust `config_split` settings for silta (default), production, main, local environments
 
