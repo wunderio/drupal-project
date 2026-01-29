@@ -18,7 +18,7 @@ This project is a tailored fork of the popular [drupal-composer template](https:
    - Adjust `grumphp.yml` tasks, including updating the project name in the `git_commit_message` regex
    - Configure local development environment:
      - For DDEV: Update project settings in `.ddev/config.yaml`
-   - For database synchronization, see [ddev-wunderio-drupal](github.com/wunderio/ddev-wunderio-drupal)
+   - For database synchronization, see [ddev-wunderio-drupal](https://github.com/wunderio/ddev-wunderio-drupal)
    - Adjust `web/sites/default/settings.php` settings (`stage_file_proxy` etc)
    - Adjust `config_split` settings for silta (default), production, main, local environments
 
@@ -86,7 +86,7 @@ This project supports one local development environment: DDEV (preferred).
   ddev auth ssh
 
   # Synchronize local database with a remote environment
-  # Synchronization is provided by [ddev-wunderio-drupal](github.com/wunderio/ddev-wunderio-drupal)
+  # Synchronization is provided by [ddev-wunderio-drupal](https://github.com/wunderio/ddev-wunderio-drupal)
   ddev syncdb
 
   # Apply configuration changes
@@ -118,7 +118,7 @@ For a complete list of all available services, URLs, and ports, use:
 - `ddev phpunit <commands>` - Run test suites
 - `ddev varnishadm <commands>` - Manage Varnish cache
 - `ddev xdebug <mode>` - Configure Xdebug debugging modes
-- `ddev syncdb [environment]` - Sync database from remote environment (requires VPN and `ddev auth ssh`, provided by [ddev-wunderio-drupal](github.com/wunderio/ddev-wunderio-drupal))
+- `ddev syncdb [environment]` - Sync database from remote environment (requires VPN and `ddev auth ssh`, the command is provided by [ddev-wunderio-drupal](https://github.com/wunderio/ddev-wunderio-drupal))
 
 <details>
 <summary>DDEV Elasticsearch configuration</summary>
