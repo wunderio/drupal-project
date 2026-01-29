@@ -18,7 +18,7 @@ This project is a tailored fork of the popular [drupal-composer template](https:
    - Adjust `grumphp.yml` tasks, including updating the project name in the `git_commit_message` regex
    - Configure local development environment:
      - For DDEV: Update project settings in `.ddev/config.yaml`
-   - Update project name in `scripts/syncdb.sh` for database synchronization
+   - Update project name in `scripts/out.sh` for database synchronization
    - Adjust `web/sites/default/settings.php` settings (`stage_file_proxy` etc)
    - Adjust `config_split` settings for silta (default), production, main, local environments
 
@@ -86,7 +86,7 @@ This project supports one local development environment: DDEV (preferred).
   ddev auth ssh
 
   # Synchronize local database with a remote environment
-  # See `scripts/syncdb.sh` for options
+  # See `.ddev/wunderio/core/tooling-syncdb.sh` for options
   ddev syncdb
 
   # Apply configuration changes
@@ -118,7 +118,7 @@ For a complete list of all available services, URLs, and ports, use:
 - `ddev phpunit <commands>` - Run test suites
 - `ddev varnishadm <commands>` - Manage Varnish cache
 - `ddev xdebug <mode>` - Configure Xdebug debugging modes
-- `ddev syncdb [environment]` - Sync database from remote environment (requires VPN and `ddev auth ssh`, see `scripts/syncdb.sh` for details)
+- `ddev syncdb [environment]` - Sync database from remote environment (requires VPN and `ddev auth ssh`, see `.ddev/wunderio/core/tooling-syncdb.sh` for options)
 
 <details>
 <summary>DDEV Elasticsearch configuration</summary>
