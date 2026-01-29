@@ -71,9 +71,6 @@ Thumbs.db
 # Sensitive deployment files
 silta/*.secrets
 
-# Lando and DDEV files
-.lando/data-mailpit/
-
 # Package lock files (large files with minimal value for indexing)
 composer.lock
 package-lock.json
