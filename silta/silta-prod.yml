@@ -48,13 +48,35 @@ nginx:
     limits:
       cpu: 100m
       memory: 150M
-
+  noauthips:
+    # Let Fastly bypass Silta basic auth.
+    # For staging env basic auth is configured in Fastly instead.
+    # Source: https://api.fastly.com/public-ip-list
+    fastly0: 23.235.32.0/20
+    fastly1: 43.249.72.0/22
+    fastly2: 103.244.50.0/24
+    fastly3: 103.245.222.0/23
+    fastly4: 103.245.224.0/24
+    fastly5: 104.156.80.0/20
+    fastly6: 140.248.64.0/18
+    fastly7: 140.248.128.0/17
+    fastly8: 146.75.0.0/17
+    fastly9: 151.101.0.0/16
+    fastly10: 157.52.64.0/18
+    fastly11: 167.82.0.0/17
+    fastly12: 167.82.128.0/20
+    fastly13: 167.82.160.0/20
+    fastly14: 167.82.224.0/20
+    fastly15: 172.111.64.0/18
+    fastly16: 185.31.16.0/22
+    fastly17: 199.27.72.0/21
+    fastly18: 199.232.0.0/16
 # Uncomment to disable basic authentication.
 # basicauth:
 #   enabled: false
 
-# Disable MailHog in production.
-mailhog:
+# Disable Mailpit in production.
+mailpit:
   enabled: false
 
 # MariaDB configuration.

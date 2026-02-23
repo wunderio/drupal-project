@@ -1,0 +1,15 @@
+#ddev-generated
+services:
+  web:
+    volumes:
+      # $WUNDERIO_GLOBAL_SCRIPT_ROOT is set in wunderio/core/wdr-core.sh, but
+      # it's not here. So we need to use the full path to the wunderio
+      # directory.
+      - ~/.ddev/wunderio:/mnt/ddev-global-cache/wunderio
+      - hooks:/mnt/wdr-hooks
+
+# In DDEV all the places which are kept during start and stop are kept in
+# mounted volumes so able to determine is there certain hooks been called we
+# need to set something permanent.
+volumes:
+  hooks:

@@ -18,8 +18,7 @@ This project is a tailored fork of the popular [drupal-composer template](https:
    - Adjust `grumphp.yml` tasks, including updating the project name in the `git_commit_message` regex
    - Configure local development environment:
      - For DDEV: Update project settings in `.ddev/config.yaml`
-     - For Lando: Update project settings in `.lando.yml`
-   - Update project name in `scripts/syncdb.sh` for database synchronization
+   - For database synchronization, see [ddev-wunderio-drupal](https://github.com/wunderio/ddev-wunderio-drupal)
    - Adjust `web/sites/default/settings.php` settings (`stage_file_proxy` etc)
    - Adjust `config_split` settings for silta (default), production, main, local environments
 
@@ -67,7 +66,7 @@ The following secret variables are defined in the `silta/silta.secrets` file for
 
 ## Local development
 
-This project supports two local development environments: DDEV (preferred) and Lando. Choose the one that best fits your workflow.
+This project uses DDEV for local development.
 
 ### DDEV environment
 
@@ -87,7 +86,7 @@ This project supports two local development environments: DDEV (preferred) and L
   ddev auth ssh
 
   # Synchronize local database with a remote environment
-  # See `scripts/syncdb.sh` for options
+  # Synchronization is provided by [ddev-wunderio-drupal](https://github.com/wunderio/ddev-wunderio-drupal)
   ddev syncdb
 
   # Apply configuration changes
@@ -113,13 +112,13 @@ For a complete list of all available services, URLs, and ports, use:
 
 - `ddev` - Display available commands
 - `ddev adminer` - Launch Adminer database management interface
-- `ddev grumphp <commands>` - Run code quality checks
+- `ddev grumphp <commands>` - Run code quality checks (command provided by [ddev-wunderio-drupal](https://github.com/wunderio/ddev-wunderio-drupal))
 - `ddev mailpit` - Open Mailpit email testing interface
 - `ddev npm <commands>` - Execute npm commands
-- `ddev phpunit <commands>` - Run test suites
+- `ddev phpunit <commands>` - Run test suites (command provided by [ddev-wunderio-drupal](https://github.com/wunderio/ddev-wunderio-drupal))
 - `ddev varnishadm <commands>` - Manage Varnish cache
 - `ddev xdebug <mode>` - Configure Xdebug debugging modes
-- `ddev syncdb [environment]` - Sync database from remote environment (requires VPN and `ddev auth ssh`, see `scripts/syncdb.sh` for details)
+- `ddev syncdb [environment]` - Sync database from remote environment (requires VPN and `ddev auth ssh` (command provided by [ddev-wunderio-drupal](https://github.com/wunderio/ddev-wunderio-drupal))
 
 <details>
 <summary>DDEV Elasticsearch configuration</summary>
@@ -157,46 +156,34 @@ Elasticvue is included for visualization and management at <http://drupal-projec
 </details>
 
 <details>
-<summary>Lando environment</summary>
+<summary>DDEV WunderIO Drupal</summary>
 
-### Lando environment
+#### DDEV WunderIO Drupal addon
 
-[Lando](https://docs.lando.dev/) offers another containerized development option with a focus on simplicity and flexibility.
+The Drupal template includes the Wunder-specific `ddev-wunderio-drupal` addon. This addon provides additional functionality and tools specifically designed for Drupal development, including custom commands, configurations, and automation scripts to enhance your workflow.
 
-#### Lando services and access points
+For more information about the addon, configuration options, and available custom commands, see:
+<https://github.com/wunderio/ddev-wunderio-drupal/tree/main>
 
-| Service | Description | Access |
-|---------|-------------|---------|
-| Web server | Primary web service | <https://drupal-project.lndo.site> |
-| Adminer | Database management via [docker-adminer](https://github.com/dehy/docker-adminer) | <http://adminer.drupal-project.lndo.site> |
-| Elasticsearch | Search functionality via Elasticsearch (uncomment in `.lando.yml` to enable) | <http://localhost:9200> or <http://elasticsearch.lndo.site> |
-| Kibana | Elasticsearch visualization (uncomment in `.lando.yml` to enable) | <http://localhost:5601> or <http://kibana.lndo.site> |
-| Mailpit | Email testing via [Mailpit](https://mailpit.axllent.org/) | <http://mail.lndo.site> |
-| Varnish | Caching via Varnish | <https://varnish.drupal-project.lndo.site> |
-| Drush | Drupal CLI tool | `lando drush @local st` |
-| SSH | Container shell access | `lando ssh (-s <service>)` |
-| Node | JavaScript tooling | Included in web container |
-| Chrome | Browser testing via [selenium/standalone-chrome](https://hub.docker.com/r/selenium/standalone-chrome/) | Available in web container |
+#### Automated installation
 
-#### Lando setup instructions
+This addon is installed automatically when you run `ddev start`.
 
-1. Install [Lando](https://github.com/lando/lando/releases)
-2. Start the environment:
+The automation is configured in `.ddev/config.wunderio.yaml` using a `pre-start` host hook:
 
-  ```bash
-  lando start
-  ```
+```yaml
+hooks:
+  pre-start:
+    - exec-host: 'if [ ! -f "${DDEV_GLOBAL_DIR}/wunderio/core/wdr-core.sh" ]; then ddev add-on get wunderio/ddev-wunderio-drupal; fi'
+```
 
-#### Lando common commands
+This means developers only need to clone the project and run `ddev start`; no manual addon installation step is required.
 
-- `lando` - Display available commands
-- `lando drupal <arguments>` - Run Drupal core scripts
-- `lando grumphp <commands>` - Run code quality checks
-- `lando npm <commands>` - Execute npm commands
-- `lando phpunit <commands>` - Run test suites
-- `lando varnishadm <commands>` - Manage Varnish cache
-- `lando xdebug <mode>` - Configure Xdebug debugging modes
-- `lando syncdb [environment]` - Sync database from remote environment (requires VPN, see `scripts/syncdb.sh` for details)
+Common commands provided by the addon include:
+
+- `ddev grumphp`
+- `ddev phpunit`
+- `ddev syncdb`
 
 </details>
 
@@ -276,7 +263,7 @@ This project uses [Cursor](https://docs.cursor.com/) as the recommended AI-power
 
 This section describes how to set up Varnish caching and Purge functionality in your local development environment.
 
-Note: Drush commands in this section should be run with the appropriate environment prefix (`ddev` or `lando`).
+Note: Drush commands in this section should be run with the appropriate environment prefix (`ddev`).
 
 #### Configuration Overview
 
@@ -355,18 +342,6 @@ The project includes ready-to-use Varnish configuration:
    ddev exec -s varnish varnishlog -i BAN -i Cache
    ```
 
-##### Lando
-
-1. **Enable Varnish**:
-   - Varnish configuration is already enabled in `.lando.yml` & `.lando/varnish.vcl`.
-
-2. **Testing Configuration**:
-
-   ```bash
-   lando drush cr
-   lando ssh -c "curl -X BAN -H 'Cache-Tags: config:system.performance' http://varnish"
-   ```
-
 ### Important Notes
 
 - **BAN vs PURGE Method:** Always use the "BAN" method in the Varnish purger configuration instead of "PURGE". The Silta Varnish configuration is set up to handle BAN requests but may reject PURGE requests with "405 Method Not Allowed" errors.
@@ -385,7 +360,7 @@ The [PHPUnit](https://phpunit.de/) test framework is predefined in this project.
 
 #### Testing examples
 
-Note: Run these commands with the appropriate environment prefix (`ddev phpunit` or `lando phpunit`).
+Note: Run these commands with the appropriate environment prefix (`ddev phpunit`).
 
 - Run one test class: `phpunit path/to/your/class/file.php`
 - List groups: `phpunit --list-groups`
