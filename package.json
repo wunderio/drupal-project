@@ -18,6 +18,8 @@
     "lint:css": "stylelint --allow-empty-input './web/themes/custom/**/*.{css,scss,sass}' './web/modules/custom/**/*.{css,scss,sass}'"
   },
   "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "@types/node": "^25.6.0",
     "eslint": "^8.8.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^8.1.0",
