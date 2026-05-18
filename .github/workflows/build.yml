@@ -90,6 +90,11 @@ jobs:
             --no-interaction \
             --optimize-autoloader \
             --prefer-dist
+          # Restore execute permissions on all composer bin stubs and their targets.
+          find vendor/bin -type f -o -type l | while read f; do
+            chmod +x "$f"
+            [ -L "$f" ] && chmod +x "$(readlink -f "$f")" 2>/dev/null || true
+          done
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -182,6 +187,7 @@ jobs:
         with:
           context: .
           file: ${{ matrix.target.dockerfile }}
+          pull: true
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.REPO }}/${{ matrix.target.name }}:${{ steps.tag.outputs.tag }}
           labels: |
