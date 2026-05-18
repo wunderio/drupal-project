@@ -1,0 +1,26 @@
+---
+# apps.yaml — ArgoCD application definitions for feature/PR environments.
+#
+# Branch mapping: feature/hotfix/epic/* PRs -> pr-<N>
+# (see cluster-management PR ApplicationSet).
+#
+# UPDATE: Change the namespace to match your project.
+
+namespace: client-fi-CHANGEME
+
+apps:
+  - name: drupal
+    chart: drupal
+    repoURL: https://storage.googleapis.com/charts.wdr.io
+    version: ">=1.0.0"
+    valuesFile: values/drupal.yaml
+    images:
+      - alias: php
+        repository: php
+        helmPath: php.image
+      - alias: nginx
+        repository: nginx
+        helmPath: nginx.image
+      - alias: shell
+        repository: shell
+        helmPath: shell.image

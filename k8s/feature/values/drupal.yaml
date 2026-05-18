@@ -1,0 +1,63 @@
+---
+# Helm values for the drupal chart — feature/PR environments.
+#
+# Image tags are managed by ArgoCD Image Updater via git write-back.
+# Tag format: {branch-normalized}-{timestamp}-{sha}
+#
+# UPDATE: Change image repository paths to match your Harbor project name.
+
+php:
+  image:
+    repository: registry.wdr.io/CHANGEME/php
+    tag: placeholder-00000000T000000-0000000
+  drupalCoreVersion: "11"
+  cron:
+    drupal:
+      # Disable cron in feature/PR environments.
+      schedule: "~ 0 31 2 *"
+
+nginx:
+  image:
+    repository: registry.wdr.io/CHANGEME/nginx
+    tag: placeholder-00000000T000000-0000000
+
+shell:
+  image:
+    repository: registry.wdr.io/CHANGEME/shell
+    tag: placeholder-00000000T000000-0000000
+
+# Reference data disabled in feature environments.
+referenceData:
+  enabled: false
+
+# Enable Mailpit (mail catcher).
+mailpit:
+  enabled: true
+
+# MariaDB configuration.
+mariadb:
+  enabled: true
+  db:
+    password: "drupal-dev-db-pass"
+  rootUser:
+    password: "drupal-dev-root-pass"
+  master:
+    persistence:
+      size: 1Gi
+    resources:
+      requests:
+        cpu: 25m
+        memory: 366Mi
+      limits:
+        memory: 488Mi
+
+# File mounts.
+mounts:
+  public-files:
+    enabled: true
+    storage: 10Gi
+    mountPath: /app/web/sites/default/files
+  private-files:
+    enabled: true
+    storage: 1Gi
+    mountPath: /app/private

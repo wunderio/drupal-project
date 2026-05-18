@@ -1,0 +1,27 @@
+---
+# apps.yaml — ArgoCD application definitions for the staging environment.
+#
+# The platform chart in cluster-management reads this file and renders one
+# ArgoCD Application per entry in the apps[] list.
+# Branch mapping: main/master -> staging (see cluster-management ApplicationSets).
+#
+# UPDATE: Change the namespace to match your project (e.g. client-fi-mysite).
+
+namespace: client-fi-CHANGEME
+
+apps:
+  - name: drupal
+    chart: drupal
+    repoURL: https://storage.googleapis.com/charts.wdr.io
+    version: ">=1.0.0"
+    valuesFile: values/drupal.yaml
+    images:
+      - alias: php
+        repository: php
+        helmPath: php.image
+      - alias: nginx
+        repository: nginx
+        helmPath: nginx.image
+      - alias: shell
+        repository: shell
+        helmPath: shell.image

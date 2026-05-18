@@ -1,0 +1,9 @@
+---
+creation_rules:
+  - path_regex: k8s/(staging|feature|production|development)/values/.*\.sops\.ya?ml
+    encrypted_regex: "^(data|stringData)$"
+    mac_only_encrypted: true
+    age: "age17823xayhv5f7tn32y934cuhtwjzj0kcad4qqmn5hpkgty4ecydmq9mra2z"
+stores:
+  yaml:
+    indent: 2
