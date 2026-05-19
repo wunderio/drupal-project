@@ -9,6 +9,7 @@
   ],
   "author": "Wunder",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "build": "echo 'No build command specified in package.json'",
     "lint": "npm run lint:js && npm run lint:css && npm run lint:md",
@@ -33,6 +34,10 @@
     "stylelint": "^14.3.0",
     "stylelint-config-prettier": "^9.0.3",
     "stylelint-config-standard": "^26.0.0",
-    "stylelint-prettier": "^2.0.0"
+    "stylelint-prettier": "^2.0.0",
+    "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "@drupal/playwright": "^1.1.1"
   }
 }
