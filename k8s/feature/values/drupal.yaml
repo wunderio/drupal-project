@@ -1,7 +1,7 @@
 ---
 # Helm values for the drupal chart — feature/PR environments.
 #
-# Image tags are managed by ArgoCD Image Updater via git write-back.
+# Image tags are updated by CI via wunderio/silta-actions/update-image-tags.
 # Tag format: {branch-normalized}-{timestamp}-{sha}
 #
 # UPDATE: Change image repository paths to match your Harbor project name.

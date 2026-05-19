@@ -15,13 +15,3 @@ apps:
     repoURL: https://storage.googleapis.com/charts.wdr.io
     version: ">=1.0.0"
     valuesFile: values/drupal.yaml
-    images:
-      - alias: php
-        repository: php
-        helmPath: php.image
-      - alias: nginx
-        repository: nginx
-        helmPath: nginx.image
-      - alias: shell
-        repository: shell
-        helmPath: shell.image
