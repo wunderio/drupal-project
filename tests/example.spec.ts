@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
 import { faker } from '@faker-js/faker';
-import { test } from './fixtures';
+import { test } from './drupal-test';
 
 test.describe('Basic page', () => {
   test('Can create a basic page', async ({ drupal, page }) => {
