@@ -44,7 +44,16 @@ export default defineConfig({
 
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      use: {
+        ...devices['Desktop Firefox'],
+        launchOptions: {
+          firefoxUserPrefs: {
+            // Disable speculative pre-connections to prevent Firefox from
+            // consuming Drupal one-time login URLs before page.goto() navigates.
+            'network.http.speculative-parallel-limit': 0,
+          },
+        },
+      },
     },
 
     {
