@@ -398,7 +398,7 @@ npx playwright show-report
 
 ##### Test structure
 
-- `tests/fixtures.ts` — Custom Playwright fixtures providing a `drupal` helper (via `@drupal/playwright`) for actions like `drupal.loginAsAdmin()`
+- `tests/drupal-test.ts` — Custom Playwright test base providing a `drupal` helper (via `@drupal/playwright`) for actions like `drupal.loginAsAdmin()`
 - `tests/example.spec.ts` — Example end-to-end test demonstrating basic page creation
 
 </details>
