@@ -107,14 +107,15 @@ jobs:
           npm ci
           npm run build
 
+      - name: Clean up before artifact upload
+        run: rm -rf .git node_modules
+
       - name: Upload built codebase
-        uses: actions/upload-artifact@v4
+        uses: pyTooling/upload-artifact@v4
         with:
           name: built-codebase
-          path: |
-            .
-            !.git
-            !node_modules
+          include-hidden-files: true
+          path: .
           retention-days: 1
 
   # ---------------------------------------------------------------
