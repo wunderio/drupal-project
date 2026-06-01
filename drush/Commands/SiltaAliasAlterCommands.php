@@ -32,35 +32,24 @@ class SiltaAliasAlterCommands extends DrushCommands implements SiteAliasManagerA
      * @hook pre-init *
      */
     public function alter(InputInterface $input, AnnotationData $annotationData) {
-        $self = $this->siteAliasManager()->getSelf();
+        // Get branch name we're currently on.
+        $branch = exec('git rev-parse --abbrev-ref HEAD');
 
-        $aliases_to_alter = ['@self.current', '@self.main', '@self.prod'];
+        $environment_name = $this->prepareEnvironmentName($branch);
+        $repository_name = exec('basename -s .git `git config --get remote.origin.url`');
+        $project_name = $this->getProjectName();
 
-        if (in_array($self->name(), $aliases_to_alter)) {
-            // Get branch name we're currently on.
-            $branch = exec('git rev-parse --abbrev-ref HEAD');
-
-            $environment_name = $this->prepareEnvironmentName($branch);
-            $repository_name = exec('basename -s .git `git config --get remote.origin.url`');
-            $project_name = $this->getProjectName();
-
-            // If project name is not explicitly set in silta.yml then we use the
-            // default - repository name.
-            if (is_null($project_name)) {
-                $project_name = $repository_name;
-            }
-
-            // Create new values for host and uri settings.
-            $new_host = str_replace('${ENVIRONMENT}', $environment_name, $self->get('host'));
-            $new_host = str_replace('${REPOSITORY}', $repository_name, $new_host);
-            $new_uri = str_replace('${ENVIRONMENT}', $environment_name, $self->get('uri'));
-            $new_uri = str_replace('${PROJECT}', $project_name, $new_uri);
-
-            // Fire the missiles!
-            $self->set('host', $new_host);
-            $self->set('uri', $new_uri);
+        // If project name is not explicitly set in silta.yml then we use the
+        // default - repository name.
+        if (is_null($project_name)) {
+            $project_name = $repository_name;
         }
 
+        $this->siteAliasManager()->setReferenceData($this->getConfig()->export() + [
+            'ENVIRONMENT' => $environment_name,
+            'REPOSITORY' => $repository_name,
+            'PROJECT' => $project_name,
+        ]);
     }
 
     /**
