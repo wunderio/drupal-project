@@ -386,40 +386,36 @@ This project is maintained by [Wunder](https://wunder.io/). Contributions from t
 
 ### Commit message validation and ticketing system integration
 
-We follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification for commit messages, with an additional requirement for ticket IDs. Each commit message must include a valid ticket ID (except for merge commits) and follow the conventional commits format:
+Commit message validation is enforced by GrumPHP (`git_commit_message`) and requires a ticket ID in the subject. Use one of these formats:
 
-```bash
-[PROJECTKEY-123]: (feat) Add new feature description
-
-- Detailed change description
-- Another relevant detail
-
-Refs: file1.ext, file2.ext
+```text
+TICKET-123: Capitalized subject
+type(TICKET-123): Capitalized subject
 ```
 
-Types include (used within parentheses):
+Examples:
 
-- feat: New feature (correlates with MINOR in semantic versioning)
-- fix: Bug fix (correlates with PATCH in semantic versioning)
-- docs: Documentation changes
-- style: Changes not affecting code meaning
-- refactor: Code changes neither fixing bugs nor adding features
-- perf: Performance improvements
-- test: Adding or correcting tests
-- build: Build system or dependency changes
-- ci: CI configuration changes
-- chore: Other changes not modifying src or test files
+```text
+WNDR-446: Update composer dependencies
+fix(WNDR-446): Add Drush 13 PRE_INITIALIZE hook
+feat(GH-57): Add release automation command
+```
 
-Breaking changes must be indicated by appending a ! after the type/scope or including "BREAKING CHANGE:" in the footer.
+Rules:
 
-Ticket ID formats:
+- Ticket format: `PROJECTKEY-123` (for example `WNDR-446`, `GH-57`).
+- Subject must start with a capital letter after `: `.
+- Allowed types in `type(...)`: `feat`, `fix`, `chore`, `docs`, `style`, `refactor`, `perf`, `test`, `ci`, `build`, `revert`.
+- Merge commits are excluded from this validation.
 
-- JIRA: `[PROJECTKEY-123]: (type) Description`
-- GitHub: `GH-123: (type) Description`
+Type names follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification.
 
-We leverage [autolinked references](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/autolinked-references-and-urls) to automatically convert ticket IDs into clickable links for easy navigation. This enhances traceability and accessibility across platforms.
+Recommended (not required by the matcher):
 
-Validation rules are implemented via the GrumPHP `git_commit_message` component. See `grumphp.yml` for configuration details.
+- Keep body lines as bullet points explaining what and why.
+- Add a `Refs:` footer with key files.
+
+Ticket IDs can be autolinked in GitHub using [custom autolinks](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/autolinked-references-and-urls).
 </details>
 
 ### Git workflow
