@@ -18,6 +18,11 @@ jobs:
     steps:
       - checkout
 
+      - restore_cache:
+          keys:
+            - v1-npm-cache-{{ checksum "package-lock.json" }}
+            - v1-npm-cache-
+
       - run:
           name: Install DDEV
           command: |
@@ -26,7 +31,14 @@ jobs:
 
       - run:
           name: Start DDEV
-          command: ddev start
+          command: ddev start --skip-hooks
+
+      - run:
+          name: Install dependencies
+          command: |
+            ddev composer install --no-interaction --prefer-dist --optimize-autoloader
+            NPM_CONFIG_CACHE=.cache/npm ddev npm ci
+            ddev npx playwright install --with-deps chromium
 
       - run:
           name: Install Drupal
@@ -36,9 +48,15 @@ jobs:
           name: Run Playwright tests
           command: |
             mkdir -p test-results
-            PLAYWRIGHT_JUNIT_OUTPUT_NAME=test-results/results.xml ddev npx playwright test --project=chromium --reporter=html,junit
+            PLAYWRIGHT_JUNIT_OUTPUT_NAME=test-results/results.xml ddev npx playwright test --project=chromium --workers=1 --reporter=html,junit
           max_auto_reruns: 2
           auto_rerun_delay: 10s
+
+      - save_cache:
+          key: v1-npm-cache-{{ checksum "package-lock.json" }}
+          paths:
+            - .cache/npm
+          when: always
 
       - store_artifacts:
           path: playwright-report
