@@ -3,8 +3,10 @@
 namespace Drush\Commands;
 
 use Consolidation\AnnotatedCommand\AnnotationData;
-use Consolidation\SiteAlias\SiteAliasManagerAwareInterface;
-use Consolidation\SiteAlias\SiteAliasManagerAwareTrait;
+use Consolidation\AnnotatedCommand\Hooks\HookManager;
+use Consolidation\SiteAlias\SiteAliasManagerInterface;
+use Drush\Attributes as CLI;
+use Drush\Boot\DrupalBootLevels;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Yaml\Yaml;
 
@@ -13,9 +15,16 @@ use Symfony\Component\Yaml\Yaml;
  *
  * @package Drush\Commands
  */
-class SiltaAliasAlterCommands extends DrushCommands implements SiteAliasManagerAwareInterface {
+#[CLI\Bootstrap(DrupalBootLevels::NONE)]
+class SiltaAliasAlterCommands extends DrushCommands {
 
-    use SiteAliasManagerAwareTrait;
+    use AutowireTrait;
+
+    public function __construct(
+        private readonly SiteAliasManagerInterface $siteAliasManager,
+    ) {
+        parent::__construct();
+    }
 
     /**
      * Alter feature alias.
@@ -28,9 +37,8 @@ class SiltaAliasAlterCommands extends DrushCommands implements SiteAliasManagerA
      *   Input interface instance.
      * @param \Consolidation\AnnotatedCommand\AnnotationData $annotationData
      *   Annotation data.
-     *
-     * @hook pre-init *
      */
+    #[CLI\Hook(type: HookManager::PRE_INITIALIZE, target: '*')]
     public function alter(InputInterface $input, AnnotationData $annotationData) {
         // Get branch name we're currently on.
         $branch = exec('git rev-parse --abbrev-ref HEAD');
@@ -45,7 +53,7 @@ class SiltaAliasAlterCommands extends DrushCommands implements SiteAliasManagerA
             $project_name = $repository_name;
         }
 
-        $this->siteAliasManager()->setReferenceData($this->getConfig()->export() + [
+        $this->siteAliasManager->setReferenceData($this->getConfig()->export() + [
             'ENVIRONMENT' => $environment_name,
             'REPOSITORY' => $repository_name,
             'PROJECT' => $project_name,
@@ -53,12 +61,12 @@ class SiltaAliasAlterCommands extends DrushCommands implements SiteAliasManagerA
 
         // Preflight may have cached @self before reference data was set; remote
         // commands (e.g. drush @prod uli) use getSelf() for SSH, so reload it.
-        $self = $this->siteAliasManager()->getSelf();
+        $self = $this->siteAliasManager->getSelf();
         $host = $self->get('host');
         if (is_string($host) && str_contains($host, '${')) {
-            $resolved = $this->siteAliasManager()->get($self->name());
+            $resolved = $this->siteAliasManager->get($self->name());
             if ($resolved !== FALSE) {
-                $this->siteAliasManager()->setSelf($resolved);
+                $this->siteAliasManager->setSelf($resolved);
             }
         }
     }
