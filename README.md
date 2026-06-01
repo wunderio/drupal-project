@@ -14,6 +14,7 @@ This project is a tailored fork of the popular [drupal-composer template](https:
    Clone the new project locally and update its details:
    - Update `README.md` with the project details
    - Update `composer.json` with the project name
+   - In real client projects, remove `/composer.lock` from `.gitignore` so the lockfile is committed and reproducible
    - Modify the `silta/silta*` files [values](https://github.com/wunderio/charts/blob/master/drupal/values.yaml)
    - Adjust `grumphp.yml` tasks, including updating the project name in the `git_commit_message` regex
    - Configure local development environment:
