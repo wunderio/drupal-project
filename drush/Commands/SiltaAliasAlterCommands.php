@@ -50,6 +50,17 @@ class SiltaAliasAlterCommands extends DrushCommands implements SiteAliasManagerA
             'REPOSITORY' => $repository_name,
             'PROJECT' => $project_name,
         ]);
+
+        // Preflight may have cached @self before reference data was set; remote
+        // commands (e.g. drush @prod uli) use getSelf() for SSH, so reload it.
+        $self = $this->siteAliasManager()->getSelf();
+        $host = $self->get('host');
+        if (is_string($host) && str_contains($host, '${')) {
+            $resolved = $this->siteAliasManager()->get($self->name());
+            if ($resolved !== FALSE) {
+                $this->siteAliasManager()->setSelf($resolved);
+            }
+        }
     }
 
     /**
