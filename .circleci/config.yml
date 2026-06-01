@@ -10,6 +10,43 @@ executors:
     docker:
       - image: wunderio/silta-cicd:circleci-php8.3-node22-composer2-v1
 
+jobs:
+  playwright-ddev:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: medium
+    steps:
+      - checkout
+
+      - run:
+          name: Install DDEV
+          command: |
+            curl -fsSL https://raw.githubusercontent.com/ddev/ddev/master/scripts/install_ddev.sh | bash
+            ddev version
+
+      - run:
+          name: Start DDEV
+          command: ddev start
+
+      - run:
+          name: Install Drupal
+          command: ddev drush site:install --yes --account-pass=admin
+
+      - run:
+          name: Run Playwright tests
+          command: |
+            mkdir -p test-results
+            PLAYWRIGHT_JUNIT_OUTPUT_NAME=test-results/results.xml ddev npx playwright test --project=chromium --reporter=html,junit
+          max_auto_reruns: 2
+          auto_rerun_delay: 10s
+
+      - store_artifacts:
+          path: playwright-report
+          destination: playwright-report
+
+      - store_test_results:
+          path: test-results
+
 # Define shared branch filters as reusable anchors.
 branch-filters:
   ignored-branches: &ignored-branches
@@ -41,6 +78,18 @@ workflows:
           name: analyze
           context: analyze
           sources: web
+
+      - playwright-ddev:
+          name: playwright-ddev
+          requires:
+            - validate
+          filters:
+            branches:
+              ignore:
+                - production
+                - /dependabot\/.*
+                - /^10\..*/
+                - /^11\..*/
 
       # Build job for feature environments.
       # Other jobs defined below extend this job.
