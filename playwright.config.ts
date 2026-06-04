@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const authFile = 'playwright/.auth/user.json';
+
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -38,14 +40,26 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
-      name: 'chromium',
+      name: 'setup',
+      testMatch: /.*\.setup\.ts/,
       use: { ...devices['Desktop Chrome'] },
+    },
+
+    {
+      name: 'chromium',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: authFile,
+      },
+      dependencies: ['setup'],
+      testIgnore: /.*\.setup\.ts/,
     },
 
     {
       name: 'firefox',
       use: {
         ...devices['Desktop Firefox'],
+        storageState: authFile,
         launchOptions: {
           firefoxUserPrefs: {
             // Disable speculative pre-connections to prevent Firefox from
@@ -54,11 +68,18 @@ export default defineConfig({
           },
         },
       },
+      dependencies: ['setup'],
+      testIgnore: /.*\.setup\.ts/,
     },
 
     {
       name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
+      use: {
+        ...devices['Desktop Safari'],
+        storageState: authFile,
+      },
+      dependencies: ['setup'],
+      testIgnore: /.*\.setup\.ts/,
     },
 
     /* Test against mobile viewports. */

@@ -1,13 +1,12 @@
 import { expect } from '@playwright/test';
 import { faker } from '@faker-js/faker';
-import { test } from './helpers/drupal-test';
+import { test } from '@playwright/test';
 
 test.describe('Basic page', { tag: '@crud' }, () => {
-  test('Can create a basic page', async ({ drupal, page }) => {
-    const title = faker.lorem.sentence();
+  test('Can create a basic page', async ({ page }) => {
+    const title = faker.lorem.sentence({ min: 2, max: 3 });
     const alias = `/${faker.lorem.slug()}`;
 
-    await drupal.loginAsAdmin();
     await page.goto('/node/add/page');
 
     // Fill in the title
@@ -34,11 +33,10 @@ test.describe('Basic page', { tag: '@crud' }, () => {
 });
 
 test.describe('Article', { tag: '@crud' }, () => {
-  test('Can create an article', async ({ drupal, page }) => {
-    const title = faker.lorem.sentence();
+  test('Can create an article', async ({ page }) => {
+    const title = faker.lorem.sentence({ min: 2, max: 3 });
     const alias = `/${faker.lorem.slug()}`;
 
-    await drupal.loginAsAdmin();
     await page.goto('/node/add/article');
 
     // Fill in the title
