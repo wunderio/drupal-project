@@ -11,10 +11,13 @@ grumphp:
     git_commit_message:
       max_body_width: 0
       max_subject_width: 0
+      enforce_capitalized_subject: false
       matchers:
-        # Modify the universal JIRA regex provided to suit your project requirements, incl. name.
-        # For example, the regex for a project called WD would be: `/^WD-[1-9][0-9]*: /`.
-        'The commit must start with the JIRA or GitHub issue number': '/^[A-Z][A-Z0-9_]+-[1-9][0-9]*: /'
+        # Support both formats:
+        # 1. JIRA/GitHub issue first: TICKET-#: Message
+        # 2. Conventional commits: type(TICKET-#): Message
+        # Examples: WNDR-446: Fix..., fix(WNDR-446): Add..., feat(GH-42): New...
+        'The commit must start with the JIRA or GitHub issue number': '/^((feat|fix|chore|docs|style|refactor|perf|test|ci|build|revert)\([A-Z][A-Z0-9_]+-[1-9][0-9]*\)|[A-Z][A-Z0-9_]+-[1-9][0-9]*): [A-Z]/'
     php_compatibility:
       run_on: '%grumphp.run_on_paths%'
       testVersion: '8.3'

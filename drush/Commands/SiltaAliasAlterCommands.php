@@ -3,8 +3,10 @@
 namespace Drush\Commands;
 
 use Consolidation\AnnotatedCommand\AnnotationData;
-use Consolidation\SiteAlias\SiteAliasManagerAwareInterface;
-use Consolidation\SiteAlias\SiteAliasManagerAwareTrait;
+use Consolidation\AnnotatedCommand\Hooks\HookManager;
+use Consolidation\SiteAlias\SiteAliasManagerInterface;
+use Drush\Attributes as CLI;
+use Drush\Boot\DrupalBootLevels;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Yaml\Yaml;
 
@@ -13,9 +15,16 @@ use Symfony\Component\Yaml\Yaml;
  *
  * @package Drush\Commands
  */
-class SiltaAliasAlterCommands extends DrushCommands implements SiteAliasManagerAwareInterface {
+#[CLI\Bootstrap(DrupalBootLevels::NONE)]
+class SiltaAliasAlterCommands extends DrushCommands {
 
-    use SiteAliasManagerAwareTrait;
+    use AutowireTrait;
+
+    public function __construct(
+        private readonly SiteAliasManagerInterface $siteAliasManager,
+    ) {
+        parent::__construct();
+    }
 
     /**
      * Alter feature alias.
@@ -28,39 +37,38 @@ class SiltaAliasAlterCommands extends DrushCommands implements SiteAliasManagerA
      *   Input interface instance.
      * @param \Consolidation\AnnotatedCommand\AnnotationData $annotationData
      *   Annotation data.
-     *
-     * @hook pre-init *
      */
+    #[CLI\Hook(type: HookManager::PRE_INITIALIZE, target: '*')]
     public function alter(InputInterface $input, AnnotationData $annotationData) {
-        $self = $this->siteAliasManager()->getSelf();
+        // Get branch name we're currently on.
+        $branch = exec('git rev-parse --abbrev-ref HEAD');
 
-        $aliases_to_alter = ['@self.current', '@self.main', '@self.prod'];
+        $environment_name = $this->prepareEnvironmentName($branch);
+        $repository_name = exec('basename -s .git `git config --get remote.origin.url`');
+        $project_name = $this->getProjectName();
 
-        if (in_array($self->name(), $aliases_to_alter)) {
-            // Get branch name we're currently on.
-            $branch = exec('git rev-parse --abbrev-ref HEAD');
-
-            $environment_name = $this->prepareEnvironmentName($branch);
-            $repository_name = exec('basename -s .git `git config --get remote.origin.url`');
-            $project_name = $this->getProjectName();
-
-            // If project name is not explicitly set in silta.yml then we use the
-            // default - repository name.
-            if (is_null($project_name)) {
-                $project_name = $repository_name;
-            }
-
-            // Create new values for host and uri settings.
-            $new_host = str_replace('${ENVIRONMENT}', $environment_name, $self->get('host'));
-            $new_host = str_replace('${REPOSITORY}', $repository_name, $new_host);
-            $new_uri = str_replace('${ENVIRONMENT}', $environment_name, $self->get('uri'));
-            $new_uri = str_replace('${PROJECT}', $project_name, $new_uri);
-
-            // Fire the missiles!
-            $self->set('host', $new_host);
-            $self->set('uri', $new_uri);
+        // If project name is not explicitly set in silta.yml then we use the
+        // default - repository name.
+        if (is_null($project_name)) {
+            $project_name = $repository_name;
         }
 
+        $this->siteAliasManager->setReferenceData($this->getConfig()->export() + [
+            'ENVIRONMENT' => $environment_name,
+            'REPOSITORY' => $repository_name,
+            'PROJECT' => $project_name,
+        ]);
+
+        // Preflight may have cached @self before reference data was set; remote
+        // commands (e.g. drush @prod uli) use getSelf() for SSH, so reload it.
+        $self = $this->siteAliasManager->getSelf();
+        $host = $self->get('host');
+        if (is_string($host) && str_contains($host, '${')) {
+            $resolved = $this->siteAliasManager->get($self->name());
+            if ($resolved !== FALSE) {
+                $this->siteAliasManager->setSelf($resolved);
+            }
+        }
     }
 
     /**
