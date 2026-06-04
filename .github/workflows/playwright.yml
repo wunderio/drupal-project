@@ -9,67 +9,18 @@ jobs:
   playwright:
     runs-on: ubuntu-latest
 
-    services:
-      mariadb:
-        image: mariadb:10.6
-        env:
-          MYSQL_DATABASE: drupal
-          MYSQL_USER: drupal
-          MYSQL_PASSWORD: drupal
-          MYSQL_ROOT_PASSWORD: root
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="healthcheck.sh --connect --innodb_initialized"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-
-    env:
-      DB_NAME: drupal
-      DB_USER: drupal
-      DB_PASS: drupal
-      DB_HOST: 127.0.0.1
-      HASH_SALT: ci-not-a-secure-salt
-      ENVIRONMENT_NAME: ci
-      DRUPAL_TEST_DRUPAL_ROOT: ${{ github.workspace }}/web
-      TEST_BASE_URL: http://localhost:8080
-      DRUSH_OPTIONS_URI: http://localhost:8080
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-          extensions: gd, pdo_mysql, mbstring, xml, zip, intl, opcache
-          tools: composer:2.3
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install Composer dependencies
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+      - name: Setup DDEV
+        uses: ddev/github-action-setup-ddev@v1
 
       - name: Install Drupal
-        run: ./vendor/bin/drush site:install --yes --account-pass=admin
-
-      - name: Start Drupal development server
-        run: ./vendor/bin/drush serve localhost:8080 &
-
-      - name: Install npm dependencies
-        run: npm ci
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
+        run: ddev drush site:install --yes --account-pass=admin
 
       - name: Run Playwright tests
-        run: npx playwright test --project=chromium
+        run: ddev exec npx playwright test --project=chromium
 
       - name: Upload Playwright report
         if: always()
