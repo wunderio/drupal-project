@@ -2,7 +2,7 @@ import { expect } from '@playwright/test';
 import { faker } from '@faker-js/faker';
 import { test } from './helpers/drupal-test';
 
-test.describe('Basic page', () => {
+test.describe('Basic page', { tag: '@crud' }, () => {
   test('Can create a basic page', async ({ drupal, page }) => {
     const title = faker.lorem.sentence();
     const alias = `/${faker.lorem.slug()}`;
