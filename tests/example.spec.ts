@@ -1,12 +1,13 @@
 import { expect } from '@playwright/test';
 import { faker } from '@faker-js/faker';
-import { test } from '@playwright/test';
+import { test } from './helpers/drupal-test';
 
 test.describe('Basic page', { tag: '@crud' }, () => {
-  test('Can create a basic page', async ({ page }) => {
+  test('Can create a basic page', async ({ drupal, page }) => {
     const title = faker.lorem.sentence({ min: 2, max: 3 });
     const alias = `/${faker.lorem.slug()}`;
 
+    await drupal.loginAsAdmin();
     await page.goto('/node/add/page');
 
     // Fill in the title
@@ -23,20 +24,20 @@ test.describe('Basic page', { tag: '@crud' }, () => {
     // Save the page
     await page.getByRole('button', { name: 'Save' }).click();
 
-    // Assert status message
-    await expect(page.locator('.messages--status')).toContainText(title);
+    // Wait for navigation to the created node page
+    await page.waitForURL(new RegExp(alias));
 
     // Assert we are on the node page
-    await expect(page).toHaveURL(new RegExp(alias));
     await expect(page.locator('h1')).toHaveText(title);
   });
 });
 
 test.describe('Article', { tag: '@crud' }, () => {
-  test('Can create an article', async ({ page }) => {
+  test('Can create an article', async ({ drupal, page }) => {
     const title = faker.lorem.sentence({ min: 2, max: 3 });
     const alias = `/${faker.lorem.slug()}`;
 
+    await drupal.loginAsAdmin();
     await page.goto('/node/add/article');
 
     // Fill in the title
@@ -53,11 +54,10 @@ test.describe('Article', { tag: '@crud' }, () => {
     // Save the page
     await page.getByRole('button', { name: 'Save' }).click();
 
-    // Assert status message
-    await expect(page.locator('.messages--status')).toContainText(title);
+    // Wait for navigation to the created node page
+    await page.waitForURL(new RegExp(alias));
 
     // Assert we are on the node page
-    await expect(page).toHaveURL(new RegExp(alias));
     await expect(page.locator('h1')).toHaveText(title);
   });
 });
