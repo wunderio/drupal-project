@@ -4,7 +4,7 @@ import { test } from './helpers/drupal-test';
 
 test.describe('Basic page', { tag: '@crud' }, () => {
   test('Can create a basic page', async ({ drupal, page }) => {
-    const title = faker.lorem.sentence({ min: 2, max: 3 });
+    const title = faker.lorem.sentence({ min: 3, max: 4 });
     const alias = `/${faker.lorem.slug()}`;
 
     await drupal.loginAsAdmin();
@@ -34,7 +34,7 @@ test.describe('Basic page', { tag: '@crud' }, () => {
 
 test.describe('Article', { tag: '@crud' }, () => {
   test('Can create an article', async ({ drupal, page }) => {
-    const title = faker.lorem.sentence({ min: 2, max: 3 });
+    const title = faker.lorem.sentence({ min: 3, max: 4 });
     const alias = `/${faker.lorem.slug()}`;
 
     await drupal.loginAsAdmin();
