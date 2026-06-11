@@ -20,6 +20,8 @@ web_environment:
   - DB_PASS=db
   - DB_HOST=db
   - DRUSH_OPTIONS_URI=https://drupal-project.ddev.site
+  - DRUPAL_TEST_DRUPAL_ROOT=/var/www/html/web
+  - TEST_BASE_URL=http://web:80
   - ENVIRONMENT_NAME=ddev
   - EXEC_GRUMPHP_COMMAND=ddev php
   - HASH_SALT=notsosecurehash
@@ -33,6 +35,7 @@ hooks:
   post-start:
     - exec: "composer install"
     - exec: "npm ci"
+    - exec: "npx playwright install --with-deps"
     - exec-host: |
         # Run the Elasticsearch plugin setup script
         ddev exec -s elasticsearch /mnt/ddev_config/elasticsearch/elasticsearch-setup.sh

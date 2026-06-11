@@ -357,15 +357,51 @@ The project includes ready-to-use Varnish configuration:
 
 ### Running tests
 
-The [PHPUnit](https://phpunit.de/) test framework is predefined in this project. See `phpunit.xml` for details. A minified `web/modules/custom/phpunit_example` module from the [examples module](https://www.drupal.org/project/examples) is included for learning purposes.
+#### PHPUnit (unit & integration tests)
 
-#### Testing examples
+The [PHPUnit](https://phpunit.de/) test framework is predefined in this project. See `phpunit.xml` for details. A minified `web/modules/custom/phpunit_example` module from the [examples module](https://www.drupal.org/project/examples) is included for learning purposes.
 
 Note: Run these commands with the appropriate environment prefix (`ddev phpunit`).
 
 - Run one test class: `phpunit path/to/your/class/file.php`
 - List groups: `phpunit --list-groups`
 - Run all tests in a particular group: `phpunit --group Groupname`
+
+#### Playwright (end-to-end tests)
+
+[Playwright](https://playwright.dev/) is used for end-to-end browser testing. Tests are located in the `tests/` directory and configured via `playwright.config.ts`.
+
+##### Setup
+
+Install Node dependencies if you haven't already:
+
+```bash
+ddev npm install
+```
+
+Playwright browsers are automatically installed inside the DDEV container on `ddev start`.
+
+##### Running tests
+
+The `TEST_BASE_URL` environment variable is preconfigured in DDEV (see `.ddev/config.yaml`).
+
+To run all tests:
+
+```bash
+ddev npx playwright test
+```
+
+To view the HTML report after a run:
+
+```bash
+npx playwright show-report
+```
+
+##### Test structure
+
+- `tests/helpers/drupal-test.ts` — Custom Playwright test base providing a `drupal` helper (via `@drupal/playwright`) for actions like `drupal.loginAsAdmin()`
+- `tests/example.spec.ts` — Example end-to-end test demonstrating basic page creation
+
 </details>
 
 ### Secrets handling
