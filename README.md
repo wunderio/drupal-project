@@ -381,7 +381,7 @@ ddev npm install
 
 Playwright browsers are automatically installed inside the DDEV container on `ddev start`.
 
-##### Running tests
+##### Running Playwright tests
 
 The `TEST_BASE_URL` environment variable is preconfigured in DDEV (see `.ddev/config.yaml`).
 
@@ -389,6 +389,18 @@ To run all tests:
 
 ```bash
 ddev npx playwright test
+```
+
+To run end-to-end tests only (excluding accessibility-tagged templates):
+
+```bash
+ddev npm run test:e2e
+```
+
+To run accessibility template tests only:
+
+```bash
+ddev npm run test:a11y
 ```
 
 To view the HTML report after a run:
@@ -401,6 +413,7 @@ npx playwright show-report
 
 - `tests/helpers/drupal-test.ts` — Custom Playwright test base providing a `drupal` helper (via `@drupal/playwright`) for actions like `drupal.loginAsAdmin()`
 - `tests/example.spec.ts` — Example end-to-end test demonstrating basic page creation
+- `tests/accessibility-template.spec.ts` — Reusable `@a11y` axe template tests for public and authenticated routes
 
 </details>
 
@@ -441,7 +454,7 @@ feat(GH-57): Add release automation command
 Rules:
 
 - Ticket format: `PROJECTKEY-123` (for example `WNDR-446`, `GH-57`).
-- Subject must start with a capital letter after `: `.
+- Subject must start with a capital letter after `:`.
 - Allowed types in `type(...)`: `feat`, `fix`, `chore`, `docs`, `style`, `refactor`, `perf`, `test`, `ci`, `build`, `revert`.
 - Merge commits are excluded from this validation.
 

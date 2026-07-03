@@ -19,8 +19,14 @@ jobs:
       - name: Install Drupal
         run: ddev drush site:install --yes --account-pass=admin
 
-      - name: Run Playwright tests
-        run: ddev exec npx playwright test --project=chromium
+      - name: Install Node dependencies
+        run: ddev exec npm ci
+
+      - name: Run Playwright e2e tests
+        run: ddev exec npm run test:e2e
+
+      - name: Run Playwright accessibility templates
+        run: ddev exec npm run test:a11y
 
       - name: Upload Playwright report
         if: always()
