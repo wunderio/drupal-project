@@ -4,6 +4,7 @@ namespace Drush\Commands;
 
 use Consolidation\AnnotatedCommand\AnnotationData;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
+use Consolidation\SiteAlias\SiteAliasManagerInitializationInterface;
 use Consolidation\SiteAlias\SiteAliasManagerInterface;
 use Drush\Attributes as CLI;
 use Drush\Boot\DrupalBootLevels;
@@ -19,6 +20,8 @@ use Symfony\Component\Yaml\Yaml;
 class SiltaAliasAlterCommands extends DrushCommands {
 
     use AutowireTrait;
+
+    private const SILTA_CONFIG_FILE = 'silta/silta.yml';
 
     public function __construct(
         private readonly SiteAliasManagerInterface $siteAliasManager,
@@ -39,67 +42,243 @@ class SiltaAliasAlterCommands extends DrushCommands {
      *   Annotation data.
      */
     #[CLI\Hook(type: HookManager::PRE_INITIALIZE, target: '*')]
-    public function alter(InputInterface $input, AnnotationData $annotationData) {
-        // Get branch name we're currently on.
-        $branch = exec('git rev-parse --abbrev-ref HEAD');
-
-        $environment_name = $this->prepareEnvironmentName($branch);
-        $repository_name = exec('basename -s .git `git config --get remote.origin.url`');
-        $project_name = $this->getProjectName();
-
-        // If project name is not explicitly set in silta.yml then we use the
-        // default - repository name.
-        if (is_null($project_name)) {
-            $project_name = $repository_name;
+    public function alter(InputInterface $input, AnnotationData $annotationData): void {
+        $context = $this->resolveReferenceContext();
+        if ($context === null) {
+            // Keep Drush usable in non-git/non-CI contexts.
+            return;
         }
 
-        $this->siteAliasManager->setReferenceData($this->getConfig()->export() + [
+        if (!$this->siteAliasManager instanceof SiteAliasManagerInitializationInterface) {
+            return;
+        }
+
+        $this->siteAliasManager->setReferenceData($this->getConfig()->export() + $context);
+        $this->refreshSelfAlias();
+    }
+
+    /**
+     * Resolve reference context values used by site aliases.
+     *
+     * @return array<string, string>|null
+     *   Context values or NULL if repository cannot be resolved.
+     */
+    private function resolveReferenceContext(): ?array {
+        $repository_name = $this->resolveRepositoryName();
+        if ($repository_name === null) {
+            return NULL;
+        }
+
+        $environment_name = $this->normalizeSiltaName($this->resolveBranchName(), 64);
+        $project_name = $this->getProjectName() ?? $repository_name;
+        $project_name = $this->normalizeSiltaName($project_name, 30);
+
+        return [
             'ENVIRONMENT' => $environment_name,
             'REPOSITORY' => $repository_name,
             'PROJECT' => $project_name,
-        ]);
+        ];
+    }
 
-        // Preflight may have cached @self before reference data was set; remote
-        // commands (e.g. drush @production uli) use getSelf() for SSH, so reload it.
+    /**
+     * Reload @self alias if host interpolation placeholders remain.
+     */
+    private function refreshSelfAlias(): void {
+        // Preflight may have cached @self before reference data was set.
+        // Reload it so SSH hostnames use the resolved values.
         $self = $this->siteAliasManager->getSelf();
         $host = $self->get('host');
-        if (is_string($host) && str_contains($host, '${')) {
-            $resolved = $this->siteAliasManager->get($self->name());
-            if ($resolved !== FALSE) {
-                $this->siteAliasManager->setSelf($resolved);
-            }
+        if (!is_string($host) || !str_contains($host, '${')) {
+            return;
+        }
+
+        $resolved = $this->siteAliasManager->get($self->name());
+        if ($resolved !== false && $this->siteAliasManager instanceof SiteAliasManagerInitializationInterface) {
+            $this->siteAliasManager->setSelf($resolved);
         }
     }
 
     /**
-     * Prepare environment name to be used in the alias.
-     *
-     * Mimic what Silta does - replace all non-alphanumeric characters with
-     * dahses to create environment name.
-     *
-     * @param string $branch
-     *   Git branch name.
+     * Resolve branch name with non-git fallbacks.
      *
      * @return string
-     *   Environment name matching what Silta has generated.
-     *
-     * @see https://github.com/wunderio/charts/blob/master/drupal/templates/_domains.tpl#L4
+     *   Branch name or a safe default.
      */
-    private function prepareEnvironmentName(string $branch) {
-
-        $environment_name = preg_replace('/[^\da-z]/i', '-', $branch);
-
-        // If environment name exceeds 64 then we trim it to 64 chars and add
-        // first chars for sha hash to it.
-        if (strlen($environment_name) > 64) {
-            $environment_name = substr($environment_name, 0, 64);
-            $sha = hash('sha256', $environment_name);
-            $prefix = substr($sha, 0, 3);
-            $environment_name = $prefix . $environment_name;
+    private function resolveBranchName(): string {
+        $env_branch = $this->readEnvironmentString('CIRCLE_BRANCH');
+        if ($env_branch !== null) {
+            return $env_branch;
         }
 
-        // Finally make it all lowercase and return.
-        return strtolower($environment_name);
+        $branch = $this->runGit('git rev-parse --abbrev-ref HEAD');
+        if ($branch !== null) {
+            return $branch;
+        }
+
+        return 'main';
+    }
+
+    /**
+     * Resolve repository name with non-git fallbacks.
+     *
+     * @return string|null
+     *   Repository name or NULL when not resolvable.
+     */
+    private function resolveRepositoryName(): ?string {
+        $repo_name = $this->readEnvironmentString('CIRCLE_PROJECT_REPONAME');
+        if ($repo_name !== null) {
+            return $this->sanitizeRepositoryName($repo_name);
+        }
+
+        $repository_url = $this->readEnvironmentString('CIRCLE_REPOSITORY_URL');
+        if ($repository_url !== null) {
+            $repo_name = $this->extractRepositoryNameFromUrl($repository_url);
+            if ($repo_name !== null) {
+                return $repo_name;
+            }
+        }
+
+        $remote_url = $this->runGit('git config --get remote.origin.url');
+        if ($remote_url !== null) {
+            $repo_name = $this->extractRepositoryNameFromUrl($remote_url);
+            if ($repo_name !== null) {
+                return $repo_name;
+            }
+        }
+
+        $cwd = getcwd();
+        if (is_string($cwd) && $cwd !== '') {
+            $repo_name = $this->sanitizeRepositoryName(basename($cwd));
+            if ($repo_name !== null) {
+                return $repo_name;
+            }
+        }
+
+        return NULL;
+    }
+
+    /**
+     * Read non-empty environment variable string.
+     *
+     * @param string $name
+     *   Environment variable name.
+     *
+     * @return string|null
+     *   Trimmed value or NULL.
+     */
+    private function readEnvironmentString(string $name): ?string {
+        $value = getenv($name);
+        if (!is_string($value)) {
+            return NULL;
+        }
+
+        $value = trim($value);
+        return $value !== '' ? $value : NULL;
+    }
+
+    /**
+     * Run git command quietly if git is available.
+     *
+     * @param string $command
+     *   Command to run.
+     *
+     * @return string|null
+     *   Trimmed output or NULL on failure.
+     */
+    private function runGit(string $command): ?string {
+        $git = trim((string) shell_exec('command -v git 2>/dev/null'));
+        if ($git === '') {
+            return NULL;
+        }
+
+        $output = shell_exec($command . ' 2>/dev/null');
+        if (!is_string($output)) {
+            return NULL;
+        }
+
+        $output = trim($output);
+        return $output !== '' ? $output : NULL;
+    }
+
+    /**
+     * Extract repository name from common git URL formats.
+     *
+     * @param string $repository_url
+     *   The repository URL.
+     *
+     * @return string|null
+     *   Extracted repository name or NULL when it cannot be determined.
+     */
+    private function extractRepositoryNameFromUrl(string $repository_url): ?string {
+        $normalized = trim($repository_url);
+        if ($normalized === '') {
+            return NULL;
+        }
+
+        $normalized = str_replace(':', '/', $normalized);
+        $parts = array_values(array_filter(explode('/', $normalized), static fn (string $value): bool => $value !== ''));
+        if ($parts === []) {
+            return NULL;
+        }
+
+        $repo_name = end($parts);
+        if (!is_string($repo_name)) {
+            return NULL;
+        }
+
+        return $this->sanitizeRepositoryName($repo_name);
+    }
+
+    /**
+     * Normalize repository name.
+     *
+     * @param string $repository_name
+     *   Repository name.
+     *
+     * @return string|null
+     *   Normalized name or NULL if empty.
+     */
+    private function sanitizeRepositoryName(string $repository_name): ?string {
+        $repository_name = trim($repository_name);
+        if ($repository_name === '') {
+            return NULL;
+        }
+
+        $repository_name = preg_replace('/\.git$/', '', $repository_name) ?? $repository_name;
+        return $repository_name !== '' ? $repository_name : NULL;
+    }
+
+    /**
+     * Normalize a Silta-style name with lowercasing, dash substitution and
+     * length-aware hash suffixing.
+     *
+     * @param string $value
+     *   Input value.
+     * @param int $max_length
+     *   Maximum length before hash suffixing.
+     *
+     * @return string
+     *   Normalized name.
+     *
+     * @see https://github.com/wunderio/charts/blob/master/drupal/templates/_domains.tpl
+     */
+    private function normalizeSiltaName(string $value, int $max_length): string {
+        $normalized = preg_replace('/[^\da-z]/i', '-', $value);
+        if ($normalized === null) {
+            $normalized = $value;
+        }
+
+        $normalized = strtolower(trim($normalized, '-'));
+        if ($normalized === '') {
+            return '';
+        }
+
+        if (strlen($normalized) >= $max_length) {
+            $hash = substr(hash('sha256', $normalized), 0, 3);
+            $normalized = substr($normalized, 0, max(0, $max_length - 3)) . $hash;
+        }
+
+        return $normalized;
     }
 
     /**
@@ -110,14 +289,21 @@ class SiltaAliasAlterCommands extends DrushCommands {
      * @return string|null
      *   Silta project name or NULL.
      */
-    private function getProjectName() {
-        $silta_config_file = 'silta/silta.yml';
-        if (file_exists($silta_config_file)) {
-            $silta_config = Yaml::parse(file_get_contents($silta_config_file));
-            if (isset($silta_config['projectName'])) {
-                return $silta_config['projectName'];
-            }
+    private function getProjectName(): ?string {
+        if (!is_file(self::SILTA_CONFIG_FILE)) {
+            return NULL;
         }
+
+        $file_contents = file_get_contents(self::SILTA_CONFIG_FILE);
+        if ($file_contents === false) {
+            return NULL;
+        }
+
+        $silta_config = Yaml::parse($file_contents);
+        if (is_array($silta_config) && isset($silta_config['projectName']) && is_string($silta_config['projectName'])) {
+            return $silta_config['projectName'];
+        }
+
         return NULL;
     }
 
