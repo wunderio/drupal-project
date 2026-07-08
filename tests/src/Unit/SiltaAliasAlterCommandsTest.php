@@ -10,9 +10,15 @@ use PHPUnit\Framework\Attributes\Group;
 
 require_once dirname(__DIR__, 3) . '/drush/Commands/SiltaAliasAlterCommands.php';
 
+/**
+ * Unit tests for Silta alias command helpers.
+ */
 #[Group('drupal_project')]
 class SiltaAliasAlterCommandsTest extends UnitTestCase {
 
+  /**
+   * Tests name normalization for Silta environment names.
+   */
   #[DataProvider('normalizeSiltaNameProvider')]
   public function testNormalizeSiltaName(string $input, int $maxLength, string $expected): void {
     $command = $this->createCommand();
@@ -70,6 +76,10 @@ class SiltaAliasAlterCommandsTest extends UnitTestCase {
   /**
    * Invokes a private method on the command.
    *
+   * @param object $object
+   *   Object to reflect.
+   * @param string $methodName
+   *   Name of the private method.
    * @param array<int, mixed> $arguments
    *   Method arguments.
    *
