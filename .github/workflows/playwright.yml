@@ -16,8 +16,12 @@ jobs:
       - name: Setup DDEV
         uses: ddev/github-action-setup-ddev@v1
 
-      - name: Install Drupal
-        run: ddev drush site:install --yes --account-pass=admin
+      - name: Install Drupal (standard base + config import)
+        run: |
+          SITE_UUID=$(sed -nE 's/^uuid:[[:space:]]*//p' config/sync/system.site.yml)
+          ddev drush site:install standard --yes --account-pass=admin
+          ddev drush config:set system.site uuid "$SITE_UUID" -y
+          ddev drush config:import -y
 
       - name: Run Playwright tests
         run: ddev exec env CI=true npx playwright test --project=chromium
