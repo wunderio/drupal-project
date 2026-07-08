@@ -20,7 +20,7 @@ jobs:
         run: ddev drush site:install --yes --account-pass=admin
 
       - name: Run Playwright tests
-        run: ddev exec npx playwright test --project=chromium
+        run: ddev exec env CI=true npx playwright test --project=chromium
 
       - name: Upload Playwright report
         if: always()
