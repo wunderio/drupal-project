@@ -27,6 +27,7 @@
 /web/tmp
 
 # Ignore database dumps
+/database_dumps/
 *.sql
 *.sql.gz
 
@@ -49,3 +50,13 @@ node_modules
 /playwright/.cache/
 /playwright/.auth/
 .copilot
+
+# PHPUnit runtime cache
+/.phpunit.cache/
+<<<<<<< HEAD
+.copilot
+=======
+
+# PHPUnit runtime cache
+/.phpunit.cache/
+>>>>>>> 1123ad3 (chore(GH-468): Ignore generated dumps and PHPUnit cache)
