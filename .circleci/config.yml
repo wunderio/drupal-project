@@ -8,7 +8,7 @@ orbs:
 executors:
   silta:
     docker:
-      - image: wunderio/silta-cicd:circleci-php8.3-node22-composer2-v1
+      - image: wunderio/silta-cicd:circleci-php8.4-node24-composer2-v1
 
 # Define shared branch filters as reusable anchors.
 branch-filters:
