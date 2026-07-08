@@ -42,7 +42,7 @@ For additional instructions, please refer to the [Silta documentation](https://g
 ## Production environment
 
 - **URL**: <https://production.drupal-project.finland.wdr.io>
-- **Drush alias**: `drush @prod st`
+- **Drush alias**: `drush @production st`
 - **SSH**: `ssh www-admin@production-shell.drupal-project -J www-admin@ssh.finland.wdr.io`
 
 ### Environment variables for `silta_finland` context
@@ -88,13 +88,8 @@ This project uses DDEV for local development.
 
   # Synchronize local database with a remote environment
   # Synchronization is provided by [ddev-wunderio-drupal](https://github.com/wunderio/ddev-wunderio-drupal)
+  # drush deploy and drush uli are part of ddev syncdb command.
   ddev syncdb
-
-  # Apply configuration changes
-  ddev drush deploy
-
-  # Get a one-time login link for admin access
-  ddev drush uli
   ```
 
 Note: All commands in the DDEV section should be run within the DDEV environment using `ddev` prefix (e.g., `ddev drush uli`), or by using `ddev ssh` to access the container shell first.
@@ -353,9 +348,9 @@ The project includes ready-to-use Varnish configuration:
 </details>
 
 <details>
-<summary>Running tests</summary>
+<summary>Testing</summary>
 
-### Running tests
+### Testing
 
 #### PHPUnit (unit & integration tests)
 
