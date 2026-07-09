@@ -1,6 +1,6 @@
 {
     "name": "wunderio/drupal-project",
-    "description": "Wunder's template for Drupal projects.",
+    "description": "Mearra's template for Drupal projects.",
     "type": "project",
     "license": "GPL-2.0-or-later",
     "homepage": "https://www.drupal.org/project/drupal",
@@ -15,17 +15,17 @@
         }
     ],
     "require": {
-        "php": ">=8.3",
+        "php": ">=8.4",
         "composer/installers": "^2.3",
         "cweagans/composer-patches": "^2.0",
         "drupal/admin_toolbar": "^3.6",
         "drupal/config_split": "^2.0",
-        "drupal/core-composer-scaffold": "^11.3",
-        "drupal/core-recommended": "^11.3",
+        "drupal/core-composer-scaffold": "^11.4",
+        "drupal/core-recommended": "^11.4",
         "drupal/monolog": "^3.0",
         "drupal/purge": "^3.6",
         "drupal/simplei": "^3.0",
-        "drupal/stage_file_proxy": "^3.1",
+        "drupal/stage_file_proxy": "^4.0",
         "drupal/varnish_purge": "^2.3",
         "drush/drush": "^13.7",
         "vlucas/phpdotenv": "^5.6",
@@ -33,7 +33,7 @@
         "wunderio/updates_log": "^2.5"
     },
     "require-dev": {
-        "drupal/core-dev": "^11.3",
+        "drupal/core-dev": "^11.4",
         "wunderio/code-quality": "^3.0"
     },
     "conflict": {
@@ -51,6 +51,7 @@
             "php-http/discovery": true,
             "phpro/grumphp": true,
             "phpstan/extension-installer": true,
+            "symfony/runtime": true,
             "tbachert/spi": true
         },
         "discard-changes": true,

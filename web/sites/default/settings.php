@@ -38,6 +38,10 @@ $settings['file_scan_ignore_directories'] = [
   'bower_components',
 ];
 
+// Disable HTML5 validation.
+// See: https://www.drupal.org/node/3537128.
+$settings['enable_html5_validation'] = FALSE;
+
 // Varnish Purge configuration.
 if (getenv('VARNISH_ADMIN_HOST')) {
   $config['varnish_purger.settings.c6013ef2d0']['hostname'] = trim(getenv('VARNISH_ADMIN_HOST'));

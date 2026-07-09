@@ -60,7 +60,7 @@ class SiltaAliasAlterCommands extends DrushCommands {
         ]);
 
         // Preflight may have cached @self before reference data was set; remote
-        // commands (e.g. drush @prod uli) use getSelf() for SSH, so reload it.
+        // commands (e.g. drush @production uli) use getSelf() for SSH, so reload it.
         $self = $this->siteAliasManager->getSelf();
         $host = $self->get('host');
         if (is_string($host) && str_contains($host, '${')) {
