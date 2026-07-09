@@ -43,26 +43,29 @@ class SiltaAliasAlterCommandsTest extends UnitTestCase {
   }
 
   /**
-   * Tests that the reference context can be resolved without git access.
+   * Tests repository name extraction from common git remote URL formats.
    */
-  public function testResolveReferenceContextUsesEnvironmentFallbacks(): void {
-    putenv('CIRCLE_BRANCH=Feature/ABC-123');
-    putenv('CIRCLE_PROJECT_REPONAME=drupal-project');
+  #[DataProvider('repositoryUrlProvider')]
+  public function testExtractRepositoryNameFromUrl(string $url, ?string $expected): void {
+    $command = $this->createCommand();
+    $actual = $this->invokePrivateMethod($command, 'extractRepositoryNameFromUrl', [$url]);
 
-    try {
-      $command = $this->createCommand();
-      $actual = $this->invokePrivateMethod($command, 'resolveReferenceContext');
+    $this->assertSame($expected, $actual);
+  }
 
-      $this->assertSame([
-        'ENVIRONMENT' => 'feature-abc-123',
-        'REPOSITORY' => 'drupal-project',
-        'PROJECT' => 'drupal-project',
-      ], $actual);
-    }
-    finally {
-      putenv('CIRCLE_BRANCH');
-      putenv('CIRCLE_PROJECT_REPONAME');
-    }
+  /**
+   * Data provider for testExtractRepositoryNameFromUrl().
+   *
+   * @return array<int, array{0:string, 1:?string}>
+   *   URL parsing test cases.
+   */
+  public static function repositoryUrlProvider(): array {
+    return [
+      ['git@github.com:wunderio/drupal-project.git', 'drupal-project'],
+      ['https://github.com/wunderio/drupal-project.git', 'drupal-project'],
+      ['https://github.com/wunderio/drupal-project', 'drupal-project'],
+      ['   ', NULL],
+    ];
   }
 
   /**

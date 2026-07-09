@@ -64,12 +64,22 @@ class SiltaAliasAlterCommands extends DrushCommands {
      *   Context values or NULL if repository cannot be resolved.
      */
     private function resolveReferenceContext(): ?array {
-        $repository_name = $this->resolveRepositoryName();
+        $remote_url = $this->runGit('git config --get remote.origin.url');
+        if ($remote_url === null) {
+            return NULL;
+        }
+
+        $repository_name = $this->extractRepositoryNameFromUrl($remote_url);
         if ($repository_name === null) {
             return NULL;
         }
 
-        $environment_name = $this->normalizeSiltaName($this->resolveBranchName(), 64);
+        $branch_name = $this->runGit('git rev-parse --abbrev-ref HEAD');
+        if ($branch_name === null) {
+            return NULL;
+        }
+
+        $environment_name = $this->normalizeSiltaName($branch_name, 64);
         $project_name = $this->getProjectName() ?? $repository_name;
         $project_name = $this->normalizeSiltaName($project_name, 30);
 
@@ -99,85 +109,7 @@ class SiltaAliasAlterCommands extends DrushCommands {
     }
 
     /**
-     * Resolve branch name with non-git fallbacks.
-     *
-     * @return string
-     *   Branch name or a safe default.
-     */
-    private function resolveBranchName(): string {
-        $env_branch = $this->readEnvironmentString('CIRCLE_BRANCH');
-        if ($env_branch !== null) {
-            return $env_branch;
-        }
-
-        $branch = $this->runGit('git rev-parse --abbrev-ref HEAD');
-        if ($branch !== null) {
-            return $branch;
-        }
-
-        return 'main';
-    }
-
-    /**
-     * Resolve repository name with non-git fallbacks.
-     *
-     * @return string|null
-     *   Repository name or NULL when not resolvable.
-     */
-    private function resolveRepositoryName(): ?string {
-        $repo_name = $this->readEnvironmentString('CIRCLE_PROJECT_REPONAME');
-        if ($repo_name !== null) {
-            return $this->sanitizeRepositoryName($repo_name);
-        }
-
-        $repository_url = $this->readEnvironmentString('CIRCLE_REPOSITORY_URL');
-        if ($repository_url !== null) {
-            $repo_name = $this->extractRepositoryNameFromUrl($repository_url);
-            if ($repo_name !== null) {
-                return $repo_name;
-            }
-        }
-
-        $remote_url = $this->runGit('git config --get remote.origin.url');
-        if ($remote_url !== null) {
-            $repo_name = $this->extractRepositoryNameFromUrl($remote_url);
-            if ($repo_name !== null) {
-                return $repo_name;
-            }
-        }
-
-        $cwd = getcwd();
-        if (is_string($cwd) && $cwd !== '') {
-            $repo_name = $this->sanitizeRepositoryName(basename($cwd));
-            if ($repo_name !== null) {
-                return $repo_name;
-            }
-        }
-
-        return NULL;
-    }
-
-    /**
-     * Read non-empty environment variable string.
-     *
-     * @param string $name
-     *   Environment variable name.
-     *
-     * @return string|null
-     *   Trimmed value or NULL.
-     */
-    private function readEnvironmentString(string $name): ?string {
-        $value = getenv($name);
-        if (!is_string($value)) {
-            return NULL;
-        }
-
-        $value = trim($value);
-        return $value !== '' ? $value : NULL;
-    }
-
-    /**
-     * Run git command quietly if git is available.
+     * Run git command quietly.
      *
      * @param string $command
      *   Command to run.
@@ -186,11 +118,6 @@ class SiltaAliasAlterCommands extends DrushCommands {
      *   Trimmed output or NULL on failure.
      */
     private function runGit(string $command): ?string {
-        $git = trim((string) shell_exec('command -v git 2>/dev/null'));
-        if ($git === '') {
-            return NULL;
-        }
-
         $output = shell_exec($command . ' 2>/dev/null');
         if (!is_string($output)) {
             return NULL;
