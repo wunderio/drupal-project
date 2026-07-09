@@ -108,6 +108,7 @@ For a complete list of all available services, URLs, and ports, use:
 
 - `ddev` - Display available commands
 - `ddev adminer` - Launch Adminer database management interface
+- `ddev copilot [args]` - Run GitHub Copilot CLI inside the agents container
 - `ddev grumphp <commands>` - Run code quality checks (command provided by [ddev-wunderio-drupal](https://github.com/wunderio/ddev-wunderio-drupal))
 - `ddev mailpit` - Open Mailpit email testing interface
 - `ddev npm <commands>` - Execute npm commands
@@ -224,21 +225,44 @@ ddev npm run lint
 </details>
 
 <details>
-<summary>Cursor AI Code Editor</summary>
+<summary>AI Workflow (ddev-agents + Copilot)</summary>
 
-### Cursor AI Code Editor
+### AI Workflow (ddev-agents + Copilot)
 
-This project uses [Cursor](https://docs.cursor.com/) as the recommended AI-powered IDE. Cursor enhances development productivity through AI-assisted coding features while maintaining compatibility with VSCode extensions and settings.
+This project includes the `ddev-agents` addon for AI-assisted development in the local DDEV environment. It provides MCP tools and a dedicated agents container for running project-aware commands safely.
 
-#### Project-specific AI Rules
+#### Quick start
 
-- Rules are stored in `@.cursor/rules/` directory
-- Main configuration file: `@.cursor/rules/common.mdc`
-- Rules provide AI with project-specific context about:
-  - File organization and key project files
-  - Development environment setup
-  - Code standards and technology stack
-  - Git workflow and commit message formatting
+1. Start the project:
+
+   ```bash
+   ddev start
+   ```
+
+2. Open the project in the devcontainer.
+
+3. Open VS Code Copilot chat and start the local MCP server (`wdrmcp`) from MCP server controls.
+
+4. Use project tools through Copilot chat, or run Copilot CLI directly:
+
+   ```bash
+   ddev copilot
+   ```
+
+#### Project AI configuration
+
+- Tool definitions: `.agents/tools-config/`
+- Addon metadata: `.ddev/addon-metadata/ddev-agents/manifest.yaml`
+- Agents runtime config: `.ddev/config.agents.yaml`
+- Copilot managed restrictions: `.ddev/copilot-managed-config.json`
+
+#### Security model
+
+- Commands run via SSH with ephemeral keys generated at each `ddev start`.
+- No Docker socket access is required in the agents workflow.
+- Keys are distributed into containers during startup and are not persisted on host by default.
+
+For deeper usage, custom tools, and environment variables, see `.agents/README.md`.
 
 </details>
 
@@ -436,7 +460,7 @@ feat(GH-57): Add release automation command
 Rules:
 
 - Ticket format: `PROJECTKEY-123` (for example `WNDR-446`, `GH-57`).
-- Subject must start with a capital letter after `: `.
+- Subject must start with a capital letter after `:`.
 - Allowed types in `type(...)`: `feat`, `fix`, `chore`, `docs`, `style`, `refactor`, `perf`, `test`, `ci`, `build`, `revert`.
 - Merge commits are excluded from this validation.
 
