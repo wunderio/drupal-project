@@ -23,6 +23,15 @@ class SiltaAliasAlterCommands extends DrushCommands {
 
     private const SILTA_CONFIG_FILE = 'silta/silta.yml';
 
+    // Site alias file whose `current.uri` names the cluster domain that
+    // ${ENVIRONMENT}/${PROJECT} get resolved against.
+    private const SELF_ALIAS_FILE = 'drush/sites/self.site.yml';
+
+    // Max total hostname length Silta's Helm chart allows for the
+    // "<environment>.<project>.<clusterDomain>" subdomain.
+    // @see https://github.com/wunderio/charts/blob/master/drupal/templates/_domains.tpl
+    private const SILTA_MAX_HOSTNAME_LENGTH = 62;
+
     public function __construct(
         private readonly SiteAliasManagerInterface $siteAliasManager,
     ) {
@@ -44,17 +53,14 @@ class SiltaAliasAlterCommands extends DrushCommands {
     #[CLI\Hook(type: HookManager::PRE_INITIALIZE, target: '*')]
     public function alter(InputInterface $input, AnnotationData $annotationData): void {
         $context = $this->resolveReferenceContext();
-        if ($context === null) {
-            // Keep Drush usable in non-git/non-CI contexts.
-            return;
-        }
-
-        if (!$this->siteAliasManager instanceof SiteAliasManagerInitializationInterface) {
+        if ($context === null || !$this->siteAliasManager instanceof SiteAliasManagerInitializationInterface) {
+            // Keep Drush usable in non-git/non-CI contexts, or when the
+            // injected manager doesn't support setting reference data.
             return;
         }
 
         $this->siteAliasManager->setReferenceData($this->getConfig()->export() + $context);
-        $this->refreshSelfAlias();
+        $this->refreshSelfAlias($this->siteAliasManager);
     }
 
     /**
@@ -64,24 +70,41 @@ class SiltaAliasAlterCommands extends DrushCommands {
      *   Context values or NULL if repository cannot be resolved.
      */
     private function resolveReferenceContext(): ?array {
+        if ($this->runGit('git rev-parse --is-inside-work-tree') !== 'true') {
+            // Not a git repository/shell at all: nothing to resolve, and
+            // nothing to warn about either.
+            return NULL;
+        }
+
         $remote_url = $this->runGit('git config --get remote.origin.url');
         if ($remote_url === null) {
+            $this->notice('no git remote "origin" configured, skipping alias resolution.');
             return NULL;
         }
 
         $repository_name = $this->extractRepositoryNameFromUrl($remote_url);
         if ($repository_name === null) {
+            $this->notice(sprintf('could not determine repository name from remote "%s".', $remote_url));
             return NULL;
         }
 
         $branch_name = $this->runGit('git rev-parse --abbrev-ref HEAD');
         if ($branch_name === null) {
+            $this->notice('could not determine current git branch, skipping alias resolution.');
             return NULL;
         }
 
-        $environment_name = $this->normalizeSiltaName($branch_name, 64);
+        $cluster_domain = $this->getClusterDomain();
+        if ($cluster_domain === null) {
+            $this->notice(sprintf('could not determine cluster domain from "%s".', self::SELF_ALIAS_FILE));
+            return NULL;
+        }
+
         $project_name = $this->getProjectName() ?? $repository_name;
         $project_name = $this->normalizeSiltaName($project_name, 30);
+
+        $max_environment_length = self::SILTA_MAX_HOSTNAME_LENGTH - strlen($cluster_domain) - strlen($project_name);
+        $environment_name = $this->normalizeSiltaName($branch_name, $max_environment_length);
 
         return [
             'ENVIRONMENT' => $environment_name,
@@ -91,20 +114,36 @@ class SiltaAliasAlterCommands extends DrushCommands {
     }
 
     /**
-     * Reload @self alias if host interpolation placeholders remain.
+     * Log a notice, if a logger is available yet.
+     *
+     * PRE_INITIALIZE fires before Drush's logger is guaranteed to be wired
+     * up, so logger() can still be NULL here.
+     *
+     * @param string $message
+     *   Message to log, prefixed for context.
      */
-    private function refreshSelfAlias(): void {
+    private function notice(string $message): void {
+        $this->logger()?->notice('Silta alias: ' . $message);
+    }
+
+    /**
+     * Reload @self alias if host interpolation placeholders remain.
+     *
+     * @param \Consolidation\SiteAlias\SiteAliasManagerInterface&\Consolidation\SiteAlias\SiteAliasManagerInitializationInterface $manager
+     *   Site alias manager, already narrowed by the caller.
+     */
+    private function refreshSelfAlias(SiteAliasManagerInterface&SiteAliasManagerInitializationInterface $manager): void {
         // Preflight may have cached @self before reference data was set.
         // Reload it so SSH hostnames use the resolved values.
-        $self = $this->siteAliasManager->getSelf();
+        $self = $manager->getSelf();
         $host = $self->get('host');
         if (!is_string($host) || !str_contains($host, '${')) {
             return;
         }
 
-        $resolved = $this->siteAliasManager->get($self->name());
-        if ($resolved !== false && $this->siteAliasManager instanceof SiteAliasManagerInitializationInterface) {
-            $this->siteAliasManager->setSelf($resolved);
+        $resolved = $manager->get($self->name());
+        if ($resolved !== false) {
+            $manager->setSelf($resolved);
         }
     }
 
@@ -130,6 +169,9 @@ class SiltaAliasAlterCommands extends DrushCommands {
     /**
      * Extract repository name from common git URL formats.
      *
+     * Handles both URL-style (https://host/org/repo.git) and SCP-style
+     * (git@host:org/repo.git) remotes.
+     *
      * @param string $repository_url
      *   The repository URL.
      *
@@ -142,37 +184,10 @@ class SiltaAliasAlterCommands extends DrushCommands {
             return NULL;
         }
 
-        $normalized = str_replace(':', '/', $normalized);
-        $parts = array_values(array_filter(explode('/', $normalized), static fn (string $value): bool => $value !== ''));
-        if ($parts === []) {
-            return NULL;
-        }
+        $path = parse_url($normalized, PHP_URL_PATH) ?: str_replace(':', '/', $normalized);
+        $repo_name = trim(basename($path, '.git'));
 
-        $repo_name = end($parts);
-        if (!is_string($repo_name)) {
-            return NULL;
-        }
-
-        return $this->sanitizeRepositoryName($repo_name);
-    }
-
-    /**
-     * Normalize repository name.
-     *
-     * @param string $repository_name
-     *   Repository name.
-     *
-     * @return string|null
-     *   Normalized name or NULL if empty.
-     */
-    private function sanitizeRepositoryName(string $repository_name): ?string {
-        $repository_name = trim($repository_name);
-        if ($repository_name === '') {
-            return NULL;
-        }
-
-        $repository_name = preg_replace('/\.git$/', '', $repository_name) ?? $repository_name;
-        return $repository_name !== '' ? $repository_name : NULL;
+        return $repo_name !== '' ? $repo_name : NULL;
     }
 
     /**
@@ -217,21 +232,54 @@ class SiltaAliasAlterCommands extends DrushCommands {
      *   Silta project name or NULL.
      */
     private function getProjectName(): ?string {
-        if (!is_file(self::SILTA_CONFIG_FILE)) {
+        $project_name = $this->parseYamlFile(self::SILTA_CONFIG_FILE)['projectName'] ?? NULL;
+        return is_string($project_name) ? $project_name : NULL;
+    }
+
+    /**
+     * Get the cluster domain the `current` alias resolves against.
+     *
+     * Parses `current.uri` in drush/sites/self.site.yml, e.g.
+     * "https://${ENVIRONMENT}.${PROJECT}.dev.wdr.io", and strips the
+     * ${ENVIRONMENT}/${PROJECT} placeholders to leave the real domain.
+     *
+     * @return string|null
+     *   Cluster domain, or NULL if it can't be determined.
+     */
+    private function getClusterDomain(): ?string {
+        $uri = $this->parseYamlFile(self::SELF_ALIAS_FILE)['current']['uri'] ?? NULL;
+        $host = is_string($uri) ? parse_url($uri, PHP_URL_HOST) : NULL;
+        if (!is_string($host)) {
             return NULL;
         }
 
-        $file_contents = file_get_contents(self::SILTA_CONFIG_FILE);
+        $prefix = '${ENVIRONMENT}.${PROJECT}.';
+        $domain = str_starts_with($host, $prefix) ? substr($host, strlen($prefix)) : $host;
+
+        return $domain !== '' ? $domain : NULL;
+    }
+
+    /**
+     * Parse a YAML file, if it exists.
+     *
+     * @param string $path
+     *   Path to the file, relative to the repository root.
+     *
+     * @return array<mixed>
+     *   Parsed content, or an empty array if missing/unparseable.
+     */
+    private function parseYamlFile(string $path): array {
+        if (!is_file($path)) {
+            return [];
+        }
+
+        $file_contents = file_get_contents($path);
         if ($file_contents === false) {
-            return NULL;
+            return [];
         }
 
-        $silta_config = Yaml::parse($file_contents);
-        if (is_array($silta_config) && isset($silta_config['projectName']) && is_string($silta_config['projectName'])) {
-            return $silta_config['projectName'];
-        }
-
-        return NULL;
+        $parsed = Yaml::parse($file_contents);
+        return is_array($parsed) ? $parsed : [];
     }
 
 }
