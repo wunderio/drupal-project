@@ -32,7 +32,6 @@
   </php>
   <testsuites>
     <testsuite name="unit">
-      <directory>./tests/src/Unit</directory>
       <directory>./web/modules/custom/*/tests/src/Unit</directory>
     </testsuite>
     <testsuite name="kernel">
