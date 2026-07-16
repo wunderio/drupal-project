@@ -40,6 +40,10 @@ class SiltaAliasAlterCommands extends DrushCommands {
      */
     #[CLI\Hook(type: HookManager::PRE_INITIALIZE, target: '*')]
     public function alter(InputInterface $input, AnnotationData $annotationData) {
+        if (!$this->isGitAvailable()) {
+            return;
+        }
+
         // Get branch name we're currently on.
         $branch = exec('git rev-parse --abbrev-ref HEAD');
 
@@ -69,6 +73,16 @@ class SiltaAliasAlterCommands extends DrushCommands {
                 $this->siteAliasManager->setSelf($resolved);
             }
         }
+    }
+
+    /**
+     * Check if git command is available.
+     *
+     * @return bool
+     *   TRUE if git is available, FALSE otherwise.
+     */
+    private function isGitAvailable(): bool {
+        return shell_exec('command -v git 2>/dev/null') !== null;
     }
 
     /**
