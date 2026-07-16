@@ -88,7 +88,7 @@ class AddClassTest extends UnitTestCase {
    *
    * @see self::addDataProvider()
    */
-  public function testAddWithDataProvider($expected, $a, $b): void {
+  public function testAddWithDataProvider(int|float $expected, int|float $a, int|float $b): void {
     $sut = new AddClass();
     $this->assertEquals($expected, $sut->add($a, $b));
   }
@@ -108,7 +108,7 @@ class AddClassTest extends UnitTestCase {
    *
    * @see self::addBadDataProvider()
    */
-  public function testAddWithBadDataProvider($a, $b): void {
+  public function testAddWithBadDataProvider(mixed $a, mixed $b): void {
     $sut = new AddClass();
     $this->expectException(\InvalidArgumentException::class);
     $sut->add($a, $b);

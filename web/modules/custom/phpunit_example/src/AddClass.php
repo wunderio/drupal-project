@@ -9,7 +9,7 @@ namespace Drupal\phpunit_example;
  *
  * @ingroup phpunit_example
  */
-final class AddClass {
+class AddClass {
 
   /**
    * A simple addition method with validity checking.
