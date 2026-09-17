@@ -2,6 +2,4 @@ name: PHPUnit Example
 type: module
 description: Demonstrates how to use PHPUnit-based tests.
 package: Example modules
-core_version_requirement: ^10 || ^11
-dependencies:
-  - drupal:node
+core_version_requirement: ^11

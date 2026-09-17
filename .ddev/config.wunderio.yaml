@@ -13,7 +13,7 @@ hooks:
     # @todo We could potentially make this work from recognizing the command.
     - exec: |
         if ! command -v wdr-core &> /dev/null; then
-          ln -s ${HOME}/wunderio/core/wdr-core.sh /usr/local/bin/wdr-core
+          sudo ln -s ${HOME}/wunderio/core/wdr-core.sh /usr/local/bin/wdr-core
         fi
         # Run once start hook if needed
         if [ ! -f "/mnt/wdr-hooks/ddev_web_post_start_once" ]; then

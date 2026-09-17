@@ -49,19 +49,12 @@
   <!-- Filter for coverage reports. -->
   <source>
     <include>
-      <directory>./web/core/includes</directory>
-      <directory>./web/core/lib</directory>
-      <directory>./web/core/modules</directory>
-      <directory>./web/core/modules</directory>
-      <directory>./web/core/sites</directory>
+      <directory>./web/modules/custom</directory>
+      <directory>./web/themes/custom</directory>
     </include>
     <exclude>
-      <directory>./web/core/modules/*/src/Tests</directory>
-      <directory>./web/core/modules/*/tests</directory>
-      <directory>./web/core/modules/*/src/Tests</directory>
-      <directory>./web/core/modules/*/tests</directory>
-      <directory>./web/core/modules/*/*/src/Tests</directory>
-      <directory>./web/core/modules/*/*/tests</directory>
+      <directory>./web/modules/custom/*/tests</directory>
+      <directory>./web/themes/custom/*/tests</directory>
     </exclude>
   </source>
 </phpunit>
