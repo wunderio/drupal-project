@@ -1,0 +1,13 @@
+name: ddev-wunderio-drupal
+repository: wunderio/ddev-wunderio-drupal
+version: 0.7.1
+install_date: "2026-07-08T14:38:24+03:00"
+project_files:
+    - config.wunderio.yaml
+    - docker-compose.wunderio.yaml
+global_files:
+    - commands/
+    - homeadditions/
+removal_actions:
+    - rm -rf "${DDEV_GLOBAL_DIR}/homeadditions/wunderio"
+    - rm -rf "${DDEV_GLOBAL_DIR}/wunderio/core"

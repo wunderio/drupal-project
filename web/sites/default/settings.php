@@ -1,72 +1,99 @@
 <?php
 
+// phpcs:ignoreFile
+
 /**
  * @file
  * Drupal site-specific configuration file.
  */
 
 // Database settings, overridden per environment.
-$databases = [];
 $databases['default']['default'] = [
-  'database' => $_ENV['DB_NAME_DRUPAL'],
-  'username' => $_ENV['DB_USER_DRUPAL'],
-  'password' => $_ENV['DB_PASS_DRUPAL'],
+  'database' => getenv('DB_NAME'),
+  'username' => getenv('DB_USER'),
+  'password' => getenv('DB_PASS'),
   'prefix' => '',
-  'host' => $_ENV['DB_HOST_DRUPAL'],
+  'host' => getenv('DB_HOST'),
   'port' => '3306',
-  'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',
   'driver' => 'mysql',
 ];
 
 // Salt for one-time login links, cancel links, form tokens, etc.
-$settings['hash_salt'] = $_ENV['HASH_SALT'];
+$settings['hash_salt'] = getenv('HASH_SALT');
 
 // Public files path.
 $settings['file_public_path']  = 'sites/default/files';
 
-// Location of the site configuration files.
-$settings['config_sync_directory'] = '../config/sync';
+// Stage File Proxy origin site.
+$config['stage_file_proxy.settings']['origin'] = 'https://production.drupal-project.finland.wdr.io';
 
 // Load services definition file.
-$settings['container_yamls'][] = $app_root . '/' . $site_path . '/services.yml';
+// Note: settings.silta.php defines Monolog services override via silta.services.yml.
+// @see: https://github.com/wunderio/charts/blob/master/drupal/files/silta.services.yml
+$settings['container_yamls'][] = DRUPAL_ROOT . '/sites/services.yml';
 
-/**
- * The default list of directories that will be ignored by Drupal's file API.
- *
- * By default ignore node_modules and bower_components folders to avoid issues
- * with common frontend tools and recursive scanning of directories looking for
- * extensions.
- *
- * @see file_scan_directory()
- * @see \Drupal\Core\Extension\ExtensionDiscovery::scanDirectory()
- */
+// The default list of directories that will be ignored by Drupal's file API.
 $settings['file_scan_ignore_directories'] = [
   'node_modules',
   'bower_components',
 ];
 
+// Disable HTML5 validation.
+// See: https://www.drupal.org/node/3537128.
+$settings['enable_html5_validation'] = FALSE;
+
 // Varnish Purge configuration.
 if (getenv('VARNISH_ADMIN_HOST')) {
-  $config['varnish_purger.settings.f94540554c']['hostname'] = trim(getenv('VARNISH_ADMIN_HOST'));
-  $config['varnish_purger.settings.f94540554c']['port'] = '80';
+  $config['varnish_purger.settings.c6013ef2d0']['hostname'] = trim(getenv('VARNISH_ADMIN_HOST'));
+  $config['varnish_purger.settings.c6013ef2d0']['port'] = '80';
 }
 
+// Symfony Mailer configuration.
+// @see: https://www.drupal.org/node/3369935
+$config['system.mail']['interface'] = [ 'default' => 'symfony_mailer' ];
+
+// Default SMTP settings.
+$smtp_address_parts = explode(':', getenv('SMTP_ADDRESS'));
+if (!empty($smtp_address_parts[0]) && !empty($smtp_address_parts[1])) {
+  $config['system.mail']['mailer_dsn'] = [
+    'scheme' => 'smtp',
+    'host' => $smtp_address_parts[0],
+    'port' => $smtp_address_parts[1],
+  ];
+}
+
+// Location of the site configuration files.
+$settings['config_sync_directory'] = '../config/sync';
+
+// Default config_split settings to cover feature environments in Silta.
+// Overrides for production, main and local environments
+// are defined in environment-specific settings sections below.
+$config['config_split.config_split.silta']['status'] = TRUE;
+$config['config_split.config_split.production']['status'] = FALSE;
+$config['config_split.config_split.main']['status'] = FALSE;
+$config['config_split.config_split.local']['status'] = FALSE;
+
 // Environment-specific settings.
-$env = $_ENV['ENVIRONMENT_NAME'];
+$env = getenv('ENVIRONMENT_NAME');
 switch ($env) {
   case 'production':
     $settings['simple_environment_indicator'] = 'DarkRed Production';
-    // Warden settings.
-    $config['warden.settings']['warden_token'] = $_ENV['WARDEN_TOKEN'];
+    $config['config_split.config_split.production']['status'] = TRUE;
+    $config['config_split.config_split.silta']['status'] = FALSE;
     break;
 
   case 'main':
     $settings['simple_environment_indicator'] = 'DarkBlue Stage';
+    $config['config_split.config_split.main']['status'] = TRUE;
+    $config['config_split.config_split.silta']['status'] = FALSE;
     break;
 
+  case 'ddev':
   case 'local':
-  case 'lando':
     $settings['simple_environment_indicator'] = 'DarkGreen Local';
+    $config['config_split.config_split.local']['status'] = TRUE;
+    $config['config_split.config_split.silta']['status'] = FALSE;
+
     // Skip file system permissions hardening.
     $settings['skip_permissions_hardening'] = TRUE;
     // Skip trusted host pattern.
@@ -88,19 +115,13 @@ switch ($env) {
     break;
 }
 
-/**
- * Load local development override configuration, if available.
- *
- * Use settings.local.php to override variables on secondary (staging,
- * development, etc) installations of this site. Typically used to disable
- * caching, JavaScript/CSS compression, re-routing of outgoing emails, and
- * other things that should not happen on development and testing sites.
- */
-if (file_exists($app_root . '/' . $site_path . '/settings.local.php')) {
-  include $app_root . '/' . $site_path . '/settings.local.php';
+// Local environment configuration overrides.
+if (file_exists(DRUPAL_ROOT . '/sites/default/settings.local.php')) {
+  include DRUPAL_ROOT . '/sites/default/settings.local.php';
 }
 
 // Silta cluster configuration overrides.
-if (isset($_ENV['SILTA_CLUSTER']) && file_exists($app_root . '/' . $site_path . '/settings.silta.php')) {
-  include $app_root . '/' . $site_path . '/settings.silta.php';
+// @see: https://github.com/wunderio/charts/blob/master/drupal/files/settings.silta.php
+if (getenv('SILTA_CLUSTER') && file_exists(DRUPAL_ROOT . '/sites/default/settings.silta.php')) {
+  include DRUPAL_ROOT . '/sites/default/settings.silta.php';
 }

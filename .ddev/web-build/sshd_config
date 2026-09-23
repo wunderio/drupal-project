@@ -1,0 +1,41 @@
+#ddev-generated
+# SSHD configuration for DDEV web container
+# Allows SSH access from agents devcontainer for remote command execution
+
+# Basic settings
+Port 22
+Protocol 2
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_ecdsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key
+
+# Authentication
+PubkeyAuthentication yes
+PasswordAuthentication no
+ChallengeResponseAuthentication no
+UsePAM yes
+
+# Don't read user's ~/.rhosts and ~/.shosts files
+IgnoreRhosts yes
+
+# Allow forwarding
+AllowTcpForwarding yes
+X11Forwarding no
+
+# Logging
+SyslogFacility AUTH
+LogLevel INFO
+
+# Security
+PermitRootLogin no
+StrictModes no
+
+# Disable unused authentication methods
+KerberosAuthentication no
+GSSAPIAuthentication no
+
+# Performance
+UseDNS no
+
+# Allow environment variables
+AcceptEnv LANG LC_* DDEV_*

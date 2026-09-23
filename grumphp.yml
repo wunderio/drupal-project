@@ -7,9 +7,20 @@ grumphp:
     failed: ~
     succeeded: ~
   tasks:
+    # @see: https://github.com/phpro/grumphp/blob/v2.x/doc/tasks/git_commit_message.md
+    git_commit_message:
+      max_body_width: 0
+      max_subject_width: 0
+      enforce_capitalized_subject: false
+      matchers:
+        # Support both formats:
+        # 1. JIRA/GitHub issue first: TICKET-#: Message
+        # 2. Conventional commits: type(TICKET-#): Message
+        # Examples: WNDR-446: Fix..., fix(WNDR-446): Add..., feat(GH-42): New...
+        'The commit must start with the JIRA or GitHub issue number': '/^((feat|fix|chore|docs|style|refactor|perf|test|ci|build|revert)\([A-Z][A-Z0-9_]+-[1-9][0-9]*\)|[A-Z][A-Z0-9_]+-[1-9][0-9]*): [A-Z]/'
     php_compatibility:
       run_on: '%grumphp.run_on_paths%'
-      testVersion: '8.1'
+      testVersion: '8.4'
     check_file_permissions: ~
     php_check_syntax:
       run_on: '%grumphp.run_on_paths%'
@@ -32,4 +43,4 @@ grumphp:
     - Wunderio\GrumPHP\Task\YamlLint\YamlLintExtensionLoader
     - Wunderio\GrumPHP\Task\JsonLint\JsonLintExtensionLoader
   git_hook_variables:
-    EXEC_GRUMPHP_COMMAND: lando php
+    EXEC_GRUMPHP_COMMAND: ${EXEC_GRUMPHP_COMMAND}

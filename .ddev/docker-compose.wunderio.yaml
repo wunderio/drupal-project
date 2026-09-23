@@ -1,0 +1,12 @@
+#ddev-generated
+services:
+  web:
+    volumes:
+      # Hooks mount to provide some persistent storage.
+      - hooks:/mnt/wdr-hooks
+
+# In DDEV all the places which are kept during start and stop are kept in
+# mounted volumes so able to determine is there certain hooks been called we
+# need to set something permanent.
+volumes:
+  hooks:
