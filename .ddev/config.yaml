@@ -29,14 +29,16 @@ web_environment:
   - VARNISH_ADMIN_HOST=varnish
   - VARNISH_ADMIN_PORT=80
   - SMTP_ADDRESS=localhost:1025
+  # Persistent DDEV volume: survives `ddev stop` (which removes containers) and
+  # isn't synced to the host by Mutagen. System deps: .ddev/web-build/Dockerfile.playwright
+  - PLAYWRIGHT_BROWSERS_PATH=/mnt/ddev-global-cache/ms-playwright
 
 corepack_enable: false
 hooks:
   post-start:
     # Skip expensive installs when the environment is already set up (see #478).
     # Composer is handled once by wunderio/ddev-wunderio-drupal (web-post-start-once).
-    # Re-run manually after dependency changes: ddev npm ci,
-    # ddev npx playwright install --with-deps
+    # Re-run manually after dependency changes: ddev npm ci
     - exec: |
         if [ ! -d node_modules ]; then
           echo "node_modules/ missing — running npm ci..."
@@ -44,13 +46,9 @@ hooks:
         else
           echo "node_modules/ present — skipping npm ci"
         fi
-    - exec: |
-        if [ ! -d "$HOME/.cache/ms-playwright" ]; then
-          echo "Playwright browser cache missing — running playwright install --with-deps..."
-          npx playwright install --with-deps
-        else
-          echo "Playwright browser cache present — skipping playwright install"
-        fi
+    # No-op when the browsers for the installed Playwright version are present;
+    # downloads new builds automatically after a Playwright version bump.
+    - exec: "npx playwright install"
     - exec-host: |
         # Run the Elasticsearch plugin setup script
         ddev exec -s elasticsearch /mnt/ddev_config/elasticsearch/elasticsearch-setup.sh
