@@ -33,9 +33,24 @@ web_environment:
 corepack_enable: false
 hooks:
   post-start:
-    - exec: "composer install"
-    - exec: "npm ci"
-    - exec: "npx playwright install --with-deps"
+    # Skip expensive installs when the environment is already set up (see #478).
+    # Composer is handled once by wunderio/ddev-wunderio-drupal (web-post-start-once).
+    # Re-run manually after dependency changes: ddev npm ci,
+    # ddev npx playwright install --with-deps
+    - exec: |
+        if [ ! -d node_modules ]; then
+          echo "node_modules/ missing — running npm ci..."
+          npm ci
+        else
+          echo "node_modules/ present — skipping npm ci"
+        fi
+    - exec: |
+        if [ ! -d "$HOME/.cache/ms-playwright" ]; then
+          echo "Playwright browser cache missing — running playwright install --with-deps..."
+          npx playwright install --with-deps
+        else
+          echo "Playwright browser cache present — skipping playwright install"
+        fi
     - exec-host: |
         # Run the Elasticsearch plugin setup script
         ddev exec -s elasticsearch /mnt/ddev_config/elasticsearch/elasticsearch-setup.sh
