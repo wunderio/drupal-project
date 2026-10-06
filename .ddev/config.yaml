@@ -48,7 +48,8 @@ hooks:
         fi
     # No-op when the browsers for the installed Playwright version are present;
     # downloads new builds automatically after a Playwright version bump.
-    - exec: "npx playwright install"
+    # Chromium only, matching CI and the deps in .ddev/web-build/Dockerfile.playwright.
+    - exec: "npx playwright install chromium"
     - exec-host: |
         # Run the Elasticsearch plugin setup script
         ddev exec -s elasticsearch /mnt/ddev_config/elasticsearch/elasticsearch-setup.sh
