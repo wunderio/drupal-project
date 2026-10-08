@@ -28,12 +28,16 @@ mariadb:
       # Database storage disk space allocation.
       # Request assistance from Ops team to change this on an existing deployment.
       size: 1G
+    # Memory request: a typical environment, innodb_buffer_pool_size + about 400Mi of
+    # fixed overhead (performance_schema, table_open_cache, table_definition_cache,
+    # threads). Feature environments use 390 to 450Mi at the median today.
+    # Memory limit: room for the larger environments and a few busy connections.
     resources:
       requests:
         cpu: 25m
-        memory: 366Mi
+        memory: 512Mi
       limits:
-        memory: 488Mi
+        memory: 1Gi
     config: |-
       [mysqld]
       skip-name-resolve
@@ -50,15 +54,17 @@ mariadb:
       character-set-server=UTF8
       collation-server=utf8_unicode_ci
       transaction-isolation=READ-COMMITTED
-      # Default max_connections value is 150.
-      # Each active connection consumes approx. 19-20MB of memory.
-      # Consider adding additional memory for production requests/limits when scaling up.
-      max_connections=200
-      # Set innodb_buffer_pool_size to 70/80% of resources.requests.memory (366Mi).
-      innodb_buffer_pool_size=275Mi
+      # Default max_connections value is 151.
+      # Match what the app can open: (autoscaling.maxReplicas 3 + 2 surge pods during
+      # a rollout) x pm.max_children 6 + 5 for cron and drush = 35.
+      # A busy connection can use about 37Mi with the buffers below.
+      max_connections=40
+      # Branch databases are small, so a small pool holds them. The pool is not the whole
+      # memory: resources.requests.memory must be the pool + about 400Mi.
+      innodb_buffer_pool_size=128Mi
       innodb_log_buffer_size=8M
-      # Set innodb_log_file_size to 12.5% of innodb_buffer_pool_size (34Mi is 12.5% of 275Mi).
-      innodb_log_file_size=34Mi
+      # Set innodb_log_file_size to 12.5% of innodb_buffer_pool_size (16Mi is 12.5% of 128Mi).
+      innodb_log_file_size=16Mi
       innodb_lock_wait_timeout=120
       innodb_open_files=49152
       innodb_flush_log_at_trx_commit=2
