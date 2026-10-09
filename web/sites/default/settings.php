@@ -16,6 +16,9 @@ $databases['default']['default'] = [
   'host' => getenv('DB_HOST'),
   'port' => '3306',
   'driver' => 'mysql',
+  // Drupal's recommended isolation level. Avoids gap-lock deadlocks on
+  // concurrent writes, and matches the Silta MariaDB config.
+  'isolation_level' => 'READ COMMITTED',
 ];
 
 // Salt for one-time login links, cancel links, form tokens, etc.
