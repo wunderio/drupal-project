@@ -4,14 +4,24 @@ import globals from 'globals';
 
 export default [
   {
-    ignores: ['**/node_modules/', '**/dist/', '**/*.min.js', '**/*.bundle.js'],
+    ignores: [
+      '**/node_modules/',
+      '**/dist/',
+      '**/storybook-static/',
+      '**/*.min.js',
+      '**/*.bundle.js',
+    ],
   },
   js.configs.recommended,
   {
-    // Drupal libraries are classic browser scripts, not modules.
+    // Parse as modules with JSX so themes' Storybook stories and Vite entries
+    // work. Drupal behaviors in IIFEs parse fine as modules too.
     files: ['web/modules/custom/**/*.js', 'web/themes/custom/**/*.js'],
     languageOptions: {
-      sourceType: 'script',
+      sourceType: 'module',
+      parserOptions: {
+        ecmaFeatures: { jsx: true },
+      },
       globals: {
         ...globals.browser,
         Drupal: 'readonly',
@@ -19,6 +29,19 @@ export default [
         once: 'readonly',
         jQuery: 'readonly',
       },
+    },
+  },
+  {
+    // Build tool config files run in Node.
+    files: ['**/*.config.js', '**/webpack/**/*.js', '**/.storybook/**/*.js'],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
+  {
+    files: ['**/*.test.js'],
+    languageOptions: {
+      globals: globals.jest,
     },
   },
   eslintPluginPrettierRecommended,
