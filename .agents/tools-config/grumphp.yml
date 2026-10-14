@@ -1,0 +1,142 @@
+# Validation - GrumPHP
+#
+# - PHP compatibility
+# - Check syntax
+# - PHPCS
+# - PHPstan
+# - yaml_lint
+# - json_lint
+
+tools:
+  - name: grumphp_run
+    enabled: true
+    description: |
+      Run all GrumPHP checks on the entire codebase.
+
+    # Note the type of this tool: test runners like grumphp may exit
+    # with a non-zero exit code if the command succeeds but checks/tests fail;
+    # the "check" executor will report the passed/failed status to agents.
+    #
+    # See: success_exit_codes
+    type: check
+    command_template: "./vendor/bin/grumphp run --no-ansi --no-interaction"
+    ssh_target: "web"
+    ssh_user: "${DDEV_SSH_USER}"
+    working_dir: "/var/www/html"
+    timeout: 120 # seconds
+    use_env_vars_in_remote: false
+    # Consider exit code 1 as the command succeeding,
+    # but report it as "checks failed".
+    # Note that the default value is [1].
+    # success_exit_codes: [1]
+    input_schema:
+      type: object
+      properties: {}
+
+  - name: grumphp_check_php_compatibility
+    enabled: true
+    description: |
+      Run PHP compatibility checks on the entire codebase.
+
+    type: check
+    command_template: "./vendor/bin/grumphp run --tasks {tasks} --no-ansi --no-interaction"
+    ssh_target: "web"
+    ssh_user: "${DDEV_SSH_USER}"
+    working_dir: "/var/www/html"
+    timeout: 60 # seconds
+    use_env_vars_in_remote: false
+    default_args:
+      tasks: ["php_compatibility"]
+    input_schema:
+      type: object
+      properties: {}
+
+  - name: grumphp_check_php_syntax
+    enabled: true
+    description: |
+      Run PHP syntax checking on the entire codebase.
+
+    type: check
+    command_template: "./vendor/bin/grumphp run --tasks {tasks} --no-ansi --no-interaction"
+    ssh_target: "web"
+    ssh_user: "${DDEV_SSH_USER}"
+    working_dir: "/var/www/html"
+    timeout: 60 # seconds
+    use_env_vars_in_remote: false
+    default_args:
+      tasks: ["php_check_syntax"]
+    input_schema:
+      type: object
+      properties: {}
+
+  - name: grumphp_check_phpcs
+    enabled: true
+    description: |
+      Run PHPCS checks on the entire codebase.
+
+    type: check
+    command_template: "./vendor/bin/grumphp run --tasks {tasks} --no-ansi --no-interaction"
+    ssh_target: "web"
+    ssh_user: "${DDEV_SSH_USER}"
+    working_dir: "/var/www/html"
+    timeout: 60 # seconds
+    use_env_vars_in_remote: false
+    default_args:
+      tasks: ["phpcs"]
+    input_schema:
+      type: object
+      properties: {}
+
+  - name: grumphp_check_phpstan
+    enabled: true
+    description: |
+      Run PHPStan checks on the entire codebase.
+
+    type: check
+    command_template: "./vendor/bin/grumphp run --tasks {tasks} --no-ansi --no-interaction"
+    ssh_target: "web"
+    ssh_user: "${DDEV_SSH_USER}"
+    working_dir: "/var/www/html"
+    timeout: 60 # seconds
+    use_env_vars_in_remote: false
+    default_args:
+      tasks: ["php_stan"]
+    input_schema:
+      type: object
+      properties: {}
+
+  - name: grumphp_lint_yaml
+    enabled: true
+    description: |
+      Run YAML linting on the entire codebase.
+
+    type: check
+    command_template: "./vendor/bin/grumphp run --tasks {tasks} --no-ansi --no-interaction"
+    ssh_target: "web"
+    ssh_user: "${DDEV_SSH_USER}"
+    working_dir: "/var/www/html"
+    timeout: 60 # seconds
+    use_env_vars_in_remote: false
+    default_args:
+      tasks: ["yaml_lint"]
+    input_schema:
+      type: object
+      properties: {}
+
+  - name: grumphp_lint_json
+    enabled: true
+    description: |
+      Run JSON linting on the entire codebase.
+
+    type: check
+    command_template: "./vendor/bin/grumphp run --tasks {tasks} --no-ansi --no-interaction"
+    ssh_target: "web"
+    ssh_user: "${DDEV_SSH_USER}"
+    working_dir: "/var/www/html"
+    timeout: 60 # seconds
+    use_env_vars_in_remote: false
+    default_args:
+      tasks: ["json_lint"]
+    input_schema:
+      type: object
+      properties: {}

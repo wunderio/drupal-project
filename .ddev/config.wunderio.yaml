@@ -7,13 +7,13 @@ hooks:
     # We check for wdr-core.sh existence (introduced in 0.5.0) to detect if
     # the add-on is missing or a pre-0.5.0 version is installed. Versions 0.5.0
     # and later are checked for updates by host-post-start-update-check.sh.
-    - exec-host: 'if [ ! -f "${DDEV_GLOBAL_DIR}/wunderio/core/wdr-core.sh" ]; then ddev add-on get wunderio/ddev-wunderio-drupal; fi'
+    - exec-host: 'if [ ! -f "${DDEV_GLOBAL_DIR}/homeadditions/wunderio/core/wdr-core.sh" ]; then ddev add-on get wunderio/ddev-wunderio-drupal; fi'
   post-start:
     # Build hook workaround to run composer install on first start.
     # @todo We could potentially make this work from recognizing the command.
     - exec: |
         if ! command -v wdr-core &> /dev/null; then
-          ln -s /mnt/ddev-global-cache/wunderio/core/wdr-core.sh /usr/local/bin/wdr-core
+          ln -s ${HOME}/wunderio/core/wdr-core.sh /usr/local/bin/wdr-core
         fi
         # Run once start hook if needed
         if [ ! -f "/mnt/wdr-hooks/ddev_web_post_start_once" ]; then
@@ -21,11 +21,11 @@ hooks:
           sudo touch /mnt/wdr-hooks/ddev_web_post_start_once
         fi
     # Script to run on every start on the host.
-    - exec-host: '${DDEV_GLOBAL_DIR}/wunderio/core/wdr-core.sh hooks host-post-start.sh'
+    - exec-host: '${DDEV_GLOBAL_DIR}/homeadditions/wunderio/core/wdr-core.sh hooks host-post-start.sh'
     # Script to run on every start.
     - exec: "wdr-core hooks web-post-start.sh"
     # Update check.
-    - exec-host: '${DDEV_GLOBAL_DIR}/wunderio/core/wdr-core.sh hooks host-post-start-update-check.sh'
+    - exec-host: '${DDEV_GLOBAL_DIR}/homeadditions/wunderio/core/wdr-core.sh hooks host-post-start-update-check.sh'
   post-import-db:
     - exec: "wdr-core hooks db-post-import.sh"
   post-restore-snapshot:

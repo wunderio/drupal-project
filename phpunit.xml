@@ -4,24 +4,7 @@
  or your current system user. See core/tests/README.md and
  https://www.drupal.org/node/2116263 for details.
 -->
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="./web/core/tests/bootstrap.php" colors="true" beStrictAboutTestsThatDoNotTestAnything="true" beStrictAboutOutputDuringTests="true" beStrictAboutChangesToGlobalState="true" failOnWarning="true" printerClass="\Drupal\Tests\Listeners\HtmlOutputPrinter" cacheResult="false" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
-  <coverage>
-    <include>
-      <directory>./web/core/includes</directory>
-      <directory>./web/core/lib</directory>
-      <directory>./web/core/modules</directory>
-      <directory>./web/core/modules</directory>
-      <directory>./web/core/sites</directory>
-    </include>
-    <exclude>
-      <directory>./web/core/modules/*/src/Tests</directory>
-      <directory>./web/core/modules/*/tests</directory>
-      <directory>./web/core/modules/*/src/Tests</directory>
-      <directory>./web/core/modules/*/tests</directory>
-      <directory>./web/core/modules/*/*/src/Tests</directory>
-      <directory>./web/core/modules/*/*/tests</directory>
-    </exclude>
-  </coverage>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="./web/core/tests/bootstrap.php" colors="true" beStrictAboutTestsThatDoNotTestAnything="true" beStrictAboutOutputDuringTests="true" beStrictAboutChangesToGlobalState="true" failOnWarning="true" cacheResult="false" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.5/phpunit.xsd" cacheDirectory=".phpunit.cache">
   <php>
     <!-- Set error reporting to E_ALL. -->
     <ini name="error_reporting" value="32767"/>
@@ -63,9 +46,22 @@
     <testsuite name="build">
     </testsuite>
   </testsuites>
-  <listeners>
-    <listener class="\Drupal\Tests\Listeners\DrupalListener">
-    </listener>
-  </listeners>
   <!-- Filter for coverage reports. -->
+  <source>
+    <include>
+      <directory>./web/core/includes</directory>
+      <directory>./web/core/lib</directory>
+      <directory>./web/core/modules</directory>
+      <directory>./web/core/modules</directory>
+      <directory>./web/core/sites</directory>
+    </include>
+    <exclude>
+      <directory>./web/core/modules/*/src/Tests</directory>
+      <directory>./web/core/modules/*/tests</directory>
+      <directory>./web/core/modules/*/src/Tests</directory>
+      <directory>./web/core/modules/*/tests</directory>
+      <directory>./web/core/modules/*/*/src/Tests</directory>
+      <directory>./web/core/modules/*/*/tests</directory>
+    </exclude>
+  </source>
 </phpunit>

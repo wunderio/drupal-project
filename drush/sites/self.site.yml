@@ -1,8 +1,5 @@
 # Edit or remove this file as needed.
 # Docs at https://github.com/drush-ops/drush/blob/master/examples/example.site.yml
-local:
-  root: ${env.DDEV_APPROOT}/${env.DDEV_DOCROOT}
-  uri: https://${env.DDEV_HOSTNAME}
 
 current:
   host: ${ENVIRONMENT}-shell.${REPOSITORY}
@@ -20,7 +17,7 @@ main:
   root: /app/web
   uri: https://main.${PROJECT}.dev.wdr.io
 
-prod:
+production:
   host: production-shell.${REPOSITORY}
   ssh:
     options: -J www-admin@ssh.finland.wdr.io

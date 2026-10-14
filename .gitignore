@@ -27,6 +27,7 @@
 /web/tmp
 
 # Ignore database dumps
+/database_dumps/
 *.sql
 *.sql.gz
 
@@ -41,3 +42,14 @@
 
 # Ignore node modules
 node_modules
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+.copilot
+
+# PHPUnit runtime cache
+/.phpunit.cache/

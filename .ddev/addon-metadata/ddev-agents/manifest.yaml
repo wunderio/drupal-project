@@ -1,9 +1,17 @@
 name: ddev-agents
 repository: wunderio/ddev-agents
-version: "0.4"
-install_date: "2026-02-02T13:10:15+02:00"
+version: 1.2.2
+install_date: "2026-07-09T18:20:26+03:00"
 project_files:
     - docker-compose.agents.yaml
+    - config.agents.yaml
     - .devcontainer/devcontainer.json
+    - .devcontainer/devcontainer.build.json
+    - commands/host/copilot
+    - commands/host/build-devcontainer
+    - commands/host/set-up
+    - copilot-managed-config.json
+    - .agents
+    - web-build
 global_files: []
 removal_actions: []

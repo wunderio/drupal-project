@@ -1,0 +1,92 @@
+# PHPUnit tests.
+
+tools:
+  - name: phpunit_list_all_test_suites
+    enabled: true
+    description: |
+      Lists all available test suites.
+
+    type: command
+    command_template: "./vendor/bin/phpunit --configuration phpunit.xml --list-suites"
+    ssh_target: "web"
+    ssh_user: "${DDEV_SSH_USER}"
+    working_dir: "/var/www/html"
+    input_schema:
+      type: object
+      properties: {}
+
+  - name: phpunit_list_all_test_files
+    enabled: true
+    description: |
+      Lists all available test files.
+
+    type: command
+    command_template: "./vendor/bin/phpunit --configuration phpunit.xml --list-test-files"
+    ssh_target: "web"
+    ssh_user: "${DDEV_SSH_USER}"
+    working_dir: "/var/www/html"
+    input_schema:
+      type: object
+      properties: {}
+
+  - name: phpunit_run_all_tests
+    enabled: true
+    description: |
+      Run all tests using PHPUnit.
+
+    type: check
+    command_template: "./vendor/bin/phpunit --configuration phpunit.xml"
+    success_exit_codes: [1, 2]
+    ssh_target: "web"
+    ssh_user: "${DDEV_SSH_USER}"
+    working_dir: "/var/www/html"
+    input_schema:
+      type: object
+      properties: {}
+
+  - name: phpunit_run_test_suites
+    enabled: true
+    description: |
+      Run specific test suites using PHPUnit.
+      Use phpunit_list_all_test_suites to discover the names of test suites.
+
+    type: check
+    command_template: "./vendor/bin/phpunit --configuration phpunit.xml --no-progress --testsuite {names}"
+    success_exit_codes: [1, 2]
+    ssh_target: "web"
+    ssh_user: "${DDEV_SSH_USER}"
+    working_dir: "/var/www/html"
+
+    input_schema:
+      type: object
+      properties:
+        names:
+          type: string
+          description: >
+            Name of the test suite to run, or a comma-separated list of test suite names.
+      required:
+        - names
+
+  - name: phpunit_run_test_files
+    enabled: true
+    description: |
+      Run specific unit test files using PHPUnit.
+
+    type: check
+    command_template: "./vendor/bin/phpunit --configuration phpunit.xml --no-progress {files}"
+    success_exit_codes: [1, 2]
+    ssh_target: "web"
+    ssh_user: "${DDEV_SSH_USER}"
+    working_dir: "/var/www/html"
+
+    input_schema:
+      type: object
+      properties:
+        files:
+          type: array
+          items:
+            type: string
+          description: >
+            Paths to unit test files to run.
+      required:
+        - files

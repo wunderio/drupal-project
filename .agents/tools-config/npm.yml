@@ -1,0 +1,41 @@
+# npm-related tools
+#
+# NOTE: These are examples and probably need to be adapted to every project.
+
+tools:
+  - name: npm_run_build
+    enabled: true
+    description: |
+      Build the frontend application.
+
+    type: command
+    command_template: "npm run build"
+    ssh_target: "web"
+    ssh_user: "${DDEV_SSH_USER}"
+    working_dir: "/var/www/html"
+    timeout: 10 # seconds
+    use_env_vars_in_remote: false
+    default_args: {}
+    input_schema:
+      type: object
+      properties: {}
+
+  - name: npm_run_test
+    enabled: true
+    description: |
+      Run tests defined in the project's package.json.
+
+    type: check
+    command_template: "npm run test"
+    ssh_target: "web"
+    ssh_user: "${DDEV_SSH_USER}"
+    working_dir: "/var/www/html"
+    timeout: 10 # seconds
+    # Consider both exit codes 1 and 2 as the command succeeding,
+    # but report them as "checks failed".
+    success_exit_codes: [1, 2]
+    use_env_vars_in_remote: false
+    default_args: {}
+    input_schema:
+      type: object
+      properties: {}

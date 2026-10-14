@@ -3,7 +3,7 @@ _core:
 hotlink: false
 origin: ''
 origin_dir: ''
-use_imagecache_root: true
 proxy_headers: ''
+use_imagecache_root: true
 verify: true
 excluded_extensions: ''

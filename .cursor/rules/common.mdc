@@ -103,7 +103,7 @@ When creating commit messages, always analyze the actual changes using `git diff
 ## Development Environment
 
 ### Code Standards
-- PHP version: 8.3+ (as specified in @composer.json)
+- PHP version: 8.4+ (as specified in @composer.json)
 - Follow Drupal coding standards (defined in @phpcs.xml)
 - Follow PHP Static Analysis rules (defined in @phpstan.neon)
 - Use GrumPHP for enforcing code quality standards (@grumphp.yml)
