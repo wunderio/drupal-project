@@ -1,38 +1,43 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\phpunit_example\Unit;
 
 use Drupal\phpunit_example\AddClass;
 // phpcs:ignore SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses.IncorrectlyOrderedUses
 use Drupal\Tests\UnitTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
- * AddClass units tests.
+ * AddClass unit tests.
  *
- * This test case demonstrates the following PHPUnit annotations:
- * - dataProvider
- * - expectedException.
+ * This test case demonstrates the following PHPUnit 11 features:
+ * - Attribute-based data providers (#[DataProvider]).
+ * - Attribute-based grouping (#[Group]).
+ * - expectException() for exception assertions.
  *
- * PHPUnit looks for classes with names ending in 'Test'. Then it
- * looks to see whether that class is a subclass of
- * \PHPUnit_Framework_TestCase. Drupal supplies us with
- * Drupal\Tests\UnitTestCase, which is a subclass of
- * \PHPUnit_Framework_TestCase. So yay, PHPUnit will find this class.
+ * PHPUnit discovers test classes by their 'Test' suffix and requires them
+ * to extend \PHPUnit\Framework\TestCase. Drupal supplies
+ * \Drupal\Tests\UnitTestCase, a subclass of \PHPUnit\Framework\TestCase,
+ * which this class extends.
  *
- * In unit testing, there should be as few dependencies as possible.
- * We want the smallest number of moving parts to be interacting in
- * our test, or we won't be sure where the errors are, or whether our
- * tests passed by accident.
+ * In unit testing, there should be as few dependencies as possible. We
+ * want the smallest number of moving parts to be interacting in our test,
+ * or we won't be sure where the errors are, or whether our tests passed by
+ * accident.
  *
- * So with that in mind, it's up to us to build out whatever
- * dependencies we need. In the case of AddClass, our needs are meager;
- * we only want an instance of AddClass so we can test its add() method.
+ * So with that in mind, it's up to us to build out whatever dependencies we
+ * need. In the case of AddClass, our needs are meager; we only want an
+ * instance of AddClass so we can test its add() method.
  *
  * @ingroup phpunit_example
- *
- * @group phpunit_example
- * @group examples
  */
+#[CoversClass(AddClass::class)]
+#[Group('phpunit_example')]
+#[Group('examples')]
 class AddClassTest extends UnitTestCase {
 
   /**
@@ -43,19 +48,20 @@ class AddClassTest extends UnitTestCase {
    * pass. It ignores most of the problems that could arise in the
    * method under test, so therefore: It is not a very good test.
    */
-  public function testAdd() {
+  public function testAdd(): void {
     $sut = new AddClass();
-    $this->assertEquals($sut->add(2, 3), 5);
+    $this->assertEquals(5, $sut->add(2, 3));
   }
 
+  #[DataProvider('addDataProvider')]
   /**
    * Test AddClass::add() with a data provider method.
    *
-   * This method is very similar to testAdd(), but uses a data provider method
-   * to test with a wider range of data.
+   * This method is very similar to testAdd(), but uses a data provider
+   * method to test with a wider range of data.
    *
    * You can tell PHPUnit which method is the data provider using the
-   * '@dataProvider' annotation.
+   * '#[DataProvider]' attribute.
    *
    * The data provider method just returns a big array of arrays of arguments.
    * That is, for each time you want this test method run, the data provider
@@ -80,36 +86,29 @@ class AddClassTest extends UnitTestCase {
    * tests 'good' data. When combined with testAddWithBadDataProvider(),
    * we get a better picture of the behavior of the method under test.
    *
-   * @dataProvider addDataProvider
-   *
    * @see self::addDataProvider()
    */
-  public function testAddWithDataProvider($expected, $a, $b) {
+  public function testAddWithDataProvider(int|float $expected, int|float $a, int|float $b): void {
     $sut = new AddClass();
     $this->assertEquals($expected, $sut->add($a, $b));
   }
 
+  #[DataProvider('addBadDataProvider')]
   /**
    * Test AddClass::add() with data that should throw an exception.
    *
    * This method is similar to testAddWithDataProvider(), but the data
    * provider gives us data that should throw an exception.
    *
-   * This test uses the setExpectedException() method to tell PHPUnit that
-   * a thrown exception should pass the test. You specify a
-   * fully-qualified exception class name. If you specify \Exception, PHPUnit
-   * will pass any exception, whereas a more specific subclass of \Exception
-   * will require that exception type to be thrown.
-   *
-   * Alternately, you can use try and catch blocks with assertions in order
-   * to test exceptions. We won't demonstrate that here; it's a much better
-   * idea to test your exceptions with setExpectedException().
-   *
-   * @dataProvider addBadDataProvider
+   * This test uses the expectException() method to tell PHPUnit that a
+   * thrown exception should pass the test. You specify a fully-qualified
+   * exception class name. If you specify \Exception, PHPUnit will pass any
+   * exception, whereas a more specific subclass of \Exception will require
+   * that exception type to be thrown.
    *
    * @see self::addBadDataProvider()
    */
-  public function testAddWithBadDataProvider($a, $b) {
+  public function testAddWithBadDataProvider(mixed $a, mixed $b): void {
     $sut = new AddClass();
     $this->expectException(\InvalidArgumentException::class);
     $sut->add($a, $b);
@@ -135,7 +134,7 @@ class AddClassTest extends UnitTestCase {
    *
    * @see self::testAddWithDataProvider()
    */
-  public static function addDataProvider() {
+  public static function addDataProvider(): array {
     return [
       [5, 2, 3],
       [50, 20, 30],
@@ -154,7 +153,7 @@ class AddClassTest extends UnitTestCase {
    *
    * @see self::testAddWithBadDataProvider()
    */
-  public static function addBadDataProvider() {
+  public static function addBadDataProvider(): array {
     $bad_data = [];
     // Set up an array with data that should cause add()
     // to throw an exception.
