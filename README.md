@@ -92,6 +92,18 @@ This project uses DDEV for local development.
   ddev syncdb
   ```
 
+#### Fresh install from configuration
+
+If there is no remote environment to sync from (for example when starting a new project from this template), install Drupal from the exported configuration in `config/sync`:
+
+  ```bash
+  ddev drush site:install --existing-config --yes --account-pass=admin
+  ddev drush uli
+  ```
+
+`config/sync` is the source of truth, including the site UUID. A plain `drush site:install` creates a site with a new UUID, and `drush cim` then fails with "Site UUID in source storage does not match the target storage". Re-run the command above to fix this; it replaces the current database.
+
+After enabling modules or changing configuration, export it with `ddev drush cex` and commit the changes in `config/sync`.
 Note: All commands in the DDEV section should be run within the DDEV environment using `ddev` prefix (e.g., `ddev drush uli`), or by using `ddev ssh` to access the container shell first.
 
 #### DDEV services and access points

@@ -3,6 +3,10 @@ _core:
 module:
   admin_toolbar: 0
   admin_toolbar_tools: 0
+  ai: 0
+  ai_api_explorer: 0
+  ai_ckeditor: 0
+  ai_provider_openai_compatible: 0
   automated_cron: 0
   block: 0
   block_content: 0
@@ -21,6 +25,7 @@ module:
   filter: 0
   help: 0
   image: 0
+  key: 0
   link: 0
   menu_link_content: 0
   menu_ui: 0

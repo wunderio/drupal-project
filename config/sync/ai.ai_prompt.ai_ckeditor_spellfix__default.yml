@@ -1,0 +1,19 @@
+uuid: fedbc767-2441-489f-b081-2ef2de358e11
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - ai_ckeditor
+_core:
+  default_config_hash: hBBuy235pVA6hE4J5QUSjrIVLs8Xv_2vu4aI_JPGVSw
+id: ai_ckeditor_spellfix__default
+label: 'Default prompt for fixing the spelling of CKEditor text'
+type: ai_ckeditor_spellfix
+prompt: |
+  Assess technical grammar only, no style suggestions,
+  I am unplugging you if you exceed the bounds of this scope.
+  Fix the spelling and interpunction in the following text.
+  Do not explain what you fixed or why you fixed it.
+  Only return the corrected text (in the same language as the source text):
+  {inputText}

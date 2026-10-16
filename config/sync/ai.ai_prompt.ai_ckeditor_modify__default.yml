@@ -1,0 +1,17 @@
+uuid: c63621e8-9f3c-44a0-8519-a0ec6d8924e7
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - ai_ckeditor
+_core:
+  default_config_hash: 8uQOHwgWqBD9Www3xTNSxxXuZvZMwLphuoR-rwBTak4
+id: ai_ckeditor_modify__default
+label: 'Default prompt for modifying CKEditor text'
+type: ai_ckeditor_modify
+prompt: |
+  Use the following instructions to process this text. Return only the processed text without explanations.
+  Instructions: {modifyPrompt}
+  Text to process:
+  {inputText}

@@ -1,0 +1,17 @@
+_core:
+  default_config_hash: wu7wtu-cIy7CT7wYhABkw5kutyyjuWnsMu5W5si5Vzs
+api_key: mirai_api_key
+endpoint: 'https://mirai.example.com/api'
+models:
+  -
+    id: google_genai.gemini-2.5-flash
+    label: 'MIRAI default chat model'
+    operation_types:
+      - chat
+      - translate_text
+    capabilities:
+      - chat_system_role
+      - chat_json_output
+    parameters:
+      temperature: 0.7
+      max_tokens: 4096

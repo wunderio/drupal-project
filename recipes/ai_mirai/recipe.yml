@@ -1,0 +1,56 @@
+name: 'AI with MIRAI'
+description: 'Enables Drupal AI with MIRAI (Open WebUI, OpenAI-compatible API) as the default chat provider. The API key is read from the MIRAI_API_KEY environment variable. The endpoint is a placeholder; settings.php overrides it from MIRAI_API_URL.'
+type: 'AI'
+input:
+  chat_model:
+    data_type: string
+    description: 'Default chat model ID, exactly as listed by /api/models.'
+    constraints:
+      NotBlank: []
+    default:
+      source: value
+      value: 'google_genai.gemini-2.5-flash'
+install:
+  - key
+  - ai
+  - ai_api_explorer
+  - ai_provider_openai_compatible
+config:
+  actions:
+    key.key.mirai_api_key:
+      createIfNotExists:
+        label: 'MIRAI API key'
+        description: 'Read from the MIRAI_API_KEY environment variable.'
+        key_type: authentication
+        key_type_settings: {}
+        key_provider: env
+        key_provider_settings:
+          env_variable: MIRAI_API_KEY
+          base64_encoded: false
+          strip_line_breaks: true
+        key_input: none
+        key_input_settings: {}
+    ai_provider_openai_compatible.settings:
+      simpleConfigUpdate:
+        api_key: mirai_api_key
+        # Placeholder, so the real host never ends up in exported config.
+        endpoint: 'https://mirai.example.com/api'
+        models:
+          -
+            id: ${chat_model}
+            label: 'MIRAI default chat model'
+            operation_types:
+              - chat
+              - translate_text
+            capabilities:
+              - chat_system_role
+              - chat_json_output
+            parameters:
+              temperature: 0.7
+              max_tokens: 4096
+    ai.settings:
+      simpleConfigUpdate:
+        default_providers:
+          chat:
+            provider_id: openai_compatible
+            model_id: ${chat_model}
