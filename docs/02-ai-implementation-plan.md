@@ -66,13 +66,43 @@ The API key and the MIRAI hostname are never stored in config. This repository i
    ddev drush cex -y
    ```
 
-   Check that `ai_provider_openai_compatible.settings.yml` still contains the placeholder endpoint, not the real MIRAI host.
+   Check that `ai_provider_openai_compatible.settings.yml` still contains the placeholder endpoint, not the real MIRAI host. If the endpoint was ever entered in the provider settings form, the real host is stored in the database and `cex` exports it. Reset the stored value first (the `settings.php` override still applies at runtime):
+
+   ```bash
+   ddev drush cset ai_provider_openai_compatible.settings endpoint 'https://mirai.example.com/api' -y
+   ```
 
 Other environments (Silta) need `MIRAI_API_URL` and `MIRAI_API_KEY` as environment variables (the key as a secret), and MIRAI must be reachable from there. Without them the site still deploys, but AI requests fail.
 
 ### Step 2: the first feature editors can use
 
-Enable the CKEditor AI assistant (`ai_ckeditor`, part of the AI module) on one text format and try it on an Article.
+The CKEditor AI assistant is set up by the recipe [recipes/ai_ckeditor](../recipes/ai_ckeditor/recipe.yml). It:
+
+- enables `ai_ckeditor` and `taxonomy`;
+- adds the **AI Assistant** button (`aickeditor`) and the text selection menu (`ai_balloon_menu`) to the Basic HTML and Full HTML editors;
+- enables all tools: Generate, Modify with a prompt, Reformat HTML, Fix spelling, Summarize, Tone, Translate and Help. The tools have no model of their own, so they use the default chat provider from step 1;
+- creates the vocabularies "Tone of voice" (`ai_tone`) and "Translation languages" (`ai_translation_languages`) with starter terms. The tone tool sends the term description to the AI as the tone description;
+- gives the Content editor role the `use ai ckeditor` permission.
+
+1. Apply the recipe:
+
+   ```bash
+   ddev drush recipe ../recipes/ai_ckeditor -y
+   ```
+
+2. **Test:** open `/node/add/article`, type a few sentences in Body and select them. Choose **AI Assistant** in the menu that appears next to the selection (or under "Show more items" in the toolbar), then try Summarize, Tone > Friendly and Translate > Finnish.
+3. Export the config and commit `config/sync`:
+
+   ```bash
+   ddev drush cex -y
+   ```
+
+Notes:
+
+- `ai_ckeditor` inside the AI module is deprecated and will be removed in AI 1.6.0. The standalone [drupal/ai_ckeditor](https://www.drupal.org/project/ai_ckeditor) project replaces it, but has no stable 1.5 release yet, and AI 1.5.1 doesn't require it. We use the bundled module for now. When upgrading to AI 1.6, run `composer require drupal/ai_ckeditor` first: the machine name and config are the same.
+- The recipe has `config: import: ai_ckeditor: '*'`. Recipes don't create a module's default config entities otherwise, so the AI prompts (`ai.ai_prompt.ai_ckeditor_*`) would be missing and every tool would send an empty prompt. The model then answers with generic text that has nothing to do with the selection.
+- The tone and language terms are content, not config. `drush cim` on another environment creates the vocabularies but not the terms, so apply the recipe there too, or add the terms by hand.
+- The browser console shows the CKEditor warning `toolbarview-item-unavailable {item: ai_balloon_menu}`. It is harmless: that toolbar item only switches on the selection menu and has no button of its own.
 
 ### Step 3: help with fields and metadata
 
