@@ -1,0 +1,7 @@
+# System libraries needed by Playwright browsers (chromium, firefox, webkit), baked
+# into the web image so they survive `ddev stop` (which removes containers). DDEV
+# caches the image build, so this only runs on first build or DDEV upgrade. Browsers
+# are installed by the post-start hook.
+# Keep the version in sync with @playwright/test in package-lock.json.
+RUN npx -y playwright@1.59.1 install-deps \
+    && rm -rf /var/lib/apt/lists/* /root/.npm
