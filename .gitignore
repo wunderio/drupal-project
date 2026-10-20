@@ -49,6 +49,7 @@ node_modules
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+/tests/__screenshots__/
 .copilot
 
 # PHPUnit runtime cache

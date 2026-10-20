@@ -1,0 +1,171 @@
+name: Visual Regression
+
+# Waits for CircleCI to deploy the pushed commit to Silta, then runs
+# tests/visual-regression.spec.ts (desktop + mobile) against that environment.
+# The first run captures a baseline (artifact), later runs compare against it.
+#
+# Required repository secrets: SILTA_BASICAUTH_USER, SILTA_BASICAUTH_PASS
+
+on:
+  push:
+    branches:
+      # - main
+      - feature/MID-73-playwright-visual
+  # Manual run (available once this file is on the default branch).
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "compare = against the latest baseline, baseline = capture a new one"
+        type: choice
+        default: compare
+        options: [compare, baseline]
+
+env:
+  # Main environment, enable after testing (and the `main` branch above):
+  # TEST_BASE_URL: "https://main.drupal-project.dev.wdr.io"
+  # BASELINE_NAME: "visual-regression-baseline-main"
+  # [TESTING] Feature environment:
+  TEST_BASE_URL: "https://feature-mid-73-playwright-visual.drupal-project.dev.wdr.io"
+  BASELINE_NAME: "visual-regression-baseline-feature-mid-73"
+
+permissions:
+  contents: read
+  actions: read
+  checks: read
+  statuses: write
+
+concurrency:
+  group: visual-regression-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  visual-regression:
+    # Pinned so baseline and comparison render with the same fonts.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    outputs:
+      state: ${{ steps.outcome.outputs.state }}
+      message: ${{ steps.outcome.outputs.message }}
+    env:
+      CI: "true"
+      TEST_HTTP_USER: ${{ secrets.SILTA_BASICAUTH_USER }}
+      TEST_HTTP_PASS: ${{ secrets.SILTA_BASICAUTH_PASS }}
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Wait for CircleCI deploy
+        if: github.event_name == 'push'
+        run: .github/scripts/wait-for-circleci.sh "${{ github.repository }}" "${{ github.sha }}"
+
+      - name: Wait for environment
+        run: .github/scripts/wait-for-url.sh "$TEST_BASE_URL/"
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      # Newest non-expired baseline artifact; none (or manual "baseline") = capture.
+      - name: Find baseline
+        id: baseline
+        env:
+          MODE: ${{ inputs.mode }}
+        run: |
+          RUN_ID=$(gh api "repos/${{ github.repository }}/actions/artifacts?name=$BASELINE_NAME&per_page=50" \
+            --jq '[.artifacts[] | select(.expired == false)][0].workflow_run.id // empty')
+          if [ "$MODE" != "baseline" ] && [ -n "$RUN_ID" ]; then
+            echo "Comparing against baseline from run $RUN_ID."
+            echo "run_id=$RUN_ID" >> "$GITHUB_OUTPUT"
+          fi
+
+      # --- Baseline -----------------------------------------------------------
+      - name: Capture baseline
+        id: capture
+        if: steps.baseline.outputs.run_id == ''
+        run: npm run test:visual:update
+
+      - name: Upload baseline
+        if: steps.capture.outcome == 'success'
+        uses: actions/upload-artifact@v6
+        with:
+          name: ${{ env.BASELINE_NAME }}
+          path: tests/__screenshots__/
+          retention-days: 90
+
+      # --- Compare ------------------------------------------------------------
+      - name: Download baseline
+        if: steps.baseline.outputs.run_id != ''
+        uses: actions/download-artifact@v7
+        with:
+          name: ${{ env.BASELINE_NAME }}
+          path: tests/__screenshots__/
+          github-token: ${{ github.token }}
+          run-id: ${{ steps.baseline.outputs.run_id }}
+
+      - name: Compare with baseline
+        id: compare
+        if: steps.baseline.outputs.run_id != ''
+        run: npm run test:visual
+
+      # --- Report -------------------------------------------------------------
+      - name: Upload report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: visual-regression-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 30
+
+      # Single place that maps the result to a commit status state + message.
+      - name: Set outcome
+        id: outcome
+        if: ${{ !cancelled() }}
+        run: |
+          case "${{ steps.capture.outcome }}:${{ steps.compare.outcome }}" in
+            success:*) STATE=pending MESSAGE="⚠️ Baseline captured, not compared" ;;
+            *:success) STATE=success MESSAGE="✅ No visual changes" ;;
+            *:failure) STATE=failure MESSAGE="❌ Visual changes detected" ;;
+            *)         STATE=error   MESSAGE="❌ Workflow error" ;;
+          esac
+          echo "state=$STATE" >> "$GITHUB_OUTPUT"
+          echo "message=$MESSAGE" >> "$GITHUB_OUTPUT"
+
+      # Commit status on the commit / PR; "pending" shows as yellow.
+      - name: Report commit status
+        if: ${{ !cancelled() }}
+        run: |
+          gh api -X POST "repos/${{ github.repository }}/statuses/${{ github.sha }}" \
+            -f context="visual-regression" \
+            -f state="${{ steps.outcome.outputs.state }}" \
+            -f description="${{ steps.outcome.outputs.message }}" \
+            -f target_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            > /dev/null
+
+  # GitHub has no "warning" run state, so the job name carries the result.
+  result:
+    name: "Result: ${{ needs.visual-regression.outputs.message || '❌ Workflow error' }}"
+    needs: [visual-regression]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Summarize
+        env:
+          STATE: ${{ needs.visual-regression.outputs.state }}
+          MESSAGE: ${{ needs.visual-regression.outputs.message || '❌ Workflow error' }}
+        run: |
+          echo "### Visual regression: $MESSAGE" >> "$GITHUB_STEP_SUMMARY"
+          case "$STATE" in
+            success) echo "$MESSAGE" ;;
+            pending) echo "::warning::$MESSAGE. The next run compares against it." ;;
+            failure) echo "::error::$MESSAGE. See the visual-regression-report artifact."; exit 1 ;;
+            *)       echo "::error::$MESSAGE. Check the visual-regression job log."; exit 1 ;;
+          esac

@@ -16,7 +16,9 @@
     "lint:js": "eslint --no-error-on-unmatched-pattern './web/themes/custom/' './web/modules/custom/'",
     "lint:md": "markdownlint './*.md' './.cursor/**/*.md' './silta/**/*.md' './web/modules/custom/**/*.md' './web/themes/custom/**/*.md' --ignore node_modules",
     "lint:md:fix": "markdownlint --fix './*.md' './.cursor/**/*.md' './silta/**/*.md' './web/modules/custom/**/*.md' './web/themes/custom/**/*.md' --ignore node_modules",
-    "lint:css": "stylelint --allow-empty-input './web/themes/custom/**/*.{css,scss,sass}' './web/modules/custom/**/*.{css,scss,sass}'"
+    "lint:css": "stylelint --allow-empty-input './web/themes/custom/**/*.{css,scss,sass}' './web/modules/custom/**/*.{css,scss,sass}'",
+    "test:visual": "VISUAL_REGRESSION=1 playwright test --project='visual-*'",
+    "test:visual:update": "npm run test:visual -- --update-snapshots=all"
   },
   "devDependencies": {
     "@faker-js/faker": "^10.4.0",

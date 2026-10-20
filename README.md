@@ -420,6 +420,29 @@ npx playwright show-report
 
 - `tests/helpers/drupal-test.ts` — Custom Playwright test base providing a `drupal` helper (via `@drupal/playwright`) for actions like `drupal.loginAsAdmin()`
 - `tests/example.spec.ts` — Example end-to-end test demonstrating basic page creation
+- `tests/visual-regression.spec.ts` — Visual regression screenshots (desktop + mobile)
+- `tests/helpers/visual.ts` — Helpers for visual tests (e.g. `waitForPageStable()`)
+- `.github/scripts/` — `wait-for-circleci.sh` and `wait-for-url.sh`, used by the visual regression workflow
+
+##### Visual regression
+
+`tests/visual-regression.spec.ts` takes full-page screenshots of the pages listed in its `PAGES` array, at desktop (1440×900) and mobile (Pixel 7) sizes. Baselines are stored in `tests/__screenshots__/` and are git-ignored.
+
+Locally, record a baseline before your change, then compare after it:
+
+```bash
+ddev npm run test:visual:update   # record baseline
+ddev npm run test:visual          # compare; diffs in the HTML report
+```
+
+In CI, the GitHub Actions workflow `.github/workflows/visual-regression.yml` runs on push. It waits until CircleCI has deployed the commit to Silta, then:
+
+- first run (no baseline artifact): captures the baseline, shown as ⚠️ (pending `visual-regression` commit status and result job)
+- next runs: compare against the baseline, ✅ when nothing changed, ❌ when screenshots differ (see the `visual-regression-report` artifact)
+
+To accept the current look as the new baseline, run the workflow manually with mode `baseline` (GitHub offers manual runs only once the workflow file is on `main`).
+
+Silta basic auth needs the `SILTA_BASICAUTH_USER` and `SILTA_BASICAUTH_PASS` repository secrets. To run it for `main`, switch `TEST_BASE_URL`, `BASELINE_NAME` and the push branch in the workflow file.
 
 </details>
 
