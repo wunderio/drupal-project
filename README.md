@@ -256,6 +256,14 @@ This project includes the `ddev-agents` addon for AI-assisted development in the
 - Agents runtime config: `.ddev/config.agents.yaml`
 - Copilot managed restrictions: `.ddev/copilot-managed-config.json`
 
+- `lando` - tools / commands overview.
+- `lando grumphp <commands>` - run [GrumPHP](https://github.com/phpro/grumphp) code quality checks. Modified or new files are checked on git commit, see more at `lando grumphp -h` or [wunderio/code-quality](https://github.com/wunderio/code-quality).
+- `lando npm <commands>` - run [npm](https://www.npmjs.com/) commands.
+- `lando phpunit <commands>` - run [PHPUnit](https://phpunit.de/) commands.
+- `lando varnishadm <commands>` - run [varnishadm](https://varnish-cache.org/docs/6.0/reference/varnishadm.html) commands.
+- `lando xdebug <mode>` - load [Xdebug](https://xdebug.org/) in the selected [mode(s)](https://xdebug.org/docs/all_settings#mode).
+  - Check that the `phpinfo()` has XDebug section visible at https://drupal-project.lndo.site/en/admin/reports/status/php. If not, do a lando rebuild and run `lando xdebug <mode>` again.
+
 #### Security model
 
 - Commands run via SSH with ephemeral keys generated at each `ddev start`.
