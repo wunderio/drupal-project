@@ -53,6 +53,14 @@ jobs:
       GH_TOKEN: ${{ github.token }}
 
     steps:
+      # Fail in seconds instead of after the CircleCI wait.
+      - name: Check secrets
+        run: |
+          if [ -z "$TEST_HTTP_USER" ] || [ -z "$TEST_HTTP_PASS" ]; then
+            echo "::error::Repository secrets SILTA_BASICAUTH_USER / SILTA_BASICAUTH_PASS are not set."
+            exit 1
+          fi
+
       - uses: actions/checkout@v5
 
       - name: Wait for CircleCI deploy
