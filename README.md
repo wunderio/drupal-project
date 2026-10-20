@@ -386,63 +386,20 @@ Note: Run these commands with the appropriate environment prefix (`ddev phpunit`
 - List groups: `phpunit --list-groups`
 - Run all tests in a particular group: `phpunit --group Groupname`
 
-#### Playwright (end-to-end tests)
+#### Playwright (end-to-end and visual regression tests)
 
-[Playwright](https://playwright.dev/) is used for end-to-end browser testing. Tests are located in the `tests/` directory and configured via `playwright.config.ts`.
+[Playwright](https://playwright.dev/) runs browser tests from `tests/` inside DDEV (browsers are installed on `ddev start`):
 
-##### Setup
-
-Install Node dependencies if you haven't already:
-
-```bash
-ddev npm install
-```
-
-Playwright browsers are automatically installed inside the DDEV container on `ddev start`.
-
-##### Running tests
-
-The `TEST_BASE_URL` environment variable is preconfigured in DDEV (see `.ddev/config.yaml`).
-
-To run all tests:
+- **End-to-end tests** check that features work, e.g. creating a page.
+- **Visual regression tests** compare desktop + mobile screenshots to catch unintended visual changes. In CI they run in GitHub Actions after CircleCI deploys to Silta.
 
 ```bash
-ddev npx playwright test
+ddev npx playwright test          # end-to-end tests
+ddev npm run test:visual:update   # visual: record baseline
+ddev npm run test:visual          # visual: compare
 ```
 
-To view the HTML report after a run:
-
-```bash
-npx playwright show-report
-```
-
-##### Test structure
-
-- `tests/helpers/drupal-test.ts` — Custom Playwright test base providing a `drupal` helper (via `@drupal/playwright`) for actions like `drupal.loginAsAdmin()`
-- `tests/example.spec.ts` — Example end-to-end test demonstrating basic page creation
-- `tests/visual-regression.spec.ts` — Visual regression screenshots (desktop + mobile)
-- `tests/helpers/visual.ts` — Helpers for visual tests (e.g. `waitForPageStable()`)
-- `.github/scripts/` — `wait-for-circleci.sh` and `wait-for-url.sh`, used by the visual regression workflow
-
-##### Visual regression
-
-`tests/visual-regression.spec.ts` takes full-page screenshots of the pages listed in its `PAGES` array, at desktop (1440×900) and mobile (Pixel 7) sizes. Baselines are stored in `tests/__screenshots__/` and are git-ignored.
-
-Locally, record a baseline before your change, then compare after it:
-
-```bash
-ddev npm run test:visual:update   # record baseline
-ddev npm run test:visual          # compare; diffs in the HTML report
-```
-
-In CI, the GitHub Actions workflow `.github/workflows/visual-regression.yml` runs on push. It waits until CircleCI has deployed the commit to Silta, then:
-
-- first run (no baseline artifact): captures the baseline, shown as ⚠️ (pending `visual-regression` commit status and result job)
-- next runs: compare against the baseline, ✅ when nothing changed, ❌ when screenshots differ (see the `visual-regression-report` artifact)
-
-To accept the current look as the new baseline, run the workflow manually with mode `baseline` (GitHub offers manual runs only once the workflow file is on `main`).
-
-Silta basic auth needs the `SILTA_BASICAUTH_USER` and `SILTA_BASICAUTH_PASS` repository secrets. To run it for `main`, switch `TEST_BASE_URL`, `BASELINE_NAME` and the push branch in the workflow file.
+See [tests/README.md](tests/README.md) for run options, configuration (tested pages and environment) and troubleshooting.
 
 </details>
 
