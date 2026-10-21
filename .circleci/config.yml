@@ -25,11 +25,6 @@ branch-filters:
 workflows:
   commit:
     jobs:
-      - approval:
-          type: approval
-          name: approve-deployment
-          filters:
-            <<: *ignored-branches
 
       - silta/drupal-validate:
           name: validate
@@ -54,7 +49,6 @@ workflows:
           requires:
             - validate
             - analyze
-            - approve-deployment
           filters:
             <<: *ignored-branches
 
