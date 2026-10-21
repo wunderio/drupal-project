@@ -4,6 +4,11 @@
 # @see: https://github.com/wunderio/charts/blob/master/drupal/values.yaml
 
 php:
+  php_ini:
+    extraConfig: |
+      ; php2shell CVE-2026-109618 / CVE-2026-109619 mitigation. Remove once PHP is patched.
+      [Session]
+      session.upload_progress.enabled = Off
   drupalCoreVersion: "11"
   cron:
     drupal:
