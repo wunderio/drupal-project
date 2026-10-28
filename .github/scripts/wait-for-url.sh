@@ -14,7 +14,9 @@ if [ -n "${TEST_HTTP_USER:-}" ]; then
 fi
 
 for i in $(seq 1 "$ATTEMPTS"); do
-  HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" ${AUTH[@]+"${AUTH[@]}"} "$URL" || true)
+  # Without timeouts, curl hangs ~2 min per attempt when the host is down.
+  HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --connect-timeout 5 --max-time 10 \
+    ${AUTH[@]+"${AUTH[@]}"} "$URL" || true)
   if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
     echo "$URL reachable (HTTP $HTTP_STATUS)."
     exit 0

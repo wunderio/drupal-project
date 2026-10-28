@@ -26,12 +26,12 @@ while :; do
       echo "CircleCI finished."
       exit 0
     fi
-    echo "::error::CircleCI finished with '$CONCLUSION', nothing deployed to test."
+    echo "::error::CircleCI finished with '$CONCLUSION', nothing was deployed, so nothing was compared. After a successful deploy, use \"Re-run failed jobs\"."
     exit 1
   fi
 
   if [ "$SECONDS" -ge "$DEADLINE" ]; then
-    echo "::error::CircleCI not finished after ${TIMEOUT}s (status: $STATUS)."
+    echo "::error::CircleCI not finished after ${TIMEOUT}s (status: $STATUS). Deploy not approved in CircleCI? After it deploys, use \"Re-run failed jobs\"."
     exit 1
   fi
 

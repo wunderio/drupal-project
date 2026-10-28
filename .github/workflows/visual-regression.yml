@@ -1,8 +1,18 @@
 name: Visual Regression
 
-# Waits for CircleCI to deploy the pushed commit to Silta, then runs
-# tests/visual-regression.spec.ts (desktop + mobile) against that environment.
-# The first run captures a baseline (artifact), later runs compare against it.
+# Screenshots the Silta environment before and after CircleCI deploys a push
+# and fails when the deploy changed how the pages look
+# (tests/visual-regression.spec.ts, desktop + mobile).
+#
+# capture-baseline: screenshots the environment before the deploy. They are
+#   kept as the baseline only when the CircleCI deploy job had not started yet
+#   and the previous run did not fail (otherwise the environment already shows
+#   this push, or a change nobody accepted).
+# compare-after-deploy: waits for the deploy, then compares against the newest
+#   kept baseline. So a failure repeats until the change is fixed, or accepted
+#   with a manual run in mode "baseline". With no baseline at all it captures
+#   one instead. A failure is only a warning when a newer push started
+#   deploying during the comparison.
 #
 # Required repository secrets: SILTA_BASICAUTH_USER, SILTA_BASICAUTH_PASS
 
@@ -15,7 +25,7 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "compare = against the latest baseline, baseline = capture a new one"
+        description: "compare = against the latest baseline, baseline = accept the current look as baseline"
         type: choice
         default: compare
         options: [compare, baseline]
@@ -27,6 +37,12 @@ env:
   # [TESTING] Feature environment:
   TEST_BASE_URL: "https://feature-mid-73-playwright-visual.drupal-project.dev.wdr.io"
   BASELINE_NAME: "visual-regression-baseline-feature-mid-73"
+  # CircleCI job that deploys the branch (.circleci/config.yml).
+  DEPLOY_JOB: ${{ github.ref_name == 'main' && 'deploy-main' || 'deploy' }}
+  CI: "true"
+  TEST_HTTP_USER: ${{ secrets.SILTA_BASICAUTH_USER }}
+  TEST_HTTP_PASS: ${{ secrets.SILTA_BASICAUTH_PASS }}
+  GH_TOKEN: ${{ github.token }}
 
 permissions:
   contents: read
@@ -34,73 +50,131 @@ permissions:
   checks: read
   statuses: write
 
+# One run per branch at a time, never cancelled: the environment is shared
+# between pushes, and a cancelled run would leave its change uncompared.
 concurrency:
   group: visual-regression-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
-  visual-regression:
+  capture-baseline:
+    if: github.event_name == 'push' || inputs.mode == 'baseline'
     # Pinned so baseline and comparison render with the same fonts.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    outputs:
+      # Only set in mode "baseline", where this job gives the result.
+      state: ${{ steps.outcome.outputs.state }}
+      message: ${{ steps.outcome.outputs.message }}
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: ./.github/actions/setup-visual
+
+      - name: Wait for environment
+        id: reachable
+        run: |
+          if .github/scripts/wait-for-url.sh "$TEST_BASE_URL/"; then
+            echo "reachable=true" >> "$GITHUB_OUTPUT"
+          elif [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            echo "::notice::Environment not reachable (asleep or not created yet), the comparison uses the previous baseline."
+          else
+            exit 1
+          fi
+
+      - name: Capture screenshots
+        id: capture
+        if: steps.reachable.outputs.reachable == 'true'
+        # On push a failed capture falls back to the previous baseline.
+        continue-on-error: ${{ github.event_name == 'push' }}
+        run: npm run test:visual:update
+
+      - name: Check baseline is usable
+        id: usable
+        if: steps.capture.outcome == 'success'
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            DEPLOY=$(.github/scripts/circleci-job-state.sh "$GITHUB_REPOSITORY" "$GITHUB_SHA" "$DEPLOY_JOB")
+            if [ "$DEPLOY" != "missing" ] && [ "$DEPLOY" != "pending" ]; then
+              echo "::notice::CircleCI job '$DEPLOY_JOB' is '$DEPLOY', so the screenshots may already show this push. The comparison uses the previous baseline."
+              exit 0
+            fi
+            # After a failed run the environment still shows the unaccepted change.
+            RUNS="repos/$GITHUB_REPOSITORY/actions/workflows/visual-regression.yml/runs?branch=$GITHUB_REF_NAME&per_page=1"
+            LAST_FAILURE=$(gh api "$RUNS&status=failure" --jq '.workflow_runs[0].id // 0')
+            LAST_SUCCESS=$(gh api "$RUNS&status=success" --jq '.workflow_runs[0].id // 0')
+            if [ "$LAST_FAILURE" -gt "$LAST_SUCCESS" ]; then
+              echo "::notice::The previous run failed, so the comparison uses the last kept baseline. To accept the current look, run the workflow with mode \"baseline\"."
+              exit 0
+            fi
+          fi
+          echo "usable=true" >> "$GITHUB_OUTPUT"
+
+      - name: Upload baseline
+        if: steps.usable.outputs.usable == 'true'
+        uses: actions/upload-artifact@v6
+        with:
+          name: ${{ env.BASELINE_NAME }}
+          path: tests/__screenshots__/
+          retention-days: 90
+
+      - name: Set outcome
+        id: outcome
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          echo "state=success" >> "$GITHUB_OUTPUT"
+          echo "message=✅ Baseline accepted" >> "$GITHUB_OUTPUT"
+
+  compare-after-deploy:
+    needs: [capture-baseline]
+    # Also runs when capture-baseline was skipped (manual "compare") or failed.
+    if: ${{ !cancelled() && (github.event_name == 'push' || inputs.mode == 'compare') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     outputs:
       state: ${{ steps.outcome.outputs.state }}
       message: ${{ steps.outcome.outputs.message }}
-    env:
-      CI: "true"
-      TEST_HTTP_USER: ${{ secrets.SILTA_BASICAUTH_USER }}
-      TEST_HTTP_PASS: ${{ secrets.SILTA_BASICAUTH_PASS }}
-      GH_TOKEN: ${{ github.token }}
 
     steps:
-      # Fail in seconds instead of after the CircleCI wait.
-      - name: Check secrets
-        run: |
-          if [ -z "$TEST_HTTP_USER" ] || [ -z "$TEST_HTTP_PASS" ]; then
-            echo "::error::Repository secrets SILTA_BASICAUTH_USER / SILTA_BASICAUTH_PASS are not set."
-            exit 1
-          fi
-
       - uses: actions/checkout@v5
+
+      - uses: ./.github/actions/setup-visual
 
       - name: Wait for CircleCI deploy
         if: github.event_name == 'push'
-        run: .github/scripts/wait-for-circleci.sh "${{ github.repository }}" "${{ github.sha }}"
+        run: |
+          .github/scripts/wait-for-circleci.sh "$GITHUB_REPOSITORY" "$GITHUB_SHA"
+          # CircleCI passed, so the deploy job must read as success. Otherwise
+          # capture-baseline can no longer tell when a deploy starts.
+          DEPLOY=$(.github/scripts/circleci-job-state.sh "$GITHUB_REPOSITORY" "$GITHUB_SHA" "$DEPLOY_JOB")
+          if [ "$DEPLOY" != "success" ] && [ "$DEPLOY" != "unknown" ]; then
+            echo "::warning::CircleCI passed but job '$DEPLOY_JOB' is '$DEPLOY'. Check DEPLOY_JOB in this workflow."
+          fi
 
       - name: Wait for environment
         run: .github/scripts/wait-for-url.sh "$TEST_BASE_URL/"
 
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-          cache: "npm"
-
-      - name: Install dependencies
-        run: |
-          npm ci
-          npx playwright install --with-deps chromium
-
-      # Newest non-expired baseline artifact; none (or manual "baseline") = capture.
+      # Newest non-expired baseline: this run's own when capture-baseline kept
+      # it, otherwise the last one kept before.
       - name: Find baseline
         id: baseline
-        env:
-          MODE: ${{ inputs.mode }}
         run: |
-          RUN_ID=$(gh api "repos/${{ github.repository }}/actions/artifacts?name=$BASELINE_NAME&per_page=50" \
-            --jq '[.artifacts[] | select(.expired == false)][0].workflow_run.id // empty')
-          if [ "$MODE" != "baseline" ] && [ -n "$RUN_ID" ]; then
-            echo "Comparing against baseline from run $RUN_ID."
+          RUN_ID=$(gh api --paginate "repos/$GITHUB_REPOSITORY/actions/artifacts?name=$BASELINE_NAME&per_page=100" \
+            | jq -rs '[.[].artifacts[] | select(.expired | not)] | max_by(.created_at) | .workflow_run.id // empty')
+          if [ -n "$RUN_ID" ]; then
+            echo "Comparing against the baseline from run $RUN_ID."
             echo "run_id=$RUN_ID" >> "$GITHUB_OUTPUT"
           fi
 
-      # --- Baseline -----------------------------------------------------------
-      - name: Capture baseline
-        id: capture
+      # --- No baseline yet (first run, or expired): capture one ---------------
+      - name: Capture initial baseline
+        id: initial
         if: steps.baseline.outputs.run_id == ''
         run: npm run test:visual:update
 
-      - name: Upload baseline
-        if: steps.capture.outcome == 'success'
+      - name: Upload initial baseline
+        if: steps.initial.outcome == 'success'
         uses: actions/upload-artifact@v6
         with:
           name: ${{ env.BASELINE_NAME }}
@@ -120,9 +194,25 @@ jobs:
       - name: Compare with baseline
         id: compare
         if: steps.baseline.outputs.run_id != ''
+        # The result is decided in "Set outcome" below.
+        continue-on-error: true
         run: npm run test:visual
 
-      # --- Report -------------------------------------------------------------
+      # The environment is shared: once a newer push starts deploying, the
+      # screenshots may show that push instead of this one.
+      - name: Check for newer deploys
+        id: superseded
+        if: github.event_name == 'push' && steps.compare.outcome == 'failure'
+        run: |
+          for SHA in $(gh api "repos/$GITHUB_REPOSITORY/compare/$GITHUB_SHA...$GITHUB_REF_NAME" --jq '.commits[].sha'); do
+            DEPLOY=$(.github/scripts/circleci-job-state.sh "$GITHUB_REPOSITORY" "$SHA" "$DEPLOY_JOB")
+            if [ "$DEPLOY" != "missing" ] && [ "$DEPLOY" != "pending" ]; then
+              echo "::warning::Newer commit $SHA started deploying (status: $DEPLOY) during the comparison, its own run compares instead."
+              echo "superseded=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          done
+
       - name: Upload report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v6
@@ -132,48 +222,56 @@ jobs:
             playwright-report/
             test-results/
           retention-days: 30
+          if-no-files-found: ignore
 
       # Single place that maps the result to a commit status state + message.
       - name: Set outcome
         id: outcome
         if: ${{ !cancelled() }}
         run: |
-          case "${{ steps.capture.outcome }}:${{ steps.compare.outcome }}" in
-            success:*) STATE=pending MESSAGE="⚠️ Baseline captured, not compared" ;;
-            *:success) STATE=success MESSAGE="✅ No visual changes" ;;
-            *:failure) STATE=failure MESSAGE="❌ Visual changes detected" ;;
-            *)         STATE=error   MESSAGE="❌ Workflow error" ;;
+          case "${{ steps.initial.outcome }}:${{ steps.compare.outcome }}:${{ steps.superseded.outputs.superseded }}" in
+            success:*)      STATE=pending MESSAGE="⚠️ Baseline captured, not compared" ;;
+            *:success:*)    STATE=success MESSAGE="✅ No visual changes" ;;
+            *:failure:true) STATE=pending MESSAGE="⚠️ Newer deploy during comparison, not reliable" ;;
+            *:failure:*)    STATE=failure MESSAGE="❌ Visual changes detected" ;;
+            *)              STATE=error   MESSAGE="❌ Workflow error" ;;
           esac
           echo "state=$STATE" >> "$GITHUB_OUTPUT"
           echo "message=$MESSAGE" >> "$GITHUB_OUTPUT"
 
-      # Commit status on the commit / PR; "pending" shows as yellow.
-      - name: Report commit status
-        if: ${{ !cancelled() }}
+      - name: Fail on visual changes
+        if: steps.outcome.outputs.state == 'failure'
         run: |
-          gh api -X POST "repos/${{ github.repository }}/statuses/${{ github.sha }}" \
-            -f context="visual-regression" \
-            -f state="${{ steps.outcome.outputs.state }}" \
-            -f description="${{ steps.outcome.outputs.message }}" \
-            -f target_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
-            > /dev/null
+          echo "::error::Visual changes detected, see the visual-regression-report artifact. Fix them, or accept them by running the workflow with mode \"baseline\"."
+          exit 1
 
   # GitHub has no "warning" run state, so the job name carries the result.
   result:
-    name: "Result: ${{ needs.visual-regression.outputs.message || '❌ Workflow error' }}"
-    needs: [visual-regression]
-    if: always()
+    name: "Result: ${{ needs.compare-after-deploy.outputs.message || needs.capture-baseline.outputs.message || '❌ Workflow error' }}"
+    needs: [capture-baseline, compare-after-deploy]
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
+    env:
+      STATE: ${{ needs.compare-after-deploy.outputs.state || needs.capture-baseline.outputs.state || 'error' }}
+      MESSAGE: ${{ needs.compare-after-deploy.outputs.message || needs.capture-baseline.outputs.message || '❌ Workflow error' }}
+
     steps:
+      # Commit status on the commit / PR; "pending" shows as yellow.
+      - name: Report commit status
+        run: |
+          gh api -X POST "repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" \
+            -f context="visual-regression" \
+            -f state="$STATE" \
+            -f description="$MESSAGE" \
+            -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
+            > /dev/null
+
       - name: Summarize
-        env:
-          STATE: ${{ needs.visual-regression.outputs.state }}
-          MESSAGE: ${{ needs.visual-regression.outputs.message || '❌ Workflow error' }}
         run: |
           echo "### Visual regression: $MESSAGE" >> "$GITHUB_STEP_SUMMARY"
           case "$STATE" in
             success) echo "$MESSAGE" ;;
-            pending) echo "::warning::$MESSAGE. The next run compares against it." ;;
+            pending) echo "::warning::$MESSAGE. See the compare-after-deploy job for details." ;;
             failure) echo "::error::$MESSAGE. See the visual-regression-report artifact."; exit 1 ;;
-            *)       echo "::error::$MESSAGE. Check the visual-regression job log."; exit 1 ;;
+            *)       echo "::error::$MESSAGE. Check the capture-baseline and compare-after-deploy job logs."; exit 1 ;;
           esac
