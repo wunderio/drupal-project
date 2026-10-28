@@ -4,7 +4,8 @@
 # CircleCI (GitHub App) reports the whole workflow as one check run named
 # "commit". Its summary lists each job and its state, either as a list
 # ("* [deploy](url) - Success", "* deploy - Blocked") or as a table
-# ("| ✅ Success | [deploy](url) | 5m |").
+# ("| ✅ Success | [deploy](url) | 5m |", "| ○ Blocked | deploy | - |").
+# Jobs that have not started have no link.
 #
 # Prints one of:
 #   missing  no CircleCI workflow for the commit yet
@@ -34,7 +35,7 @@ if [ "$SUMMARY" = "MISSING" ]; then
 fi
 
 # The job's line, without link targets so URLs can't match a state word.
-LINE=$(grep -F -e "[$JOB]" -e "* $JOB -" <<<"$SUMMARY" | head -n 1 | sed 's/([^)]*)//g' || true)
+LINE=$(grep -F -e "[$JOB]" -e "* $JOB -" -e "| $JOB |" <<<"$SUMMARY" | head -n 1 | sed 's/([^)]*)//g' || true)
 WORD=$(grep -o -i -E 'not running|not run|on hold|blocked|queued|running|success|failed|cancell?ed|skipped|error' <<<"$LINE" | head -n 1 | tr '[:upper:]' '[:lower:]' || true)
 
 case "$WORD" in
@@ -46,7 +47,8 @@ case "$WORD" in
     MESSAGE="Could not read the state of CircleCI job '$JOB' for $SHA. Either the job name is wrong or CircleCI changed its check run summary format; update .github/scripts/circleci-job-state.sh. Until then the pre-deploy baseline check can't tell when the deploy starts."
     echo "::warning::$MESSAGE" >&2
     if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
-      echo "⚠️ $MESSAGE" >>"$GITHUB_STEP_SUMMARY"
+      printf '⚠️ %s\n\n<details><summary>CircleCI check run summary</summary>\n\n%s\n\n</details>\n' \
+        "$MESSAGE" "${SUMMARY:-(empty)}" >>"$GITHUB_STEP_SUMMARY"
     fi
     echo "unknown"
     ;;

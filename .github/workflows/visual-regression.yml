@@ -1,4 +1,4 @@
-name: Visual Regression
+name: "Playwright: Visual regression tests"
 
 # Screenshots the Silta environment before and after CircleCI deploys a push
 # and fails when the deploy changed how the pages look
@@ -14,35 +14,48 @@ name: Visual Regression
 #   one instead. A failure is only a warning when a newer push started
 #   deploying during the comparison.
 #
-# Called by playwright.yml, which sets the environment, the branch and the
-# manual run mode. Required repository secrets: SILTA_BASICAUTH_USER,
-# SILTA_BASICAUTH_PASS
+# Required repository secrets: SILTA_BASICAUTH_USER, SILTA_BASICAUTH_PASS
 
 on:
-  workflow_call:
+  push:
+    branches:
+      # - main
+      # [FEATURE BRANCH]
+      - feature/MID-73-playwright-visual
+  # Manual run (available once this file is on the default branch).
+  workflow_dispatch:
     inputs:
       mode:
         description: "compare = against the latest baseline, baseline = accept the current look as baseline"
-        type: string
+        type: choice
         default: compare
-      base-url:
-        description: "Silta environment to test"
-        type: string
-        required: true
-      baseline-name:
-        description: "Artifact name of the baseline, one per environment"
-        type: string
-        required: true
+        options: [compare, baseline]
 
 env:
-  TEST_BASE_URL: ${{ inputs.base-url }}
-  BASELINE_NAME: ${{ inputs.baseline-name }}
+  # Main environment, enable after testing (and the `main` branch above):
+  # TEST_BASE_URL: "https://main.drupal-project.dev.wdr.io"
+  # BASELINE_NAME: "visual-regression-baseline-main"
+  # [FEATURE BRANCH] Feature environment:
+  TEST_BASE_URL: "https://feature-mid-73-playwright-visual.drupal-project.dev.wdr.io"
+  BASELINE_NAME: "visual-regression-baseline-feature-mid-73"
   # CircleCI job that deploys the branch (.circleci/config.yml).
   DEPLOY_JOB: ${{ github.ref_name == 'main' && 'deploy-main' || 'deploy' }}
   CI: "true"
   TEST_HTTP_USER: ${{ secrets.SILTA_BASICAUTH_USER }}
   TEST_HTTP_PASS: ${{ secrets.SILTA_BASICAUTH_PASS }}
   GH_TOKEN: ${{ github.token }}
+
+permissions:
+  contents: read
+  actions: read
+  checks: read
+  statuses: write
+
+# One run per branch at a time, never cancelled: the environment is shared
+# between pushes, and a cancelled run would leave its change uncompared.
+concurrency:
+  group: visual-regression-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   capture-baseline:
@@ -93,7 +106,7 @@ jobs:
             read -r FAILED_AT _ <<< "$(.github/scripts/latest-artifact.sh "$GITHUB_REPOSITORY" "$BASELINE_NAME-failed")"
             read -r PASSED_AT _ <<< "$(.github/scripts/latest-artifact.sh "$GITHUB_REPOSITORY" "$BASELINE_NAME-passed")"
             if [[ "${FAILED_AT:-}" > "${PASSED_AT:-}" ]]; then
-              echo "::notice::The previous run failed, so the comparison uses the last kept baseline. To accept the current look, run the Playwright Tests workflow with mode \"baseline\"."
+              echo "::notice::The previous run failed, so the comparison uses the last kept baseline. To accept the current look, run this workflow with mode \"baseline\"."
               exit 0
             fi
           fi
@@ -229,7 +242,7 @@ jobs:
       - name: Fail on visual changes
         if: steps.outcome.outputs.state == 'failure'
         run: |
-          echo "::error::Visual changes detected, see the visual-regression-report artifact. Fix them, or accept them by running the Playwright Tests workflow with mode \"baseline\"."
+          echo "::error::Visual changes detected, see the visual-regression-report artifact. Fix them, or accept them by running this workflow with mode \"baseline\"."
           exit 1
 
   # GitHub has no "warning" run state, so the job name carries the result.
@@ -237,7 +250,7 @@ jobs:
     name: "Result: ${{ needs.compare-after-deploy.outputs.message || needs.capture-baseline.outputs.message || '❌ Workflow error' }}"
     needs: [capture-baseline, compare-after-deploy]
     if: ${{ !cancelled() }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       STATE: ${{ needs.compare-after-deploy.outputs.state || needs.capture-baseline.outputs.state || 'error' }}
       MESSAGE: ${{ needs.compare-after-deploy.outputs.message || needs.capture-baseline.outputs.message || '❌ Workflow error' }}
