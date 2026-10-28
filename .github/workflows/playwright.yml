@@ -1,12 +1,29 @@
 name: Playwright Tests
 
+# End-to-end: installs Drupal in DDEV and runs the e2e specs (chromium).
+# Visual regression: screenshots the Silta environment before and after the
+#   CircleCI deploy, see visual-regression.yml.
+
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      # [FEATURE BRANCH] Branch whose environment the visual regression tests:
+      - feature/MID-73-playwright-visual
   pull_request:
+  # Manual visual regression run (available once this file is on the default branch).
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Visual regression: compare = against the latest baseline, baseline = accept the current look as baseline"
+        type: choice
+        default: compare
+        options: [compare, baseline]
 
 jobs:
-  playwright:
+  e2e:
+    name: End-to-end
+    if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref_name == 'main')
     runs-on: ubuntu-latest
 
     steps:
@@ -29,3 +46,30 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
+
+  visual:
+    name: Visual regression
+    # Main environment, enable after testing (and `main` is already in on.push):
+    # if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref_name == 'main')
+    # [FEATURE BRANCH] Feature environment:
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref_name == 'feature/MID-73-playwright-visual')
+    uses: ./.github/workflows/visual-regression.yml
+    with:
+      mode: ${{ inputs.mode || 'compare' }}
+      # Main environment, enable after testing:
+      # base-url: "https://main.drupal-project.dev.wdr.io"
+      # baseline-name: "visual-regression-baseline-main"
+      # [FEATURE BRANCH] Feature environment:
+      base-url: "https://feature-mid-73-playwright-visual.drupal-project.dev.wdr.io"
+      baseline-name: "visual-regression-baseline-feature-mid-73"
+    secrets: inherit
+    permissions:
+      contents: read
+      actions: read
+      checks: read
+      statuses: write
+    # One visual run per branch at a time, never cancelled: the environment is
+    # shared between pushes, and a cancelled run would leave its change uncompared.
+    concurrency:
+      group: visual-regression-${{ github.ref }}
+      cancel-in-progress: false

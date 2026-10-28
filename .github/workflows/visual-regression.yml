@@ -14,47 +14,35 @@ name: Visual Regression
 #   one instead. A failure is only a warning when a newer push started
 #   deploying during the comparison.
 #
-# Required repository secrets: SILTA_BASICAUTH_USER, SILTA_BASICAUTH_PASS
+# Called by playwright.yml, which sets the environment, the branch and the
+# manual run mode. Required repository secrets: SILTA_BASICAUTH_USER,
+# SILTA_BASICAUTH_PASS
 
 on:
-  push:
-    branches:
-      # - main
-      - feature/MID-73-playwright-visual
-  # Manual run (available once this file is on the default branch).
-  workflow_dispatch:
+  workflow_call:
     inputs:
       mode:
         description: "compare = against the latest baseline, baseline = accept the current look as baseline"
-        type: choice
+        type: string
         default: compare
-        options: [compare, baseline]
+      base-url:
+        description: "Silta environment to test"
+        type: string
+        required: true
+      baseline-name:
+        description: "Artifact name of the baseline, one per environment"
+        type: string
+        required: true
 
 env:
-  # Main environment, enable after testing (and the `main` branch above):
-  # TEST_BASE_URL: "https://main.drupal-project.dev.wdr.io"
-  # BASELINE_NAME: "visual-regression-baseline-main"
-  # [TESTING] Feature environment:
-  TEST_BASE_URL: "https://feature-mid-73-playwright-visual.drupal-project.dev.wdr.io"
-  BASELINE_NAME: "visual-regression-baseline-feature-mid-73"
+  TEST_BASE_URL: ${{ inputs.base-url }}
+  BASELINE_NAME: ${{ inputs.baseline-name }}
   # CircleCI job that deploys the branch (.circleci/config.yml).
   DEPLOY_JOB: ${{ github.ref_name == 'main' && 'deploy-main' || 'deploy' }}
   CI: "true"
   TEST_HTTP_USER: ${{ secrets.SILTA_BASICAUTH_USER }}
   TEST_HTTP_PASS: ${{ secrets.SILTA_BASICAUTH_PASS }}
   GH_TOKEN: ${{ github.token }}
-
-permissions:
-  contents: read
-  actions: read
-  checks: read
-  statuses: write
-
-# One run per branch at a time, never cancelled: the environment is shared
-# between pushes, and a cancelled run would leave its change uncompared.
-concurrency:
-  group: visual-regression-${{ github.ref }}
-  cancel-in-progress: false
 
 jobs:
   capture-baseline:
@@ -100,12 +88,12 @@ jobs:
               echo "::notice::CircleCI job '$DEPLOY_JOB' is '$DEPLOY', so the screenshots may already show this push. The comparison uses the previous baseline."
               exit 0
             fi
-            # After a failed run the environment still shows the unaccepted change.
-            RUNS="repos/$GITHUB_REPOSITORY/actions/workflows/visual-regression.yml/runs?branch=$GITHUB_REF_NAME&per_page=1"
-            LAST_FAILURE=$(gh api "$RUNS&status=failure" --jq '.workflow_runs[0].id // 0')
-            LAST_SUCCESS=$(gh api "$RUNS&status=success" --jq '.workflow_runs[0].id // 0')
-            if [ "$LAST_FAILURE" -gt "$LAST_SUCCESS" ]; then
-              echo "::notice::The previous run failed, so the comparison uses the last kept baseline. To accept the current look, run the workflow with mode \"baseline\"."
+            # After a failed run the environment still shows the unaccepted
+            # change. Results are recorded by the result job below.
+            read -r FAILED_AT _ <<< "$(.github/scripts/latest-artifact.sh "$GITHUB_REPOSITORY" "$BASELINE_NAME-failed")"
+            read -r PASSED_AT _ <<< "$(.github/scripts/latest-artifact.sh "$GITHUB_REPOSITORY" "$BASELINE_NAME-passed")"
+            if [[ "${FAILED_AT:-}" > "${PASSED_AT:-}" ]]; then
+              echo "::notice::The previous run failed, so the comparison uses the last kept baseline. To accept the current look, run the Playwright Tests workflow with mode \"baseline\"."
               exit 0
             fi
           fi
@@ -149,7 +137,7 @@ jobs:
           # capture-baseline can no longer tell when a deploy starts.
           DEPLOY=$(.github/scripts/circleci-job-state.sh "$GITHUB_REPOSITORY" "$GITHUB_SHA" "$DEPLOY_JOB")
           if [ "$DEPLOY" != "success" ] && [ "$DEPLOY" != "unknown" ]; then
-            echo "::warning::CircleCI passed but job '$DEPLOY_JOB' is '$DEPLOY'. Check DEPLOY_JOB in this workflow."
+            echo "::warning::CircleCI passed but job '$DEPLOY_JOB' is '$DEPLOY'. Check DEPLOY_JOB in visual-regression.yml."
           fi
 
       - name: Wait for environment
@@ -160,9 +148,8 @@ jobs:
       - name: Find baseline
         id: baseline
         run: |
-          RUN_ID=$(gh api --paginate "repos/$GITHUB_REPOSITORY/actions/artifacts?name=$BASELINE_NAME&per_page=100" \
-            | jq -rs '[.[].artifacts[] | select(.expired | not)] | max_by(.created_at) | .workflow_run.id // empty')
-          if [ -n "$RUN_ID" ]; then
+          read -r _ RUN_ID <<< "$(.github/scripts/latest-artifact.sh "$GITHUB_REPOSITORY" "$BASELINE_NAME")"
+          if [ -n "${RUN_ID:-}" ]; then
             echo "Comparing against the baseline from run $RUN_ID."
             echo "run_id=$RUN_ID" >> "$GITHUB_OUTPUT"
           fi
@@ -242,7 +229,7 @@ jobs:
       - name: Fail on visual changes
         if: steps.outcome.outputs.state == 'failure'
         run: |
-          echo "::error::Visual changes detected, see the visual-regression-report artifact. Fix them, or accept them by running the workflow with mode \"baseline\"."
+          echo "::error::Visual changes detected, see the visual-regression-report artifact. Fix them, or accept them by running the Playwright Tests workflow with mode \"baseline\"."
           exit 1
 
   # GitHub has no "warning" run state, so the job name carries the result.
@@ -265,6 +252,20 @@ jobs:
             -f description="$MESSAGE" \
             -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
             > /dev/null
+
+      # Read by capture-baseline of the next run: after a failure the
+      # environment shows a change nobody accepted yet.
+      - name: Record result
+        if: env.STATE != 'error'
+        run: echo "$STATE" > visual-regression-result.txt
+
+      - name: Upload result
+        if: env.STATE != 'error'
+        uses: actions/upload-artifact@v6
+        with:
+          name: ${{ env.BASELINE_NAME }}-${{ env.STATE == 'failure' && 'failed' || 'passed' }}
+          path: visual-regression-result.txt
+          retention-days: 90
 
       - name: Summarize
         run: |
