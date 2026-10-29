@@ -240,12 +240,11 @@ jobs:
           echo "state=$STATE" >> "$GITHUB_OUTPUT"
           echo "message=$MESSAGE" >> "$GITHUB_OUTPUT"
 
-      # One self-contained page (images embedded) that opens in the browser.
+      # The Playwright HTML report as one file (attachments embedded), so it
+      # opens in the browser like `npx playwright show-report`.
       - name: Build HTML report
-        if: ${{ !cancelled() && (steps.compare.outcome != 'skipped' || steps.initial.outcome == 'success') }}
-        env:
-          MESSAGE: ${{ steps.outcome.outputs.message }}
-        run: node .github/scripts/visual-report.mjs "$MESSAGE" visual-regression-report.html
+        if: ${{ !cancelled() && hashFiles('playwright-report/index.html') != '' }}
+        run: node .github/scripts/visual-report.mjs playwright-report visual-regression-report.html
 
       # Unzipped (archive: false), so the artifact link opens the page directly.
       - name: Upload HTML report

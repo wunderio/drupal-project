@@ -1,11 +1,18 @@
 #!/usr/bin/env node
-// Build a single-file HTML report of a visual regression run: expected /
-// actual / diff for each changed page (from test-results/), plus the baseline
-// screenshots (from tests/__screenshots__/). Images are embedded, so the file
-// can be uploaded as an unzipped artifact and opened straight in the browser.
+// Turn the Playwright HTML report (playwright-report/: index.html + data/)
+// into one self-contained file, so it can be uploaded as an unzipped artifact
+// and opened straight in the browser, looking the same as
+// `npx playwright show-report` (Diff / Actual / Expected / Side by side /
+// Slider).
+//
+// index.html already embeds the test data as a base64 zip of JSON files; only
+// the attachments (screenshots, error context) live in data/. This rewrites
+// every "data/<file>" reference in that zip to a data: URI. Traces are not
+// inlined, they stay in the zipped visual-regression-report artifact.
+//
 // Also lists the changed pages in $GITHUB_STEP_SUMMARY when set.
 //
-// Usage: node visual-report.mjs <title> <out.html>
+// Usage: node visual-report.mjs <report-dir> <out.html>
 import {
   appendFileSync,
   existsSync,
@@ -13,170 +20,128 @@ import {
   readFileSync,
   writeFileSync,
 } from 'node:fs';
-import { join } from 'node:path';
+import { extname, join } from 'node:path';
+import { crc32, deflateRawSync, inflateRawSync } from 'node:zlib';
 
-const [title = 'Visual regression', out = 'visual-regression-report.html'] =
+const [dir = 'playwright-report', out = 'visual-regression-report.html'] =
   process.argv.slice(2);
-const RESULTS = 'test-results';
-const BASELINES = 'tests/__screenshots__';
-const {
-  GITHUB_SERVER_URL,
-  GITHUB_REPOSITORY,
-  GITHUB_RUN_ID,
-  GITHUB_REF_NAME,
-  GITHUB_SHA,
-  GITHUB_STEP_SUMMARY,
-} = process.env;
+const DATA = join(dir, 'data');
+const TYPES = {
+  '.png': 'image/png',
+  '.jpeg': 'image/jpeg',
+  '.jpg': 'image/jpeg',
+  '.webm': 'video/webm',
+  '.md': 'text/markdown',
+  '.txt': 'text/plain',
+  '.json': 'application/json',
+};
+const MARKER =
+  /(<template id="playwrightReportBase64">data:application\/zip;base64,)([^<]*)(<\/template>)/;
 
-const dirs = (path) =>
-  existsSync(path)
-    ? readdirSync(path, { withFileTypes: true })
-        .filter((e) => e.isDirectory())
-        .map((e) => e.name)
-    : [];
-const pngs = (path) =>
-  readdirSync(path)
-    .filter((f) => f.endsWith('.png'))
-    .sort();
-const img = (path) =>
-  `data:image/png;base64,${readFileSync(path).toString('base64')}`;
-const escape = (text) =>
-  String(text).replace(/[&<>"]/g, (c) => `&#${c.charCodeAt(0)};`);
-
-// Changed pages, one per test folder; with retries only the last attempt counts.
-// Folder names end with the project, e.g. "...-homepage-visual-desktop-retry2".
-const attempts = new Map();
-for (const dir of dirs(RESULTS)) {
-  const [, base, retry = 0] = dir.match(/^(.*?)(?:-retry(\d+))?$/);
-  if (!attempts.has(base) || Number(retry) > attempts.get(base).retry) {
-    attempts.set(base, { dir, retry: Number(retry) });
+// Minimal zip reader/writer (central directory, deflate), enough for the
+// report's own zip.
+const unzip = (zip) => {
+  const end = zip.lastIndexOf(Buffer.from([0x50, 0x4b, 0x05, 0x06]));
+  const count = zip.readUInt16LE(end + 10);
+  let pos = zip.readUInt32LE(end + 16);
+  const entries = [];
+  for (let i = 0; i < count; i++) {
+    const method = zip.readUInt16LE(pos + 10);
+    const size = zip.readUInt32LE(pos + 20);
+    const nameLength = zip.readUInt16LE(pos + 28);
+    const name = zip.toString('utf8', pos + 46, pos + 46 + nameLength);
+    const local = zip.readUInt32LE(pos + 42);
+    const start =
+      local + 30 + zip.readUInt16LE(local + 26) + zip.readUInt16LE(local + 28);
+    const raw = zip.subarray(start, start + size);
+    entries.push({ name, data: method === 8 ? inflateRawSync(raw) : raw });
+    pos +=
+      46 + nameLength + zip.readUInt16LE(pos + 30) + zip.readUInt16LE(pos + 32);
   }
+  return entries;
+};
+
+const zip = (entries) => {
+  const locals = [];
+  const centrals = [];
+  let offset = 0;
+  for (const { name, data } of entries) {
+    const file = Buffer.from(name);
+    const packed = deflateRawSync(data);
+    const header = Buffer.alloc(30);
+    header.writeUInt32LE(0x04034b50, 0);
+    header.writeUInt16LE(20, 4);
+    header.writeUInt16LE(0x0800, 6); // UTF-8 names
+    header.writeUInt16LE(8, 8); // deflate
+    header.writeUInt32LE(crc32(data), 14);
+    header.writeUInt32LE(packed.length, 18);
+    header.writeUInt32LE(data.length, 22);
+    header.writeUInt16LE(file.length, 26);
+    const central = Buffer.alloc(46);
+    central.writeUInt32LE(0x02014b50, 0);
+    central.writeUInt16LE(20, 4);
+    header.copy(central, 6, 4, 30); // same fields from version to name length
+    central.writeUInt32LE(offset, 42);
+    locals.push(header, file, packed);
+    centrals.push(central, file);
+    offset += header.length + file.length + packed.length;
+  }
+  const directory = Buffer.concat(centrals);
+  const end = Buffer.alloc(22);
+  end.writeUInt32LE(0x06054b50, 0);
+  end.writeUInt16LE(entries.length, 8);
+  end.writeUInt16LE(entries.length, 10);
+  end.writeUInt32LE(directory.length, 12);
+  end.writeUInt32LE(offset, 16);
+  return Buffer.concat([...locals, directory, end]);
+};
+
+const html = readFileSync(join(dir, 'index.html'), 'utf8');
+const match = html.match(MARKER);
+if (!match) {
+  console.error(
+    `No embedded report data in ${dir}/index.html; did the Playwright HTML report format change?`,
+  );
+  process.exit(1);
 }
-const changes = [...attempts.values()].flatMap(({ dir }) => {
-  const project = dir.match(/(visual-[a-z0-9]+)(?:-retry\d+)?$/)?.[1] ?? dir;
-  return pngs(join(RESULTS, dir))
-    .filter((f) => f.endsWith('-diff.png'))
-    .map((diff) => {
-      const name = diff.replace(/-diff\.png$/, '');
-      const file = (kind) => join(RESULTS, dir, `${name}-${kind}.png`);
-      return {
-        name,
-        project,
-        expected: file('expected'),
-        actual: file('actual'),
-        diff: file('diff'),
-      };
-    });
+
+const uris = new Map(
+  (existsSync(DATA) ? readdirSync(DATA) : []).map((file) => [
+    `data/${file}`,
+    `data:${
+      TYPES[extname(file)] ?? 'application/octet-stream'
+    };base64,${readFileSync(join(DATA, file)).toString('base64')}`,
+  ]),
+);
+const changes = [];
+const entries = unzip(Buffer.from(match[2], 'base64')).map(({ name, data }) => {
+  if (!name.endsWith('.json')) return { name, data };
+  const json = JSON.parse(data.toString('utf8'), (key, value) =>
+    key === 'path' && uris.has(value) ? uris.get(value) : value,
+  );
+  for (const test of json.tests ?? []) {
+    const last = test.results?.at(-1);
+    if (last?.attachments?.some((a) => a.name.endsWith('-diff.png'))) {
+      changes.push(`- ${test.title} (${test.projectName})`);
+    }
+  }
+  return { name, data: Buffer.from(JSON.stringify(json)) };
 });
-
-const figure = (label, path) =>
-  existsSync(path)
-    ? `<figure><figcaption>${label}</figcaption><img src="${img(
-        path,
-      )}" alt="${label}"></figure>`
-    : '';
-
-const changeCards = changes
-  .map(
-    (c, i) => `
-  <section class="card">
-    <input type="checkbox" id="wide-${i}" class="wide">
-    <h3>${escape(c.name)} <span>${escape(
-      c.project,
-    )}</span> <label for="wide-${i}">Toggle full width</label></h3>
-    <div class="images">${figure('Expected', c.expected)}${figure(
-      'Actual',
-      c.actual,
-    )}${figure('Diff', c.diff)}</div>
-  </section>`,
-  )
-  .join('');
-
-const baselines = dirs(BASELINES)
-  .flatMap((project) =>
-    pngs(join(BASELINES, project)).map((f) => ({
-      project,
-      file: join(BASELINES, project, f),
-    })),
-  )
-  .map((b) =>
-    figure(
-      `${escape(
-        b.file
-          .split('/')
-          .pop()
-          .replace(/\.png$/, ''),
-      )} · ${escape(b.project)}`,
-      b.file,
-    ),
-  )
-  .join('');
-
-const runUrl = GITHUB_RUN_ID
-  ? `${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}`
-  : '';
-const meta = [
-  GITHUB_REF_NAME && `Branch <code>${escape(GITHUB_REF_NAME)}</code>`,
-  GITHUB_SHA && `commit <code>${escape(GITHUB_SHA.slice(0, 7))}</code>`,
-  runUrl && `<a href="${runUrl}">workflow run</a>`,
-]
-  .filter(Boolean)
-  .join(' · ');
 
 writeFileSync(
   out,
-  `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Visual regression report</title>
-<style>
-  :root { color-scheme: light dark; --bg: #fff; --fg: #1f2328; --muted: #59636e; --line: #d1d9e0; --card: #f6f8fa; }
-  @media (prefers-color-scheme: dark) { :root { --bg: #0d1117; --fg: #e6edf3; --muted: #9198a1; --line: #3d444d; --card: #151b23; } }
-  body { margin: 0; padding: 24px 16px; background: var(--bg); color: var(--fg); font: 15px/1.5 system-ui, sans-serif; }
-  main { max-width: 1600px; margin: 0 auto; }
-  h1 { margin: 0 0 4px; font-size: 24px; }
-  h2 { margin: 32px 0 12px; font-size: 18px; }
-  .meta, h3 span, figcaption { color: var(--muted); font-size: 13px; }
-  a { color: #4493f8; }
-  .card { margin: 0 0 16px; padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); }
-  h3 { display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; margin: 0 0 12px; font-size: 16px; }
-  h3 label { margin-left: auto; color: #4493f8; font-size: 13px; font-weight: normal; cursor: pointer; }
-  .wide { display: none; }
-  .images { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; align-items: start; }
-  .wide:checked ~ .images { grid-template-columns: minmax(0, 1fr); }
-  .baselines { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-top: 12px; }
-  figure { margin: 0; }
-  img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 4px; }
-  summary { cursor: pointer; font-weight: 600; }
-  @media (max-width: 720px) { .images { grid-template-columns: minmax(0, 1fr); } }
-</style>
-</head>
-<body>
-<main>
-  <h1>${escape(title)}</h1>
-  <p class="meta">${meta}</p>
-  <h2>Changed pages (${changes.length})</h2>
-  ${changeCards || '<p>No visual changes.</p>'}
-  <details>
-    <summary>Baseline screenshots</summary>
-    <div class="baselines">${
-      baselines || '<p>No baseline screenshots.</p>'
-    }</div>
-  </details>
-</main>
-</body>
-</html>
-`,
+  html.replace(
+    MARKER,
+    (_, open, __, close) => open + zip(entries).toString('base64') + close,
+  ),
 );
 
-if (GITHUB_STEP_SUMMARY && changes.length) {
+if (process.env.GITHUB_STEP_SUMMARY && changes.length) {
   appendFileSync(
-    GITHUB_STEP_SUMMARY,
-    `Changed pages:\n${changes
-      .map((c) => `- ${c.name} (${c.project})`)
-      .join('\n')}\n`,
+    process.env.GITHUB_STEP_SUMMARY,
+    `Changed pages:\n${changes.join('\n')}\n`,
   );
 }
-console.log(`Wrote ${out}: ${changes.length} changed page(s).`);
+console.log(
+  `Wrote ${out}: ${uris.size} attachment(s) inlined, ${changes.length} changed page(s).`,
+);
