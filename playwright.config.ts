@@ -5,18 +5,26 @@ const authFile = 'playwright/.auth/user.json';
 /* Visual regression spec, only run by the visual-* projects. */
 const visualSpec = /.*visual-regression\.spec\.ts/;
 
+/*
+ * Shared by the visual-* projects. A screenshot change fails the same way every
+ * time, so no retries, and no extra failure screenshot: the expected / actual /
+ * diff images already show it. Keeps the HTML report small and quick to open.
+ */
+const visual = { testMatch: visualSpec, retries: 0 };
+const visualUse = { screenshot: 'off' as const };
+
 /* Visual regression projects are enabled by `npm run test:visual*` (VISUAL_REGRESSION=1). */
 const visualProjects = process.env.VISUAL_REGRESSION
   ? [
       {
         name: 'visual-desktop',
-        testMatch: visualSpec,
-        use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
+        ...visual,
+        use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 }, ...visualUse },
       },
       {
         name: 'visual-mobile',
-        testMatch: visualSpec,
-        use: { ...devices['Pixel 7'] },
+        ...visual,
+        use: { ...devices['Pixel 7'], ...visualUse },
       },
     ]
   : [];
