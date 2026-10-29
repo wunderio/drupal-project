@@ -22,14 +22,9 @@ jobs:
       - name: Run Playwright tests
         run: ddev exec env CI=true npx playwright test --project=chromium
 
-      - name: Publish test results
+      - name: Publish test summary
         if: always()
-        uses: mikepenz/action-junit-report@v5
-        with:
-          report_paths: playwright/test-results/junit.xml
-          check_name: Playwright test results
-          detailed_summary: true
-          include_passed: true
+        run: node .github/scripts/playwright-summary.mjs
 
       - name: Upload Playwright report
         if: always()
