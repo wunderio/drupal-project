@@ -5,7 +5,7 @@
 # Uses basic auth when TEST_HTTP_USER is set (TEST_HTTP_PASS optional).
 set -euo pipefail
 
-URL="$1"
+URL="${1:?Usage: wait-for-url.sh <url> [attempts]}"
 ATTEMPTS="${2:-30}"
 
 AUTH=()

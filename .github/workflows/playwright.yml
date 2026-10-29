@@ -29,6 +29,7 @@ jobs:
       - name: Run Playwright tests
         run: ddev exec env CI=true npx playwright test --project=chromium
 
+      # Zipped, with traces.
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v6
@@ -36,3 +37,31 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
+
+      # On the host (not in DDEV), so the script can write the job summary.
+      - uses: actions/setup-node@v6
+        if: ${{ !cancelled() && hashFiles('playwright-report/index.html') != '' }}
+        with:
+          node-version: "24"
+
+      # The Playwright HTML report as one file (attachments embedded), so it
+      # opens in the browser like `npx playwright show-report`.
+      - name: Build HTML report
+        if: ${{ !cancelled() && hashFiles('playwright-report/index.html') != '' }}
+        run: node .github/scripts/playwright-report-html.mjs playwright-report playwright-e2e-report.html
+
+      # Unzipped (archive: false), so the artifact link opens the page directly.
+      - name: Upload HTML report
+        id: html-report
+        if: ${{ !cancelled() && hashFiles('playwright-e2e-report.html') != '' }}
+        uses: actions/upload-artifact@v7
+        with:
+          path: playwright-e2e-report.html
+          archive: false
+          retention-days: 30
+
+      - name: Link HTML report
+        if: steps.html-report.outputs.artifact-url != ''
+        env:
+          REPORT_URL: ${{ steps.html-report.outputs.artifact-url }}
+        run: echo "[Open the Playwright report]($REPORT_URL)" >> "$GITHUB_STEP_SUMMARY"

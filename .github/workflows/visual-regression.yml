@@ -76,7 +76,7 @@ jobs:
       - name: Wait for environment
         id: reachable
         run: |
-          if .github/scripts/wait-for-url.sh "$TEST_BASE_URL/"; then
+          if .github/scripts/visual-regression/wait-for-url.sh "$TEST_BASE_URL/"; then
             echo "reachable=true" >> "$GITHUB_OUTPUT"
           elif [ "$GITHUB_EVENT_NAME" = "push" ]; then
             echo "::notice::Environment not reachable (asleep or not created yet), the comparison uses the previous baseline."
@@ -91,26 +91,18 @@ jobs:
         continue-on-error: ${{ github.event_name == 'push' }}
         run: npm run test:visual:update
 
+      # On push, only screenshots taken before the deploy started, after a
+      # passed run, become the baseline. A manual "baseline" run always does.
       - name: Check baseline is usable
         id: usable
         if: steps.capture.outcome == 'success'
         run: |
           if [ "$GITHUB_EVENT_NAME" = "push" ]; then
-            DEPLOY=$(.github/scripts/circleci-job-state.sh "$GITHUB_REPOSITORY" "$GITHUB_SHA" "$DEPLOY_JOB")
-            if [ "$DEPLOY" != "missing" ] && [ "$DEPLOY" != "pending" ]; then
-              echo "::notice::CircleCI job '$DEPLOY_JOB' is '$DEPLOY', so the screenshots may already show this push. The comparison uses the previous baseline."
-              exit 0
-            fi
-            # After a failed run the environment still shows the unaccepted
-            # change. Results are recorded by the result job below.
-            read -r FAILED_AT _ <<< "$(.github/scripts/latest-artifact.sh "$GITHUB_REPOSITORY" "$BASELINE_NAME-failed")"
-            read -r PASSED_AT _ <<< "$(.github/scripts/latest-artifact.sh "$GITHUB_REPOSITORY" "$BASELINE_NAME-passed")"
-            if [[ "${FAILED_AT:-}" > "${PASSED_AT:-}" ]]; then
-              echo "::notice::The previous run failed, so the comparison uses the last kept baseline. To accept the current look, run this workflow with mode \"baseline\"."
-              exit 0
-            fi
+            USABLE=$(.github/scripts/visual-regression/baseline-usable.sh "$GITHUB_REPOSITORY" "$GITHUB_SHA" "$DEPLOY_JOB" "$BASELINE_NAME")
+          else
+            USABLE=true
           fi
-          echo "usable=true" >> "$GITHUB_OUTPUT"
+          echo "usable=$USABLE" >> "$GITHUB_OUTPUT"
 
       - name: Upload baseline
         if: steps.usable.outputs.usable == 'true'
@@ -145,24 +137,17 @@ jobs:
 
       - name: Wait for CircleCI deploy
         if: github.event_name == 'push'
-        run: |
-          .github/scripts/wait-for-circleci.sh "$GITHUB_REPOSITORY" "$GITHUB_SHA"
-          # CircleCI passed, so the deploy job must read as success. Otherwise
-          # capture-baseline can no longer tell when a deploy starts.
-          DEPLOY=$(.github/scripts/circleci-job-state.sh "$GITHUB_REPOSITORY" "$GITHUB_SHA" "$DEPLOY_JOB")
-          if [ "$DEPLOY" != "success" ] && [ "$DEPLOY" != "unknown" ]; then
-            echo "::warning::CircleCI passed but job '$DEPLOY_JOB' is '$DEPLOY'. Check DEPLOY_JOB in visual-regression.yml."
-          fi
+        run: .github/scripts/visual-regression/wait-for-circleci.sh "$GITHUB_REPOSITORY" "$GITHUB_SHA" "$DEPLOY_JOB"
 
       - name: Wait for environment
-        run: .github/scripts/wait-for-url.sh "$TEST_BASE_URL/"
+        run: .github/scripts/visual-regression/wait-for-url.sh "$TEST_BASE_URL/"
 
       # Newest non-expired baseline: this run's own when capture-baseline kept
       # it, otherwise the last one kept before.
       - name: Find baseline
         id: baseline
         run: |
-          read -r _ RUN_ID <<< "$(.github/scripts/latest-artifact.sh "$GITHUB_REPOSITORY" "$BASELINE_NAME")"
+          read -r _ RUN_ID <<< "$(.github/scripts/visual-regression/latest-artifact.sh "$GITHUB_REPOSITORY" "$BASELINE_NAME")"
           if [ -n "${RUN_ID:-}" ]; then
             echo "Comparing against the baseline from run $RUN_ID."
             echo "run_id=$RUN_ID" >> "$GITHUB_OUTPUT"
@@ -205,14 +190,10 @@ jobs:
         id: superseded
         if: github.event_name == 'push' && steps.compare.outcome == 'failure'
         run: |
-          for SHA in $(gh api "repos/$GITHUB_REPOSITORY/compare/$GITHUB_SHA...$GITHUB_REF_NAME" --jq '.commits[].sha'); do
-            DEPLOY=$(.github/scripts/circleci-job-state.sh "$GITHUB_REPOSITORY" "$SHA" "$DEPLOY_JOB")
-            if [ "$DEPLOY" != "missing" ] && [ "$DEPLOY" != "pending" ]; then
-              echo "::warning::Newer commit $SHA started deploying (status: $DEPLOY) during the comparison, its own run compares instead."
-              echo "superseded=true" >> "$GITHUB_OUTPUT"
-              exit 0
-            fi
-          done
+          NEWER=$(.github/scripts/visual-regression/newer-deploy.sh "$GITHUB_REPOSITORY" "$GITHUB_SHA" "$GITHUB_REF_NAME" "$DEPLOY_JOB")
+          if [ -n "$NEWER" ]; then
+            echo "superseded=true" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Upload report
         if: ${{ !cancelled() }}
@@ -244,7 +225,7 @@ jobs:
       # opens in the browser like `npx playwright show-report`.
       - name: Build HTML report
         if: ${{ !cancelled() && hashFiles('playwright-report/index.html') != '' }}
-        run: node .github/scripts/visual-report.mjs playwright-report visual-regression-report.html
+        run: node .github/scripts/playwright-report-html.mjs playwright-report visual-regression-report.html
 
       # Unzipped (archive: false), so the artifact link opens the page directly.
       - name: Upload HTML report

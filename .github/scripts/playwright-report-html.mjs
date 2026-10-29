@@ -1,18 +1,17 @@
 #!/usr/bin/env node
-// Turn the Playwright HTML report (playwright-report/: index.html + data/)
-// into one self-contained file, so it can be uploaded as an unzipped artifact
-// and opened straight in the browser, looking the same as
-// `npx playwright show-report` (Diff / Actual / Expected / Side by side /
-// Slider).
+// Turn a Playwright HTML report (playwright-report/: index.html + data/) into
+// one self-contained file, so it can be uploaded as an unzipped artifact and
+// opened straight in the browser, looking the same as
+// `npx playwright show-report`.
 //
 // index.html already embeds the test data as a base64 zip of JSON files; only
 // the attachments (screenshots, error context) live in data/. This rewrites
 // every "data/<file>" reference in that zip to a data: URI. Traces are not
-// inlined, they stay in the zipped visual-regression-report artifact.
+// inlined (several MB each); they stay in the zipped report artifact.
 //
-// Also lists the changed pages in $GITHUB_STEP_SUMMARY when set.
+// Also lists the failed tests in $GITHUB_STEP_SUMMARY when set.
 //
-// Usage: node visual-report.mjs <report-dir> <out.html>
+// Usage: node playwright-report-html.mjs <report-dir> <out.html>
 import {
   appendFileSync,
   existsSync,
@@ -23,9 +22,10 @@ import {
 import { extname, join } from 'node:path';
 import { crc32, deflateRawSync, inflateRawSync } from 'node:zlib';
 
-const [dir = 'playwright-report', out = 'visual-regression-report.html'] =
+const [dir = 'playwright-report', out = 'playwright-report.html'] =
   process.argv.slice(2);
 const DATA = join(dir, 'data');
+// Attachment types to inline; anything else (trace zips) keeps its path.
 const TYPES = {
   '.png': 'image/png',
   '.jpeg': 'image/jpeg',
@@ -105,25 +105,36 @@ if (!match) {
   process.exit(1);
 }
 
+// "data/<file>" -> data: URI, for every attachment of a known type.
 const uris = new Map(
-  (existsSync(DATA) ? readdirSync(DATA) : []).map((file) => [
-    `data/${file}`,
-    `data:${
-      TYPES[extname(file)] ?? 'application/octet-stream'
-    };base64,${readFileSync(join(DATA, file)).toString('base64')}`,
-  ]),
+  (existsSync(DATA) ? readdirSync(DATA) : [])
+    .filter((file) => TYPES[extname(file)])
+    .map((file) => [
+      `data/${file}`,
+      `data:${TYPES[extname(file)]};base64,${readFileSync(
+        join(DATA, file),
+      ).toString('base64')}`,
+    ]),
 );
-const changes = [];
+
+// Rewrite the attachment paths in the report's JSON files and collect the
+// failed tests (a screenshot diff means the page looks different).
+const failed = [];
 const entries = unzip(Buffer.from(match[2], 'base64')).map(({ name, data }) => {
   if (!name.endsWith('.json')) return { name, data };
   const json = JSON.parse(data.toString('utf8'), (key, value) =>
     key === 'path' && uris.has(value) ? uris.get(value) : value,
   );
   for (const test of json.tests ?? []) {
-    const last = test.results?.at(-1);
-    if (last?.attachments?.some((a) => a.name.endsWith('-diff.png'))) {
-      changes.push(`- ${test.title} (${test.projectName})`);
-    }
+    if (test.outcome !== 'unexpected') continue;
+    const changed = test.results
+      ?.at(-1)
+      ?.attachments?.some((a) => a.name.endsWith('-diff.png'));
+    failed.push(
+      `- ${test.title} (${test.projectName})${
+        changed ? ' – screenshot changed' : ''
+      }`,
+    );
   }
   return { name, data: Buffer.from(JSON.stringify(json)) };
 });
@@ -136,12 +147,12 @@ writeFileSync(
   ),
 );
 
-if (process.env.GITHUB_STEP_SUMMARY && changes.length) {
+if (process.env.GITHUB_STEP_SUMMARY && failed.length) {
   appendFileSync(
     process.env.GITHUB_STEP_SUMMARY,
-    `Changed pages:\n${changes.join('\n')}\n`,
+    `Failed tests:\n${failed.join('\n')}\n`,
   );
 }
 console.log(
-  `Wrote ${out}: ${uris.size} attachment(s) inlined, ${changes.length} changed page(s).`,
+  `Wrote ${out}: ${uris.size} attachment(s) inlined, ${failed.length} failed test(s).`,
 );

@@ -19,9 +19,9 @@
 # Requires: gh (authenticated via GH_TOKEN).
 set -euo pipefail
 
-REPO="$1"
-SHA="$2"
-JOB="$3"
+REPO="${1:?Usage: circleci-job-state.sh <owner/repo> <sha> <job>}"
+SHA="${2:?Usage: circleci-job-state.sh <owner/repo> <sha> <job>}"
+JOB="${3:?Usage: circleci-job-state.sh <owner/repo> <sha> <job>}"
 
 SUMMARY=$(
   gh api "repos/$REPO/commits/$SHA/check-runs?check_name=commit" --jq '
@@ -44,7 +44,7 @@ case "$WORD" in
   success) echo "success" ;;
   failed | canceled | cancelled | skipped | error) echo "failed" ;;
   *)
-    MESSAGE="Could not read the state of CircleCI job '$JOB' for $SHA. Either the job name is wrong or CircleCI changed its check run summary format; update .github/scripts/circleci-job-state.sh. Until then the pre-deploy baseline check can't tell when the deploy starts."
+    MESSAGE="Could not read the state of CircleCI job '$JOB' for $SHA. Either the job name is wrong or CircleCI changed its check run summary format; update .github/scripts/visual-regression/circleci-job-state.sh. Until then the pre-deploy baseline check can't tell when the deploy starts."
     echo "::warning::$MESSAGE" >&2
     if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
       printf '⚠️ %s\n\n<details><summary>CircleCI check run summary</summary>\n\n%s\n\n</details>\n' \

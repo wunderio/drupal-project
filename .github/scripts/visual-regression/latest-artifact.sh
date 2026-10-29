@@ -6,8 +6,8 @@
 # Requires: gh (authenticated via GH_TOKEN), jq.
 set -euo pipefail
 
-REPO="$1"
-NAME="$2"
+REPO="${1:?Usage: latest-artifact.sh <owner/repo> <artifact-name>}"
+NAME="${2:?Usage: latest-artifact.sh <owner/repo> <artifact-name>}"
 
 gh api --paginate "repos/$REPO/actions/artifacts?name=$NAME&per_page=100" \
   | jq -rs '[.[].artifacts[] | select(.expired | not)] | max_by(.created_at)
