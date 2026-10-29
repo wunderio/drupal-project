@@ -131,7 +131,7 @@ jobs:
     needs: [capture-baseline]
     # Also runs when capture-baseline was skipped (manual "compare") or failed.
     if: ${{ !cancelled() && (github.event_name == 'push' || inputs.mode == 'compare') }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04 # same image as capture-baseline (fonts)
     timeout-minutes: 90
     outputs:
       state: ${{ steps.outcome.outputs.state }}
@@ -267,7 +267,7 @@ jobs:
     name: "Result: ${{ needs.compare-after-deploy.outputs.message || needs.capture-baseline.outputs.message || '❌ Workflow error' }}"
     needs: [capture-baseline, compare-after-deploy]
     if: ${{ !cancelled() }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     env:
       STATE: ${{ needs.compare-after-deploy.outputs.state || needs.capture-baseline.outputs.state || 'error' }}
       MESSAGE: ${{ needs.compare-after-deploy.outputs.message || needs.capture-baseline.outputs.message || '❌ Workflow error' }}
