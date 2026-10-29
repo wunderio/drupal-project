@@ -2,6 +2,33 @@ import { defineConfig, devices } from '@playwright/test';
 
 const authFile = 'playwright/.auth/user.json';
 
+/* Visual regression spec, only run by the visual-* projects. */
+const visualSpec = /.*visual-regression\.spec\.ts/;
+
+/*
+ * Shared by the visual-* projects. A screenshot change fails the same way every
+ * time, so no retries, and no extra failure screenshot: the expected / actual /
+ * diff images already show it. Keeps the HTML report small and quick to open.
+ */
+const visual = { testMatch: visualSpec, retries: 0 };
+const visualUse = { screenshot: 'off' as const };
+
+/* Visual regression projects are enabled by `npm run test:visual*` (VISUAL_REGRESSION=1). */
+const visualProjects = process.env.VISUAL_REGRESSION
+  ? [
+      {
+        name: 'visual-desktop',
+        ...visual,
+        use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 }, ...visualUse },
+      },
+      {
+        name: 'visual-mobile',
+        ...visual,
+        use: { ...devices['Pixel 7'], ...visualUse },
+      },
+    ]
+  : [];
+
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -25,10 +52,26 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [['html', { open: 'never' }]],
+  /* Visual regression baselines (git-ignored, machine-specific). */
+  snapshotPathTemplate: '{testDir}/__screenshots__/{projectName}/{arg}{ext}',
+  expect: {
+    toHaveScreenshot: { maxDiffPixels: 100, animations: 'disabled' },
+  },
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
     baseURL: process.env.TEST_BASE_URL,
+    ignoreHTTPSErrors: true,
+
+    /* HTTP basic auth for Silta environments. */
+    ...(process.env.TEST_HTTP_USER
+      ? {
+          httpCredentials: {
+            username: process.env.TEST_HTTP_USER,
+            password: process.env.TEST_HTTP_PASS || '',
+          },
+        }
+      : {}),
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -52,7 +95,7 @@ export default defineConfig({
         storageState: authFile,
       },
       dependencies: ['setup'],
-      testIgnore: /.*\.setup\.ts/,
+      testIgnore: [/.*\.setup\.ts/, visualSpec],
     },
 
     {
@@ -69,7 +112,7 @@ export default defineConfig({
         },
       },
       dependencies: ['setup'],
-      testIgnore: /.*\.setup\.ts/,
+      testIgnore: [/.*\.setup\.ts/, visualSpec],
     },
 
     {
@@ -79,8 +122,11 @@ export default defineConfig({
         storageState: authFile,
       },
       dependencies: ['setup'],
-      testIgnore: /.*\.setup\.ts/,
+      testIgnore: [/.*\.setup\.ts/, visualSpec],
     },
+
+    /* Visual regression (desktop + mobile), see tests/visual-regression.spec.ts. */
+    ...visualProjects,
 
     /* Test against mobile viewports. */
     // {

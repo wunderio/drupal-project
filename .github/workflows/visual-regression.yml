@@ -1,0 +1,294 @@
+name: "Playwright: Visual regression tests"
+
+# Screenshots the Silta environment before and after CircleCI deploys a push
+# and fails when the deploy changed how the pages look
+# (tests/visual-regression.spec.ts, desktop + mobile).
+#
+# capture-baseline: screenshots the environment before the deploy. They are
+#   kept as the baseline only when the CircleCI deploy job had not started yet
+#   and the previous run did not fail (otherwise the environment already shows
+#   this push, or a change nobody accepted).
+# compare-after-deploy: waits for the deploy, then compares against the newest
+#   kept baseline. So a failure repeats until the change is fixed, or accepted
+#   with a manual run in mode "baseline". With no baseline at all it captures
+#   one instead. A failure is only a warning when a newer push started
+#   deploying during the comparison.
+#
+# Required repository secrets: SILTA_BASICAUTH_USER, SILTA_BASICAUTH_PASS
+
+on:
+  push:
+    branches:
+      # - main
+      # [FEATURE BRANCH]
+      - feature/MID-73-playwright-visual
+  # Manual run (available once this file is on the default branch).
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "compare = against the latest baseline, baseline = accept the current look as baseline"
+        type: choice
+        default: compare
+        options: [compare, baseline]
+
+env:
+  # Main environment, enable after testing (and the `main` branch above):
+  # TEST_BASE_URL: "https://main.drupal-project.dev.wdr.io"
+  # BASELINE_NAME: "visual-regression-baseline-main"
+  # [FEATURE BRANCH] Feature environment:
+  TEST_BASE_URL: "https://feature-mid-73-playwright-visual.drupal-project.dev.wdr.io"
+  BASELINE_NAME: "visual-regression-baseline-feature-mid-73"
+  # CircleCI job that deploys the branch (.circleci/config.yml).
+  DEPLOY_JOB: ${{ github.ref_name == 'main' && 'deploy-main' || 'deploy' }}
+  CI: "true"
+  TEST_HTTP_USER: ${{ secrets.SILTA_BASICAUTH_USER }}
+  TEST_HTTP_PASS: ${{ secrets.SILTA_BASICAUTH_PASS }}
+  GH_TOKEN: ${{ github.token }}
+
+permissions:
+  contents: read
+  actions: read
+  checks: read
+  statuses: write
+
+# One run per branch at a time, never cancelled: the environment is shared
+# between pushes, and a cancelled run would leave its change uncompared.
+concurrency:
+  group: visual-regression-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  capture-baseline:
+    if: github.event_name == 'push' || inputs.mode == 'baseline'
+    # Pinned so baseline and comparison render with the same fonts.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    outputs:
+      # Only set in mode "baseline", where this job gives the result.
+      state: ${{ steps.outcome.outputs.state }}
+      message: ${{ steps.outcome.outputs.message }}
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: ./.github/actions/setup-visual
+
+      - name: Wait for environment
+        id: reachable
+        run: |
+          if .github/scripts/visual-regression/wait-for-url.sh "$TEST_BASE_URL/"; then
+            echo "reachable=true" >> "$GITHUB_OUTPUT"
+          elif [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            echo "::notice::Environment not reachable (asleep or not created yet), the comparison uses the previous baseline."
+          else
+            exit 1
+          fi
+
+      - name: Capture screenshots
+        id: capture
+        if: steps.reachable.outputs.reachable == 'true'
+        # On push a failed capture falls back to the previous baseline.
+        continue-on-error: ${{ github.event_name == 'push' }}
+        run: npm run test:visual:update
+
+      # On push, only screenshots taken before the deploy started, after a
+      # passed run, become the baseline. A manual "baseline" run always does.
+      - name: Check baseline is usable
+        id: usable
+        if: steps.capture.outcome == 'success'
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            USABLE=$(.github/scripts/visual-regression/baseline-usable.sh "$GITHUB_REPOSITORY" "$GITHUB_SHA" "$DEPLOY_JOB" "$BASELINE_NAME")
+          else
+            USABLE=true
+          fi
+          echo "usable=$USABLE" >> "$GITHUB_OUTPUT"
+
+      - name: Upload baseline
+        if: steps.usable.outputs.usable == 'true'
+        uses: actions/upload-artifact@v6
+        with:
+          name: ${{ env.BASELINE_NAME }}
+          path: tests/__screenshots__/
+          retention-days: 90
+
+      - name: Set outcome
+        id: outcome
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          echo "state=success" >> "$GITHUB_OUTPUT"
+          echo "message=✅ Baseline accepted" >> "$GITHUB_OUTPUT"
+
+  compare-after-deploy:
+    needs: [capture-baseline]
+    # Also runs when capture-baseline was skipped (manual "compare") or failed.
+    if: ${{ !cancelled() && (github.event_name == 'push' || inputs.mode == 'compare') }}
+    runs-on: ubuntu-24.04 # same image as capture-baseline (fonts)
+    timeout-minutes: 90
+    outputs:
+      state: ${{ steps.outcome.outputs.state }}
+      message: ${{ steps.outcome.outputs.message }}
+      report_url: ${{ steps.html-report.outputs.artifact-url }}
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: ./.github/actions/setup-visual
+
+      - name: Wait for CircleCI deploy
+        if: github.event_name == 'push'
+        run: .github/scripts/visual-regression/wait-for-circleci.sh "$GITHUB_REPOSITORY" "$GITHUB_SHA" "$DEPLOY_JOB"
+
+      - name: Wait for environment
+        run: .github/scripts/visual-regression/wait-for-url.sh "$TEST_BASE_URL/"
+
+      # Newest non-expired baseline: this run's own when capture-baseline kept
+      # it, otherwise the last one kept before.
+      - name: Find baseline
+        id: baseline
+        run: |
+          read -r _ RUN_ID <<< "$(.github/scripts/visual-regression/latest-artifact.sh "$GITHUB_REPOSITORY" "$BASELINE_NAME")"
+          if [ -n "${RUN_ID:-}" ]; then
+            echo "Comparing against the baseline from run $RUN_ID."
+            echo "run_id=$RUN_ID" >> "$GITHUB_OUTPUT"
+          fi
+
+      # --- No baseline yet (first run, or expired): capture one ---------------
+      - name: Capture initial baseline
+        id: initial
+        if: steps.baseline.outputs.run_id == ''
+        run: npm run test:visual:update
+
+      - name: Upload initial baseline
+        if: steps.initial.outcome == 'success'
+        uses: actions/upload-artifact@v6
+        with:
+          name: ${{ env.BASELINE_NAME }}
+          path: tests/__screenshots__/
+          retention-days: 90
+
+      # --- Compare ------------------------------------------------------------
+      - name: Download baseline
+        if: steps.baseline.outputs.run_id != ''
+        uses: actions/download-artifact@v7
+        with:
+          name: ${{ env.BASELINE_NAME }}
+          path: tests/__screenshots__/
+          github-token: ${{ github.token }}
+          run-id: ${{ steps.baseline.outputs.run_id }}
+
+      - name: Compare with baseline
+        id: compare
+        if: steps.baseline.outputs.run_id != ''
+        # The result is decided in "Set outcome" below.
+        continue-on-error: true
+        run: npm run test:visual
+
+      # The environment is shared: once a newer push starts deploying, the
+      # screenshots may show that push instead of this one.
+      - name: Check for newer deploys
+        id: superseded
+        if: github.event_name == 'push' && steps.compare.outcome == 'failure'
+        run: |
+          NEWER=$(.github/scripts/visual-regression/newer-deploy.sh "$GITHUB_REPOSITORY" "$GITHUB_SHA" "$GITHUB_REF_NAME" "$DEPLOY_JOB")
+          if [ -n "$NEWER" ]; then
+            echo "superseded=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: visual-regression-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 30
+          if-no-files-found: ignore
+
+      # Single place that maps the result to a commit status state + message.
+      - name: Set outcome
+        id: outcome
+        if: ${{ !cancelled() }}
+        run: |
+          case "${{ steps.initial.outcome }}:${{ steps.compare.outcome }}:${{ steps.superseded.outputs.superseded }}" in
+            success:*)      STATE=pending MESSAGE="⚠️ Baseline captured, not compared" ;;
+            *:success:*)    STATE=success MESSAGE="✅ No visual changes" ;;
+            *:failure:true) STATE=pending MESSAGE="⚠️ Newer deploy during comparison, not reliable" ;;
+            *:failure:*)    STATE=failure MESSAGE="❌ Visual changes detected" ;;
+            *)              STATE=error   MESSAGE="❌ Workflow error" ;;
+          esac
+          echo "state=$STATE" >> "$GITHUB_OUTPUT"
+          echo "message=$MESSAGE" >> "$GITHUB_OUTPUT"
+
+      # The Playwright HTML report as one file (attachments embedded), so it
+      # opens in the browser like `npx playwright show-report`.
+      - name: Build HTML report
+        if: ${{ !cancelled() && hashFiles('playwright-report/index.html') != '' }}
+        run: node .github/scripts/playwright-report-html.mjs playwright-report visual-regression-report.html
+
+      # Unzipped (archive: false), so the artifact link opens the page directly.
+      - name: Upload HTML report
+        id: html-report
+        if: ${{ !cancelled() && hashFiles('visual-regression-report.html') != '' }}
+        uses: actions/upload-artifact@v7
+        with:
+          path: visual-regression-report.html
+          archive: false
+          retention-days: 30
+
+      - name: Fail on visual changes
+        if: steps.outcome.outputs.state == 'failure'
+        run: |
+          echo "::error::Visual changes detected, see the visual regression report (link in the Result job summary). Fix them, or accept them by running this workflow with mode \"baseline\"."
+          exit 1
+
+  # GitHub has no "warning" run state, so the job name carries the result.
+  result:
+    name: "Result: ${{ needs.compare-after-deploy.outputs.message || needs.capture-baseline.outputs.message || '❌ Workflow error' }}"
+    needs: [capture-baseline, compare-after-deploy]
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    env:
+      STATE: ${{ needs.compare-after-deploy.outputs.state || needs.capture-baseline.outputs.state || 'error' }}
+      MESSAGE: ${{ needs.compare-after-deploy.outputs.message || needs.capture-baseline.outputs.message || '❌ Workflow error' }}
+      REPORT_URL: ${{ needs.compare-after-deploy.outputs.report_url }}
+
+    steps:
+      # Commit status on the commit / PR; "pending" shows as yellow. Its
+      # "Details" link opens the HTML report when there is one.
+      - name: Report commit status
+        run: |
+          gh api -X POST "repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" \
+            -f context="visual-regression" \
+            -f state="$STATE" \
+            -f description="$MESSAGE" \
+            -f target_url="${REPORT_URL:-$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID}" \
+            > /dev/null
+
+      # Read by capture-baseline of the next run: after a failure the
+      # environment shows a change nobody accepted yet.
+      - name: Record result
+        if: env.STATE != 'error'
+        run: echo "$STATE" > visual-regression-result.txt
+
+      - name: Upload result
+        if: env.STATE != 'error'
+        uses: actions/upload-artifact@v6
+        with:
+          name: ${{ env.BASELINE_NAME }}-${{ env.STATE == 'failure' && 'failed' || 'passed' }}
+          path: visual-regression-result.txt
+          retention-days: 90
+
+      - name: Summarize
+        run: |
+          echo "### Visual regression: $MESSAGE" >> "$GITHUB_STEP_SUMMARY"
+          if [ -n "$REPORT_URL" ]; then
+            echo "[Open the visual regression report]($REPORT_URL)" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          case "$STATE" in
+            success) echo "$MESSAGE" ;;
+            pending) echo "::warning::$MESSAGE. See the compare-after-deploy job for details." ;;
+            failure) echo "::error::$MESSAGE. Open the visual regression report: ${REPORT_URL:-see the visual-regression-report artifact}"; exit 1 ;;
+            *)       echo "::error::$MESSAGE. Check the capture-baseline and compare-after-deploy job logs."; exit 1 ;;
+          esac
