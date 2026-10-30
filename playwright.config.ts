@@ -15,6 +15,8 @@ const authFile = 'playwright/.auth/user.json';
  */
 export default defineConfig({
   testDir: './tests',
+  /* Keep all generated files (results, report, auth state) under playwright/. */
+  outputDir: './playwright/test-results',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -24,7 +26,12 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [['html', { open: 'never' }]],
+  reporter: process.env.CI
+    ? [
+        ['html', { open: 'never', outputFolder: 'playwright/report' }],
+        ['github'],
+      ]
+    : [['html', { open: 'never', outputFolder: 'playwright/report' }], ['list']],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
@@ -37,12 +44,24 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
 
-  /* Configure projects for major browsers */
+  /* Browser projects run the e2e tests; "a11y" runs the @a11y-tagged axe scans once,
+   * in Chromium. CI runs "chromium" and "a11y" as separate jobs. */
   projects: [
     {
       name: 'setup',
       testMatch: /.*\.setup\.ts/,
       use: { ...devices['Desktop Chrome'] },
+    },
+
+    {
+      name: 'a11y',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: authFile,
+      },
+      dependencies: ['setup'],
+      testIgnore: /.*\.setup\.ts/,
+      grep: /@a11y/,
     },
 
     {
@@ -53,6 +72,7 @@ export default defineConfig({
       },
       dependencies: ['setup'],
       testIgnore: /.*\.setup\.ts/,
+      grepInvert: /@a11y/,
     },
 
     {
@@ -70,6 +90,7 @@ export default defineConfig({
       },
       dependencies: ['setup'],
       testIgnore: /.*\.setup\.ts/,
+      grepInvert: /@a11y/,
     },
 
     {
@@ -80,6 +101,7 @@ export default defineConfig({
       },
       dependencies: ['setup'],
       testIgnore: /.*\.setup\.ts/,
+      grepInvert: /@a11y/,
     },
 
     /* Test against mobile viewports. */
