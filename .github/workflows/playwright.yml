@@ -5,12 +5,21 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+  # Find and download the visual regression baseline artifact.
+  actions: read
+
+env:
+  # Newest baseline of the visual regression screenshots, taken from main.
+  BASELINE_NAME: visual-baseline-main
+
 jobs:
   playwright:
     name: ${{ matrix.name }}
     runs-on: ubuntu-latest
     strategy:
-      # Let both suites finish, so an accessibility failure doesn't cancel e2e.
+      # Let all suites finish, so an accessibility failure doesn't cancel e2e.
       fail-fast: false
       matrix:
         include:
@@ -18,6 +27,9 @@ jobs:
             project: chromium
           - name: accessibility
             project: a11y
+          - name: visual
+            project: visual-*
+            visual: true
 
     steps:
       - name: Checkout
@@ -30,7 +42,41 @@ jobs:
         run: ddev drush site:install --existing-config --yes --account-pass=admin
 
       - name: Run Playwright tests
+        if: ${{ !matrix.visual }}
         run: ddev exec env CI=true npx playwright test --project=${{ matrix.project }}
+
+      # --- Visual regression ---------------------------------------------------
+      # Pushes to main record the baseline. Pull requests are compared against
+      # the newest one, so only changes made by the PR are reported.
+      - name: Find baseline
+        id: baseline
+        if: ${{ matrix.visual && github.event_name == 'pull_request' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          read -r _ RUN_ID <<< "$(.github/scripts/visual-regression/latest-artifact.sh "$GITHUB_REPOSITORY" "$BASELINE_NAME")"
+          if [ -n "${RUN_ID:-}" ]; then
+            gh run download "$RUN_ID" --repo "$GITHUB_REPOSITORY" --name "$BASELINE_NAME" --dir playwright/screenshots
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::No baseline yet (first run, or expired): capturing one, nothing is compared."
+          fi
+
+      - name: Compare with baseline
+        if: ${{ matrix.visual && steps.baseline.outputs.found == 'true' }}
+        run: ddev exec env CI=true VISUAL_REGRESSION=1 npx playwright test --project='${{ matrix.project }}'
+
+      - name: Record baseline
+        if: ${{ matrix.visual && steps.baseline.outputs.found != 'true' }}
+        run: ddev exec env CI=true VISUAL_REGRESSION=1 npx playwright test --project='${{ matrix.project }}' --update-snapshots=all
+
+      - name: Upload baseline
+        if: ${{ matrix.visual && github.event_name == 'push' }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: ${{ env.BASELINE_NAME }}
+          path: playwright/screenshots/
+          retention-days: 90
 
       - name: Upload Playwright report
         if: always()
