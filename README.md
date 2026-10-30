@@ -410,6 +410,14 @@ To run all tests:
 ddev npx playwright test
 ```
 
+Tests are split into Playwright projects:
+
+- `chromium`, `firefox`, `webkit` — functional end-to-end tests in each browser (everything not tagged `@a11y`)
+- `a11y` — accessibility scans (tests tagged `@a11y`), Chromium only
+
+Run one project with `--project`, for example `ddev npx playwright test --project=chromium`.
+The GitHub Actions workflow runs `chromium` and `a11y` as separate jobs ("e2e" and "accessibility"), each with its own status check and report artifact.
+
 Each run writes an HTML report to `playwright/report/` (git-ignored, like everything under `playwright/`). To view it, start the report server inside the web container:
 
 ```bash
@@ -418,7 +426,8 @@ ddev playwright-report
 
 It prints the report URL for this project (`https://novarnish.<project>.ddev.site:9323`). Leave the command running while you browse the report; stop it with `Ctrl+C`.
 
-- The URL uses the `novarnish.` hostname. The Varnish add-on serves the main `<project>.ddev.site` hostname and moves the web container to `novarnish.<project>.ddev.site`, and DDEV only exposes the web container's extra ports on that hostname. `https://<project>.ddev.site:9323` returns a 404. Without Varnish, the command prints the main hostname instead.
+- The URL uses the `novarnish.` hostname. The Varnish add-on serves the main `<project>.ddev.site` hostname and moves the web container to `novarnish.<project>.ddev.site`, and DDEV only exposes the web container's extra ports on that hostname.
+  `https://<project>.ddev.site:9323` returns a 404. Without Varnish, the command prints the main hostname instead.
 - Running `ddev npx playwright show-report` directly also works, but it needs `--host 0.0.0.0` (DDEV's router can't reach the default `localhost`), and the `http://0.0.0.0:9323` address it prints is only valid inside the container.
 - Port 9323 is exposed through `web_extra_exposed_ports` in `.ddev/config.yaml`. If the page doesn't load after you pull this change, run `ddev restart` so DDEV applies the new port.
 
@@ -430,7 +439,7 @@ You can also open `playwright/report/index.html` directly in your browser withou
 Any violations are attached as JSON to the test in the HTML report, and the test fails. Run only these tests with:
 
 ```bash
-ddev npx playwright test --grep @a11y
+ddev npx playwright test --project=a11y
 ```
 
 ##### Test structure

@@ -44,12 +44,24 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
 
-  /* Configure projects for major browsers */
+  /* Browser projects run the e2e tests; "a11y" runs the @a11y-tagged axe scans once,
+   * in Chromium. CI runs "chromium" and "a11y" as separate jobs. */
   projects: [
     {
       name: 'setup',
       testMatch: /.*\.setup\.ts/,
       use: { ...devices['Desktop Chrome'] },
+    },
+
+    {
+      name: 'a11y',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: authFile,
+      },
+      dependencies: ['setup'],
+      testIgnore: /.*\.setup\.ts/,
+      grep: /@a11y/,
     },
 
     {
@@ -60,6 +72,7 @@ export default defineConfig({
       },
       dependencies: ['setup'],
       testIgnore: /.*\.setup\.ts/,
+      grepInvert: /@a11y/,
     },
 
     {
@@ -77,6 +90,7 @@ export default defineConfig({
       },
       dependencies: ['setup'],
       testIgnore: /.*\.setup\.ts/,
+      grepInvert: /@a11y/,
     },
 
     {
@@ -87,6 +101,7 @@ export default defineConfig({
       },
       dependencies: ['setup'],
       testIgnore: /.*\.setup\.ts/,
+      grepInvert: /@a11y/,
     },
 
     /* Test against mobile viewports. */
