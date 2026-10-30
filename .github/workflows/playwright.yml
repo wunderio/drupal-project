@@ -22,10 +22,6 @@ jobs:
       - name: Run Playwright tests
         run: ddev exec env CI=true npx playwright test --project=chromium
 
-      - name: Publish test summary
-        if: always()
-        run: node .github/scripts/playwright-summary.mjs
-
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v6
