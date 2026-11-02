@@ -436,6 +436,7 @@ You can also open `playwright/report/index.html` directly in your browser withou
 ##### Accessibility tests
 
 `tests/accessibility.spec.ts` uses [axe-core](https://github.com/dequelabs/axe-core-npm/tree/develop/packages/playwright) (`@axe-core/playwright`) to scan the front page and the "Add basic page" form (as admin) against WCAG 2.0/2.1 A and AA rules.
+The `link-in-text-block` rule is temporarily disabled (see `DISABLED_RULES` in `tests/helpers/a11y.ts`).
 Any violations are attached as JSON to the test in the HTML report, and the test fails. Run only these tests with:
 
 ```bash
