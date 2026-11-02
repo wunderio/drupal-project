@@ -14,10 +14,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # --project accepts "*" wildcards; each job runs one test type in all its browsers.
           - name: e2e
-            project: chromium
+            project: e2e-*
           - name: accessibility
-            project: a11y
+            project: a11y-*
 
     steps:
       - name: Checkout
@@ -30,7 +31,7 @@ jobs:
         run: ddev drush site:install --existing-config --yes --account-pass=admin
 
       - name: Run Playwright tests
-        run: ddev exec env CI=true npx playwright test --project=${{ matrix.project }}
+        run: ddev exec env CI=true npx playwright test --project="${{ matrix.project }}"
 
       - name: Upload Playwright report
         if: always()
