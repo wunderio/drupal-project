@@ -23,8 +23,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # --project accepts "*" wildcards; each job runs one test type in all its browsers.
           - name: e2e
-            project: chromium
+            project: e2e-*
           - name: accessibility
             project: a11y
           - name: visual
@@ -43,7 +44,7 @@ jobs:
 
       - name: Run Playwright tests
         if: ${{ !matrix.visual }}
-        run: ddev exec env CI=true npx playwright test --project=${{ matrix.project }}
+        run: ddev exec env CI=true npx playwright test --project="${{ matrix.project }}"
 
       # --- Visual regression ---------------------------------------------------
       # Pushes to main record the baseline. Pull requests are compared against

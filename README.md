@@ -410,13 +410,13 @@ To run all tests:
 ddev npx playwright test
 ```
 
-Tests are split into Playwright projects:
+Tests are split into Playwright projects named `<type>-<browser>`, shown in brackets in the test output (for example `[e2e-firefox]`):
 
-- `chromium`, `firefox`, `webkit` — functional end-to-end tests in each browser (everything not tagged `@a11y`)
-- `a11y` — accessibility scans (tests tagged `@a11y`), Chromium only
+- `e2e-chromium`, `e2e-firefox`, `e2e-webkit` — functional end-to-end tests in each browser (everything not tagged `@a11y`)
+- `a11y-chromium` — accessibility scans (tests tagged `@a11y`), Chromium only
 
-Run one project with `--project`, for example `ddev npx playwright test --project=chromium`.
-The GitHub Actions workflow runs `chromium` and `a11y` as separate jobs ("e2e" and "accessibility"), each with its own status check and report artifact.
+Run one project with `--project`, for example `ddev npx playwright test --project=e2e-firefox`, or all projects of one type with a wildcard: `ddev npx playwright test --project="e2e-*"`.
+The GitHub Actions workflow runs `e2e-*` and `a11y-*` as separate jobs ("e2e" and "accessibility"), each with its own status check and report artifact.
 
 Each run writes an HTML report to `playwright/report/` (git-ignored, like everything under `playwright/`). To view it, start the report server inside the web container:
 
@@ -428,7 +428,7 @@ It prints the report URL for this project (`https://novarnish.<project>.ddev.sit
 
 - The URL uses the `novarnish.` hostname. The Varnish add-on serves the main `<project>.ddev.site` hostname and moves the web container to `novarnish.<project>.ddev.site`, and DDEV only exposes the web container's extra ports on that hostname.
   `https://<project>.ddev.site:9323` returns a 404. Without Varnish, the command prints the main hostname instead.
-- Running `ddev npx playwright show-report` directly also works, but it needs `--host 0.0.0.0` (DDEV's router can't reach the default `localhost`), and the `http://0.0.0.0:9323` address it prints is only valid inside the container.
+- Running `ddev npx playwright show-report playwright/report --host 0.0.0.0` directly also works. The explicit report directory selects the configured output, and `--host 0.0.0.0` lets DDEV's router reach the server. The `http://0.0.0.0:9323` address it prints is only valid inside the container.
 - Port 9323 is exposed through `web_extra_exposed_ports` in `.ddev/config.yaml`. If the page doesn't load after you pull this change, run `ddev restart` so DDEV applies the new port.
 
 You can also open `playwright/report/index.html` directly in your browser without a server. The report itself works, but traces don't open from a `file://` URL.
@@ -436,10 +436,11 @@ You can also open `playwright/report/index.html` directly in your browser withou
 ##### Accessibility tests
 
 `tests/accessibility.spec.ts` uses [axe-core](https://github.com/dequelabs/axe-core-npm/tree/develop/packages/playwright) (`@axe-core/playwright`) to scan the front page and the "Add basic page" form (as admin) against WCAG 2.0/2.1 A and AA rules.
+The `link-in-text-block` rule is temporarily disabled (see `DISABLED_RULES` in `tests/helpers/a11y.ts`).
 Any violations are attached as JSON to the test in the HTML report, and the test fails. Run only these tests with:
 
 ```bash
-ddev npx playwright test --project=a11y
+ddev npx playwright test --project=a11y-chromium
 ```
 
 ##### Test structure

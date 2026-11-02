@@ -4,7 +4,7 @@
 ## Usage: playwright-report
 ## Example: "ddev playwright-report"
 
-set -eu
+set -euo pipefail
 
 # The Varnish add-on takes over the main hostname, so DDEV routes the web
 # container's extra exposed ports only under the "novarnish." hostname.

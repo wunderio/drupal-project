@@ -77,8 +77,9 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
 
-  /* Browser projects run the e2e tests; "a11y" runs the @a11y-tagged axe scans once,
-   * in Chromium. CI runs "chromium", "a11y" and the visual-* projects as separate jobs. */
+  /* Projects are named "<type>-<browser>": "e2e-*" run the functional tests in each
+   * browser; "a11y-chromium" runs the @a11y-tagged axe scans once, in Chromium.
+   * CI runs "e2e-*" and "a11y-*" as separate jobs. */
   projects: [
     {
       name: 'setup',
@@ -87,7 +88,7 @@ export default defineConfig({
     },
 
     {
-      name: 'a11y',
+      name: 'a11y-chromium',
       use: {
         ...devices['Desktop Chrome'],
         storageState: authFile,
@@ -98,7 +99,7 @@ export default defineConfig({
     },
 
     {
-      name: 'chromium',
+      name: 'e2e-chromium',
       use: {
         ...devices['Desktop Chrome'],
         storageState: authFile,
@@ -109,7 +110,7 @@ export default defineConfig({
     },
 
     {
-      name: 'firefox',
+      name: 'e2e-firefox',
       use: {
         ...devices['Desktop Firefox'],
         storageState: authFile,
@@ -127,7 +128,7 @@ export default defineConfig({
     },
 
     {
-      name: 'webkit',
+      name: 'e2e-webkit',
       use: {
         ...devices['Desktop Safari'],
         storageState: authFile,
