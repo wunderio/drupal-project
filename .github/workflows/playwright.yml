@@ -100,7 +100,7 @@ jobs:
         if: steps.html-report.outputs.artifact-url != ''
         env:
           REPORT_URL: ${{ steps.html-report.outputs.artifact-url }}
-        run: echo "[Open the ${{ matrix.name }} report]($REPORT_URL)" >> "$GITHUB_STEP_SUMMARY"
+        run: echo "<a href=\"$REPORT_URL\" target=\"_blank\" rel=\"noopener\">Open the ${{ matrix.name }} report</a>" >> "$GITHUB_STEP_SUMMARY"
 
       # Full report with traces, as a zip.
       - name: Upload Playwright report
