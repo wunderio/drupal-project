@@ -1,6 +1,9 @@
 # rig project file. Reference: policy/schema/project.schema.json in
 # wunderio/internal-wrigan. Commit this file; it can only narrow the central policy.
 schema: 1
+# Template ID. Generated projects MUST change this to a unique value
+# (e.g. client-COUNTRYCODE-CLIENT-PROJECT); rig keys state and policy by it.
+project_id: drupal-project
 runtime: auto
 packs:
   - drupal
