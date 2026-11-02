@@ -27,7 +27,7 @@ jobs:
           - name: e2e
             project: e2e-*
           - name: accessibility
-            project: a11y
+            project: a11y-*
           - name: visual
             project: visual-*
             visual: true
@@ -55,8 +55,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          read -r _ RUN_ID <<< "$(.github/scripts/visual-regression/latest-artifact.sh "$GITHUB_REPOSITORY" "$BASELINE_NAME")"
-          if [ -n "${RUN_ID:-}" ]; then
+          RUN_ID=$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?name=$BASELINE_NAME&per_page=100" \
+            --jq '[.artifacts[] | select(.expired | not)] | max_by(.created_at) | .workflow_run.id // empty')
+          if [ -n "$RUN_ID" ]; then
             gh run download "$RUN_ID" --repo "$GITHUB_REPOSITORY" --name "$BASELINE_NAME" --dir playwright/screenshots
             echo "found=true" >> "$GITHUB_OUTPUT"
           else

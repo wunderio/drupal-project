@@ -443,6 +443,17 @@ Any violations are attached as JSON to the test in the HTML report, and the test
 ddev npx playwright test --project=a11y-chromium
 ```
 
+##### Visual regression tests
+
+`tests/visual-regression.spec.ts` screenshots the pages in its `PAGES` list (desktop 1440×900 and mobile Pixel 7, the `visual-*` projects) and compares them with baselines in `playwright/screenshots/` (git-ignored, machine-specific, never committed). The `visual-*` projects only exist when `VISUAL_REGRESSION=1`, which the npm scripts set:
+
+```bash
+ddev npm run test:visual:update   # record baseline
+ddev npm run test:visual          # compare against baseline
+```
+
+In GitHub Actions the `visual` job of the "Playwright Tests" matrix runs the same tests in DDEV, against a fresh install from `config/sync` (so use only pages that exist without content). A push to `main` records the baseline and uploads it as the `visual-baseline-main` artifact. Pull requests download the newest one and compare against it. If there is none yet, the job records one and compares nothing. Diff images are in the `playwright-report-visual` artifact.
+
 ##### Test structure
 
 - `tests/helpers/drupal-test.ts` — Custom Playwright test base providing a `drupal` helper (via `@drupal/playwright`) for actions like `drupal.loginAsAdmin()`
