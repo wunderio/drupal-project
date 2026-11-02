@@ -241,7 +241,7 @@ AI-assisted development runs through [rig](https://github.com/wunderio/internal-
 2. Start the project:
 
    ```bash
-   ddev start
+   rig up
    ```
 
 3. Start Claude Code or GitHub Copilot in the agents container:
