@@ -428,7 +428,7 @@ It prints the report URL for this project (`https://novarnish.<project>.ddev.sit
 
 - The URL uses the `novarnish.` hostname. The Varnish add-on serves the main `<project>.ddev.site` hostname and moves the web container to `novarnish.<project>.ddev.site`, and DDEV only exposes the web container's extra ports on that hostname.
   `https://<project>.ddev.site:9323` returns a 404. Without Varnish, the command prints the main hostname instead.
-- Running `ddev npx playwright show-report` directly also works, but it needs `--host 0.0.0.0` (DDEV's router can't reach the default `localhost`), and the `http://0.0.0.0:9323` address it prints is only valid inside the container.
+- Running `ddev npx playwright show-report playwright/report --host 0.0.0.0` directly also works. The explicit report directory selects the configured output, and `--host 0.0.0.0` lets DDEV's router reach the server. The `http://0.0.0.0:9323` address it prints is only valid inside the container.
 - Port 9323 is exposed through `web_extra_exposed_ports` in `.ddev/config.yaml`. If the page doesn't load after you pull this change, run `ddev restart` so DDEV applies the new port.
 
 You can also open `playwright/report/index.html` directly in your browser without a server. The report itself works, but traces don't open from a `file://` URL.
