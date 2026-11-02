@@ -19,6 +19,7 @@ This project is a tailored fork of the popular [drupal-composer template](https:
    - Adjust `grumphp.yml` tasks, including updating the project name in the `git_commit_message` regex
    - Configure local development environment:
      - For DDEV: Update project settings in `.ddev/config.yaml`
+   - For AI-assisted development, follow the [rig workflow](#ai-workflow-rig--claude-code) to initialize rig with a unique project ID.
    - For database synchronization, see [ddev-wunderio-drupal](https://github.com/wunderio/ddev-wunderio-drupal)
    - Adjust `web/sites/default/settings.php` settings (`stage_file_proxy` etc)
    - Adjust `config_split` settings for silta (default), production, main, local environments
@@ -108,6 +109,7 @@ For a complete list of all available services, URLs, and ports, use:
 
 - `ddev` - Display available commands
 - `ddev adminer` - Launch Adminer database management interface
+- `ddev copilot [args]` - Run GitHub Copilot CLI inside the rig agents container (see [AI Workflow](#ai-workflow-rig--claude-code))
 - `ddev claude [args]` - Run Claude Code inside the rig agents container (see [AI Workflow](#ai-workflow-rig--claude-code))
 - `ddev grumphp <commands>` - Run code quality checks (command provided by [ddev-wunderio-drupal](https://github.com/wunderio/ddev-wunderio-drupal))
 - `ddev mailpit` - Open Mailpit email testing interface
@@ -235,16 +237,18 @@ AI-assisted development runs through [rig](https://github.com/wunderio/internal-
 
 1. Install rig on the host (see the rig repository for instructions).
 
-2. Start the project:
+2. Initialize the project and start the environment:
 
    ```bash
-   ddev start
+   rig init
+   rig up
    ```
 
-3. Start Claude Code in the agents container:
+3. Start Claude Code or GitHub Copilot in the agents container:
 
    ```bash
    ddev claude
+   ddev copilot
    ```
 
 #### Project AI configuration
