@@ -1,0 +1,16 @@
+_meta:
+  version: '1.0'
+  entity_type: taxonomy_term
+  uuid: 6619bb5d-fe56-426c-9f03-2f86097ed5f1
+  bundle: ai_translation_languages
+  default_langcode: en
+default:
+  status:
+    -
+      value: true
+  name:
+    -
+      value: 'German'
+  weight:
+    -
+      value: 4

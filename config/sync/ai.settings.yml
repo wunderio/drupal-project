@@ -1,0 +1,12 @@
+_core:
+  default_config_hash: WWvo9_41v-oaqjbKdBtohSrem-s9w-7MIfvCWjZvAI4
+prompt_logging: false
+prompt_logging_tags: ''
+default_providers:
+  chat:
+    provider_id: openai_compatible
+    model_id: google_genai.gemini-2.5-flash
+request_timeout: 60
+allowed_hosts: {  }
+allowed_hosts_rewrite_links: false
+global_guardrails: {  }
