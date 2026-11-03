@@ -1,55 +1,49 @@
 <?php
 
-namespace Drush\Listeners;
+namespace Drush\Commands;
 
+use Consolidation\AnnotatedCommand\AnnotationData;
+use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Consolidation\SiteAlias\SiteAliasManagerInterface;
 use Drush\Attributes as CLI;
 use Drush\Boot\DrupalBootLevels;
-use Drush\Commands\AutowireTrait;
-use Drush\Drush;
-use Drush\Event\ConsoleDefinitionsEvent;
-use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
+use Symfony\Component\Console\Event\ConsoleCommandEvent;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Yaml\Yaml;
 
 /**
- * Fills the Silta site aliases from git and silta.yml.
+ * Class SiltaAliasAlterCommands.
  *
- * Silta generates environment URLs and hostnames dynamically based on the
- * branch name. This attempts to mimic the same behaviour in order to
- * dynamically target the specific Silta environment of the branch you're on.
- *
- * It listens on ConsoleDefinitionsEvent, which fires once the command files
- * are loaded and before any command runs. A command hook would miss remote
- * commands that don't exist locally (config:status, sqlq, ws...): Drush runs
- * those through a RemoteCommandProxy, which has no hooks, and the alias would
- * keep its ${REPOSITORY} placeholder.
+ * @package Drush\Commands
  */
-#[AsEventListener]
-#[CLI\Bootstrap(level: DrupalBootLevels::NONE)]
-class SiltaAliasListener {
+#[CLI\Bootstrap(DrupalBootLevels::NONE)]
+class SiltaAliasAlterCommands extends DrushCommands {
 
     use AutowireTrait;
-
-    /**
-     * Whether the aliases are filled already.
-     *
-     * The event fires again on a full Drupal bootstrap.
-     */
-    private bool $done = FALSE;
 
     public function __construct(
         private readonly SiteAliasManagerInterface $siteAliasManager,
     ) {
+        parent::__construct();
     }
 
     /**
-     * Fills ENVIRONMENT, REPOSITORY and PROJECT in the aliases.
+     * Alter feature alias.
+     *
+     * Silta generates environment URLs and hostnames dynamically based on the
+     * branch name. This attempts to mimic the same behaviour in order to
+     * dynamically target the specific Silta environment of the branch you're on.
+     *
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     *   Input interface instance.
+     * @param \Consolidation\AnnotatedCommand\AnnotationData $annotationData
+     *   Annotation data.
      */
-    public function __invoke(ConsoleDefinitionsEvent $event): void {
-        if ($this->done || !$this->isGitAvailable()) {
+    #[CLI\Hook(type: HookManager::PRE_INITIALIZE, target: '*')]
+    public function alter(InputInterface $input, AnnotationData $annotationData) {
+        if (!$this->isGitAvailable()) {
             return;
         }
-        $this->done = TRUE;
 
         // Get branch name we're currently on.
         $branch = exec('git rev-parse --abbrev-ref HEAD');
@@ -64,7 +58,7 @@ class SiltaAliasListener {
             $project_name = $repository_name;
         }
 
-        $this->siteAliasManager->setReferenceData(Drush::config()->export() + [
+        $this->siteAliasManager->setReferenceData($this->getConfig()->export() + [
             'ENVIRONMENT' => $environment_name,
             'REPOSITORY' => $repository_name,
             'PROJECT' => $project_name,
@@ -83,13 +77,30 @@ class SiltaAliasListener {
     }
 
     /**
+     * Alter the aliases for remote commands that aren't available locally.
+     *
+     * Commands that exist only on a bootstrapped site (config:status, cim,
+     * updb:status, ws...) run through Drush's RemoteCommandProxy, which has
+     * no PRE_INITIALIZE hooks, so alter() above never runs for them and the
+     * alias keeps its ${REPOSITORY} placeholder. Command event hooks run for
+     * every command.
+     *
+     * @param \Symfony\Component\Console\Event\ConsoleCommandEvent $event
+     *   The command event.
+     */
+    #[CLI\Hook(type: HookManager::PRE_COMMAND_EVENT, target: '*')]
+    public function alterForRemoteProxy(ConsoleCommandEvent $event) {
+        $this->alter($event->getInput(), new AnnotationData());
+    }
+
+    /**
      * Check if git command is available.
      *
      * @return bool
      *   TRUE if git is available, FALSE otherwise.
      */
     private function isGitAvailable(): bool {
-        return shell_exec('command -v git 2>/dev/null') !== NULL;
+        return shell_exec('command -v git 2>/dev/null') !== null;
     }
 
     /**
