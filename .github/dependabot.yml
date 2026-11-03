@@ -3,12 +3,48 @@ updates:
 - package-ecosystem: composer
   directory: "/"
   schedule:
-    interval: daily
+    interval: weekly
+    day: monday
     time: "03:00"
   open-pull-requests-limit: 10
+  groups:
+    # One PR for Drupal core packages, which must move together.
+    drupal-core:
+      patterns:
+        - "drupal/core*"
+    # Contrib modules, drush and dev tooling: minor and patch in one PR.
+    # Majors still get their own PR each, because they need a manual look.
+    composer-minor-patch:
+      update-types:
+        - minor
+        - patch
 - package-ecosystem: npm
   directory: "/"
   schedule:
-    interval: daily
+    interval: weekly
+    day: monday
     time: "03:00"
   open-pull-requests-limit: 10
+  groups:
+    npm-minor-patch:
+      update-types:
+        - minor
+        - patch
+    # Lint stack majors usually need config changes together.
+    lint-major:
+      update-types:
+        - major
+      patterns:
+        - "eslint*"
+        - "@eslint/*"
+        - "prettier"
+        - "stylelint*"
+        - "globals"
+- package-ecosystem: github-actions
+  directory: "/"
+  schedule:
+    interval: monthly
+  groups:
+    github-actions:
+      patterns:
+        - "*"

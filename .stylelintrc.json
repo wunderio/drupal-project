@@ -1,26 +1,23 @@
 {
   "extends": [
-    "stylelint-config-standard",
-    "stylelint-config-prettier"
+    "stylelint-config-standard"
   ],
-  "plugins": ["stylelint-prettier"],
+  "plugins": [
+    "stylelint-prettier"
+  ],
   "rules": {
-    "at-rule-no-unknown": [ true, {
-      "ignoreAtRules": [
-        "include",
-        "mixin",
-        "extend",
-        "if",
-        "else",
-        "each",
-        "content",
-        "import",
-        "function",
-        "return"
-      ]
-    }],
     "no-descending-specificity": null,
-    "function-calc-no-invalid": null,
+    "selector-class-pattern": null,
     "prettier/prettier": true
-  }
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/*.scss"
+      ],
+      "extends": [
+        "stylelint-config-standard-scss"
+      ]
+    }
+  ]
 }
