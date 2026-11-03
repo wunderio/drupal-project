@@ -47,7 +47,7 @@ jobs:
       # Smoke test of the report script, it depends on Playwright's report format.
       - name: Test report script
         if: ${{ !cancelled() }}
-        run: node --test .github/scripts/
+        run: node --test .github/scripts/*.test.mjs
 
       # The Playwright HTML report as one file (attachments embedded), so it
       # opens in the browser like `npx playwright show-report`.

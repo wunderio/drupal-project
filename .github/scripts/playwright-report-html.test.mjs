@@ -1,4 +1,4 @@
-// Smoke test for playwright-report-html.mjs: node --test .github/scripts/
+// Smoke test for playwright-report-html.mjs: node --test .github/scripts/*.test.mjs
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
