@@ -1,7 +1,7 @@
 name: ddev-wunderio-drupal
 repository: wunderio/ddev-wunderio-drupal
-version: 0.7.1
-install_date: "2026-07-08T14:38:24+03:00"
+version: 0.8.1
+install_date: "2026-11-02T16:10:34+02:00"
 project_files:
     - config.wunderio.yaml
     - docker-compose.wunderio.yaml
