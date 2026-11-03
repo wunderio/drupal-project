@@ -19,7 +19,7 @@ jobs:
         run: |
           v=$(node -p "require('./package-lock.json').packages['node_modules/playwright'].version")
           grep -qF "playwright@$v " .ddev/web-build/Dockerfile.playwright \
-            || { echo "::error file=.ddev/web-build/Dockerfile.playwright::package-lock.json has Playwright $v; update the version in this Dockerfile to match."; exit 1; }
+            || { echo "::error file=.ddev/web-build/Dockerfile.playwright::package-lock.json has Playwright $v, but .ddev/web-build/Dockerfile.playwright does not. Change it to playwright@$v."; exit 1; }
 
       - name: Setup DDEV
         uses: ddev/github-action-setup-ddev@v1
