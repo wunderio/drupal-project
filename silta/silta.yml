@@ -27,7 +27,9 @@ mariadb:
     persistence:
       # Database storage disk space allocation.
       # Request assistance from Ops team to change this on an existing deployment.
-      size: 1G
+      # Whole GiB: UpCloud's block storage refuses volumes under 1 GiB,
+      # and 1G is about 7% short of that.
+      size: 1Gi
     resources:
       requests:
         cpu: 25m
