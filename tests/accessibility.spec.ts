@@ -9,7 +9,6 @@ test.describe('Accessibility', { tag: '@a11y' }, () => {
   });
 
   test('Add basic page form has no detectable WCAG violations', async ({ drupal, page }, testInfo) => {
-    await drupal.loginAsAdmin();
     await page.goto('/node/add/page');
 
     // Wait for CKEditor 5 to initialise so the editor markup is scanned.
