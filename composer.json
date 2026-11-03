@@ -67,6 +67,7 @@
                 "web-root": "web/"
             },
             "file-mapping": {
+                "[web-root]/.eslintrc.json": false,
                 "[web-root]/sites/development.services.yml": false
             }
         },
