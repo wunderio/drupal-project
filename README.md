@@ -436,7 +436,7 @@ You can also open `playwright/report/index.html` directly in your browser withou
 
 `tests/accessibility.spec.ts` uses [axe-core](https://github.com/dequelabs/axe-core-npm/tree/develop/packages/playwright) (`@axe-core/playwright`) to scan pages against WCAG 2.0/2.1 A and AA rules.
 Tests run as an anonymous visitor (front page, login form) and as admin (front page, "Add basic page" form). The `a11y-chromium` project loads the admin session from the setup step; the anonymous group clears it with `test.use({ storageState: { cookies: [], origins: [] } })`. Add new pages to the group that matches who sees them.
-The `link-in-text-block` rule is temporarily disabled (see `DISABLED_RULES` in `tests/helpers/a11y.ts`).
+Before the scans, the suite creates an article promoted to the front page and deletes it afterwards (`tests/helpers/content.ts`), so the front page is scanned with content instead of the placeholder an empty site shows.
 Any violations are attached as JSON to the test in the HTML report, and the test fails. Run only these tests with:
 
 ```bash
