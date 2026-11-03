@@ -4,11 +4,6 @@ import type { Result } from 'axe-core';
 
 const WCAG_TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'];
 
-// Temporarily skipped axe rules.
-// TODO: Re-enable "link-in-text-block" once links in body text are underlined or reach 3:1 contrast
-// with the surrounding text (core Olivero fails on the default "Welcome to Drupal" front page).
-const DISABLED_RULES = ['link-in-text-block'];
-
 // How many failing elements to list per violation in the report.
 const MAX_ELEMENTS = 5;
 const MAX_HTML_LENGTH = 100;
@@ -32,7 +27,7 @@ function formatViolation(v: Result, index: number) {
     .join('\n');
 
   return [
-    `${index + 1}. [${v.impact}] ${v.id}: ${v.help}`,
+    `${index + 1}. [${v.impact ?? 'unknown'}] ${v.id}: ${v.help}`,
     `   WCAG: ${wcag}`,
     `   Elements (${v.nodes.length}):`,
     ...elements,
@@ -45,7 +40,6 @@ function formatViolation(v: Result, index: number) {
 export async function expectNoA11yViolations(page: Page, testInfo: TestInfo) {
   const results = await new AxeBuilder({ page })
     .withTags(WCAG_TAGS)
-    .disableRules(DISABLED_RULES)
     .analyze();
 
   if (results.violations.length > 0) {
