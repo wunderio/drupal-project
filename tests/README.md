@@ -27,13 +27,14 @@ Results are written to `playwright-report/` (open `playwright-report/index.html`
 | `tests/auth.setup.ts`                | Logs in as admin once and stores the session for end-to-end tests              |
 | `tests/example.spec.ts`              | Example end-to-end tests (create a basic page and an article)                  |
 | `tests/helpers/drupal-test.ts`       | Test base with the `drupal` helper (via `@drupal/playwright`)                  |
-| `tests/visual-regression.spec.ts`    | Visual regression: list of pages to screenshot                                 |
-| `tests/helpers/visual.ts`            | Visual helpers, e.g. `waitForPageStable()` (lazy images, fonts)                |
+| `tests/visual-regression.spec.ts`    | Visual regression spec, reads the pages from `visual-pages.json`               |
+| `tests/visual-pages.json`            | Pages to screenshot (`path`, `name`, optional `mask`, `fullPage`)              |
+| `tests/helpers/visual.ts`, `.css`    | `waitForPageStable()` (lazy images, fonts) and styles applied while screenshotting |
 | `tests/__screenshots__/`             | Visual baselines (git-ignored, created by `test:visual:update`)                |
 | `.github/workflows/`                 | `playwright.yml` (end-to-end in CI), `visual-regression.yml`                   |
-| `.github/scripts/`                   | `playwright-report-html.mjs`: one-file HTML report, used by both workflows     |
-| `.github/scripts/visual-regression/` | Shell scripts of the visual workflow (CircleCI and URL waits, baseline checks) |
-| `.github/actions/setup-visual/`      | Shared setup of the visual workflow jobs (secrets, npm, Chromium)              |
+| `.github/scripts/`                   | `playwright-report-html.mjs` (+ test): one-file HTML report, used by both workflows |
+| `.github/scripts/visual-regression/` | Shell scripts of the visual workflow (wait for CircleCI, wait for URL, find baseline) |
+| `.github/actions/`                   | `setup-visual` (secrets, Node) and `run-visual` (Playwright in Docker)         |
 
 ## End-to-end tests
 
@@ -52,7 +53,7 @@ Each test type has its own workflow, so a run only contains the jobs for its eve
 | Workflow                            | File                                                                  | Jobs                                                   | Runs on                                      |
 | ----------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------ | -------------------------------------------- |
 | Playwright: End-to-end tests        | [`playwright.yml`](../.github/workflows/playwright.yml)               | `playwright_e2e` (chromium, Drupal installed in DDEV)  | pull requests and pushes to `main`           |
-| Playwright: Visual regression tests | [`visual-regression.yml`](../.github/workflows/visual-regression.yml) | `capture-baseline` → `compare-after-deploy` → `Result` | pushes to the configured branch, manual runs |
+| Playwright: Visual regression tests | [`visual-regression.yml`](../.github/workflows/visual-regression.yml) | `visual` (wait for deploy → baseline or compare) | pushes to the configured branch, manual runs |
 
 The visual workflow is explained in [Visual regression → CI workflow](#ci-workflow).
 
@@ -63,13 +64,13 @@ Both workflows link the Playwright HTML report from the run page, packed into on
 | Workflow          | Where to find the link                                                                                                               | Zipped artifact (also has the traces) |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------- |
 | End-to-end        | **Open the Playwright report** in the `playwright_e2e` job summary                                                                   | `playwright-report`                   |
-| Visual regression | **Open the visual regression report** in the `Result` job summary, or "Details" of the `visual-regression` check on the commit or PR | `visual-regression-report`            |
+| Visual regression | **Open the visual regression report** in the `visual` job summary, or "Details" of the `visual-regression` check on the commit or PR | `visual-regression-report`            |
 
 Anyone with read access to the repository can open the reports (GitHub login required).
 
 ## Visual regression
 
-Each page in the `PAGES` list is captured as a full-page screenshot at two sizes: `visual-desktop` (1440×900) and `visual-mobile` (Pixel 7). A test fails when more than 100 pixels differ from the baseline.
+Each page in `visual-pages.json` is captured as a full-page screenshot at two sizes: `visual-desktop` (1440×900) and `visual-mobile` (Pixel 7). A test fails when more than 0.1% of the pixels differ from the baseline.
 
 Baselines are never committed, because screenshots differ between machines. Locally you record your own; CI keeps its own as a GitHub artifact.
 
@@ -84,48 +85,44 @@ Runs against your DDEV site:
 
 ### CI workflow
 
-The visual regression workflow screenshots the Silta environment before and after CircleCI deploys the push, so only changes made by the deploy are reported, not content edits made in the meantime.
+The visual regression workflow runs once per push, after CircleCI has deployed it. It screenshots the real Silta environment (with its real content) in a Playwright Docker image pinned to the `@playwright/test` version, so rendering does not change with runner updates.
 
-1. **`capture-baseline`** screenshots the environment while CircleCI is still building. The screenshots are kept as the baseline (artifact `BASELINE_NAME`, 90 days) only when:
+1. It waits until the CircleCI workflow of the commit has succeeded (only the check run's status is read) and the site responds.
+2. It finds the newest kept baseline (artifact `BASELINE_NAME`, 90 days):
+   - ⚠️ none (first run, expired, or manual mode `baseline`): the screenshots become the baseline, nothing is compared.
+   - ✅ found and nothing changed: the new screenshots replace it as the baseline.
+   - ❌ found and pages changed: the baseline is kept, see the report ([Reports in CI](#reports-in-ci)). Every following run fails against the same baseline until the change is reverted or accepted.
+   - ⚠️ pages changed, but a newer push exists, so the result is not reliable; the newer push's run compares instead.
+3. The last step sets the commit status `visual-regression` (⚠️ is pending/yellow) and links the report.
 
-   - the CircleCI deploy job had not started yet when the capture finished, and
-   - the previous visual run for that environment did not fail (`Result` records each outcome as artifact `BASELINE_NAME-passed` / `-failed`).
+To accept an intended change, run the workflow manually ("Run workflow", mode `baseline`). Mode `compare` compares without waiting for a deploy. Manual runs are only offered once the workflow file is on `main`.
 
-   Otherwise, or when the environment is not reachable, the run uses the previous baseline. The job log says why.
-
-2. **`compare-after-deploy`** waits until CircleCI has deployed the commit and the site responds, then compares against the newest kept baseline:
-   - ✅ no changes.
-   - ❌ changes, see the report ([Reports in CI](#reports-in-ci)). The next runs keep failing against the same baseline until the change is reverted or accepted.
-   - ⚠️ changes, but a newer push started deploying during the comparison, so the result is not reliable; the newer push's run compares instead.
-   - ⚠️ no baseline at all (first run, or expired): it captures one, nothing is compared.
-3. **`Result`** shows the outcome in its name and sets the commit status `visual-regression` (⚠️ is pending/yellow). Its summary links the report, see [Reports in CI](#reports-in-ci).
-
-To accept an intended change, run the visual regression workflow manually ("Run workflow", mode `baseline`): it captures the current look as the new baseline. Mode `compare` compares without waiting for a deploy. Manual runs are only offered once the workflow file is on `main`.
-
-The deploy start is read from the CircleCI `commit` check run (`.github/scripts/visual-regression/circleci-job-state.sh`). Every run checks that it can still read the deploy job there and shows a warning if CircleCI changed that format.
+Content edits made in the environment also show up as changes. Mask changing elements with `mask` in `visual-pages.json`.
 
 ## Configuring visual regression
 
 ### Pages to test
 
-Edit `PAGES` in [`visual-regression.spec.ts`](visual-regression.spec.ts). Only the front page is tested by default:
+Edit [`visual-pages.json`](visual-pages.json), no test code needed. Only the front page is tested by default:
 
-```ts
-const PAGES = [
-  { path: '/', name: 'homepage' },
-  { path: '/about-us', name: 'about-us' },
-  { path: '/node/1', name: 'article' },
-];
+```json
+[
+  { "path": "/", "name": "homepage" },
+  { "path": "/about-us", "name": "about-us", "mask": [".cookie-banner", "time"] },
+  { "path": "/node/1", "name": "article", "fullPage": false }
+]
 ```
 
 - `path` is relative to `TEST_BASE_URL`. Pick pages that exist in every environment you test (local, Silta).
-- `name` becomes the screenshot file name, so keep it unique and URL-safe.
-- Pages are loaded as an anonymous user. Record a new baseline after adding pages.
-- Prefer one page per template (landing page, article, listing, form) over many similar pages.
+- `name` becomes the screenshot file name: unique, only `a-z`, `0-9` and `-`.
+- `mask` (optional) lists CSS selectors painted over before comparing, for dates, rotating banners, cookie notices.
+- `fullPage` (optional, default `true`): `false` screenshots only the first screen.
+- Pages are loaded as an anonymous user and must answer below HTTP 400 and contain a `main` element, otherwise the test fails instead of screenshotting an error page.
+- Record a new baseline after adding pages. Prefer one page per template (landing page, article, listing, form) over many similar pages.
 
 ### Environment tested in CI
 
-Set in the `on.push.branches` and `env` blocks at the top of `visual-regression.yml`. The default target is the `main` environment:
+Set in the `on.push.branches` and `env` blocks at the top of `visual-regression.yml`. Another workflow can also call it (`workflow_call`) with `base-url` and `baseline-name`. The default target is the `main` environment:
 
 ```yaml
 on:
@@ -153,7 +150,6 @@ env:
 
 - The Silta URL is the branch name lowercased with `/` and other special characters replaced by `-`. The exact URL is in the CircleCI `deploy` job output.
 - Use a separate `BASELINE_NAME` per environment, so screenshots of different environments are never compared with each other.
-- The CircleCI deploy job follows the branch (`deploy-main` on `main`, `deploy` elsewhere, as in `.circleci/config.yml`).
 - Feature deploys wait for the manual `approve-deployment` in CircleCI. The workflow waits up to 60 minutes.
 - Visual runs of a branch never overlap: a new push waits until the previous one has finished.
 
@@ -176,7 +172,7 @@ In [`playwright.config.ts`](../playwright.config.ts):
 | What               | Where                                                                          |
 | ------------------ | ------------------------------------------------------------------------------ |
 | Screen sizes       | `visualProjects` (add a project, e.g. a tablet, named `visual-<name>`)         |
-| Allowed difference | `expect.toHaveScreenshot.maxDiffPixels` (default 100 pixels)                   |
+| Allowed difference | `expect.toHaveScreenshot.maxDiffPixelRatio` (default 0.1% of the pixels)       |
 | Basic auth         | `TEST_HTTP_USER` / `TEST_HTTP_PASS` environment variables                      |
 | Retries            | `visual`: none, also in CI (a screenshot change fails the same way every time) |
 | Baseline location  | `snapshotPathTemplate` (`tests/__screenshots__/<project>/<name>.png`)          |
@@ -184,13 +180,14 @@ In [`playwright.config.ts`](../playwright.config.ts):
 ## Troubleshooting visual tests
 
 - **Fails without visible changes:** dynamic content (dates, random teasers, carousels, cookie banners) changes between runs. Hide or mask it, e.g. `toHaveScreenshot(name, { mask: [page.locator('.carousel')] })`.
-- **Lazy images missing:** `waitForPageStable()` in `tests/helpers/visual.ts` scrolls the page to load them. Extend it if a component loads content later.
+- **Lazy images missing:** `waitForPageStable()` in `tests/helpers/visual.ts` scrolls until the page stops growing and waits for images and fonts. Extend it if a component loads content later.
+- **Video or iframe area differs:** `tests/helpers/visual.css` already hides `video` and `iframe` while screenshotting; add other selectors there.
 - **CI ⚠️ "Baseline captured" every run:** the baseline is not found. Check that `BASELINE_NAME` did not change and the artifact has not expired.
 - **CI ❌ keeps failing after the change was intended:** accept it with a manual run of the visual regression workflow in mode `baseline`.
-- **CI warning "Could not read the state of CircleCI job":** CircleCI changed its check run summary, or `DEPLOY_JOB` in `visual-regression.yml` does not match `.circleci/config.yml`.
-  Update `.github/scripts/visual-regression/circleci-job-state.sh`. Until then pre-deploy screenshots are discarded and runs compare against the previous baseline.
+- **CI warning "baseline was recorded with Playwright X":** Playwright was upgraded. If the pages look right, accept the new rendering with mode `baseline`.
 - **CI fails with "secrets are not set" or HTTP 401/403:** the Silta basic auth credentials are missing or wrong. Add or fix the `SILTA_BASICAUTH_USER` and `SILTA_BASICAUTH_PASS` repository secrets (Settings → Secrets and variables → Actions), then re-run the workflow.
-- **CI ❌ "Workflow error":** usually CircleCI failed, the deploy was not approved within 60 minutes, or the basic auth secrets are missing. See the `compare-after-deploy` job log. Once the deploy has succeeded, use "Re-run failed jobs": the baseline captured by the run is kept.
+- **CI ❌ "Workflow error":** usually CircleCI failed, the deploy was not approved within 60 minutes, or the basic auth secrets are missing. See the failing step in the `visual` job log. Once the deploy has succeeded, use "Re-run failed jobs".
+- **One-file report step fails:** it is optional (`continue-on-error`). Use the zipped `visual-regression-report` artifact and check `.github/scripts/playwright-report-html.mjs` after a Playwright upgrade (`node --test .github/scripts/`).
 
 ## Using this in another project
 
@@ -207,12 +204,12 @@ Each test type can be copied on its own. Copy the files, then adjust the marked 
 
 **Visual regression tests** (on top of the Playwright setup above):
 
-- `playwright.config.ts`: `visualSpec`, `visualProjects`, `snapshotPathTemplate` and the `toHaveScreenshot` options
+- `playwright.config.ts`: `visualSpec`, `visualProjects`, `snapshotPathTemplate` and the `toHaveScreenshot` options; pin `@playwright/test` to an exact version in `package.json` (the CI Docker image tag is taken from it)
 - `package.json`: the `test:visual` and `test:visual:update` scripts
-- `tests/visual-regression.spec.ts` and `tests/helpers/visual.ts`
+- `tests/visual-regression.spec.ts`, `tests/visual-pages.json`, `tests/helpers/visual.ts` and `tests/helpers/visual.css`
 - CI (Silta + CircleCI only):
   - `.github/workflows/visual-regression.yml`: set the branch and `env` block at the top (see [Environment tested in CI](#environment-tested-in-ci))
-  - `.github/actions/setup-visual/`
+  - `.github/actions/setup-visual/` and `.github/actions/run-visual/`
   - `.github/scripts/visual-regression/`
   - `.github/scripts/playwright-report-html.mjs`
   - repository secrets `SILTA_BASICAUTH_USER` and `SILTA_BASICAUTH_PASS`

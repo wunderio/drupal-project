@@ -40,14 +40,21 @@ jobs:
 
       # On the host (not in DDEV), so the script can write the job summary.
       - uses: actions/setup-node@v6
-        if: ${{ !cancelled() && hashFiles('playwright-report/index.html') != '' }}
+        if: ${{ !cancelled() }}
         with:
           node-version: "24"
 
+      # Smoke test of the report script, it depends on Playwright's report format.
+      - name: Test report script
+        if: ${{ !cancelled() }}
+        run: node --test .github/scripts/
+
       # The Playwright HTML report as one file (attachments embedded), so it
       # opens in the browser like `npx playwright show-report`.
+      # Optional: the zipped report above is the fallback if this breaks.
       - name: Build HTML report
         if: ${{ !cancelled() && hashFiles('playwright-report/index.html') != '' }}
+        continue-on-error: true
         run: node .github/scripts/playwright-report-html.mjs playwright-report playwright-e2e-report.html
 
       # Unzipped (archive: false), so the artifact link opens the page directly.

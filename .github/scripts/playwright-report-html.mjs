@@ -20,11 +20,14 @@ import {
   writeFileSync,
 } from 'node:fs';
 import { extname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { crc32, deflateRawSync, inflateRawSync } from 'node:zlib';
 
-const [dir = 'playwright-report', out = 'playwright-report.html'] =
-  process.argv.slice(2);
-const DATA = join(dir, 'data');
+// Playwright major.minor this was written against. The report format is
+// internal to Playwright, so another version only gets a warning here; if the
+// format really changed, the checks below fail with a clear message and the
+// workflows fall back to the zipped report.
+const TESTED_WITH = '1.59';
 // Attachment types to inline; anything else (trace zips) keeps its path.
 const TYPES = {
   '.png': 'image/png',
@@ -40,8 +43,9 @@ const MARKER =
 
 // Minimal zip reader/writer (central directory, deflate), enough for the
 // report's own zip.
-const unzip = (zip) => {
+export const unzip = (zip) => {
   const end = zip.lastIndexOf(Buffer.from([0x50, 0x4b, 0x05, 0x06]));
+  if (end < 0) throw new Error('embedded data is not a zip file');
   const count = zip.readUInt16LE(end + 10);
   let pos = zip.readUInt32LE(end + 16);
   const entries = [];
@@ -61,7 +65,7 @@ const unzip = (zip) => {
   return entries;
 };
 
-const zip = (entries) => {
+export const zip = (entries) => {
   const locals = [];
   const centrals = [];
   let offset = 0;
@@ -96,63 +100,87 @@ const zip = (entries) => {
   return Buffer.concat([...locals, directory, end]);
 };
 
-const html = readFileSync(join(dir, 'index.html'), 'utf8');
-const match = html.match(MARKER);
-if (!match) {
-  console.error(
-    `No embedded report data in ${dir}/index.html; did the Playwright HTML report format change?`,
-  );
-  process.exit(1);
-}
+const build = (dir, out) => {
+  const DATA = join(dir, 'data');
+  const html = readFileSync(join(dir, 'index.html'), 'utf8');
+  const match = html.match(MARKER);
+  if (!match) {
+    throw new Error('no embedded report data in index.html');
+  }
 
-// "data/<file>" -> data: URI, for every attachment of a known type.
-const uris = new Map(
-  (existsSync(DATA) ? readdirSync(DATA) : [])
-    .filter((file) => TYPES[extname(file)])
-    .map((file) => [
-      `data/${file}`,
-      `data:${TYPES[extname(file)]};base64,${readFileSync(
-        join(DATA, file),
-      ).toString('base64')}`,
-    ]),
-);
-
-// Rewrite the attachment paths in the report's JSON files and collect the
-// failed tests (a screenshot diff means the page looks different).
-const failed = [];
-const entries = unzip(Buffer.from(match[2], 'base64')).map(({ name, data }) => {
-  if (!name.endsWith('.json')) return { name, data };
-  const json = JSON.parse(data.toString('utf8'), (key, value) =>
-    key === 'path' && uris.has(value) ? uris.get(value) : value,
+  // "data/<file>" -> data: URI, for every attachment of a known type.
+  const uris = new Map(
+    (existsSync(DATA) ? readdirSync(DATA) : [])
+      .filter((file) => TYPES[extname(file)])
+      .map((file) => [
+        `data/${file}`,
+        `data:${TYPES[extname(file)]};base64,${readFileSync(
+          join(DATA, file),
+        ).toString('base64')}`,
+      ]),
   );
-  for (const test of json.tests ?? []) {
-    if (test.outcome !== 'unexpected') continue;
-    const changed = test.results
-      ?.at(-1)
-      ?.attachments?.some((a) => a.name.endsWith('-diff.png'));
-    failed.push(
-      `- ${test.title} (${test.projectName})${
-        changed ? ' – screenshot changed' : ''
-      }`,
+
+  // Rewrite the attachment paths in the report's JSON files and collect the
+  // failed tests (a screenshot diff means the page looks different).
+  const failed = [];
+  const packed = unzip(Buffer.from(match[2], 'base64'));
+  if (!packed.some(({ name }) => name === 'report.json')) {
+    throw new Error('report.json missing in the embedded data');
+  }
+  const entries = packed.map(({ name, data }) => {
+    if (!name.endsWith('.json')) return { name, data };
+    const json = JSON.parse(data.toString('utf8'), (key, value) =>
+      key === 'path' && uris.has(value) ? uris.get(value) : value,
+    );
+    for (const test of json.tests ?? []) {
+      if (test.outcome !== 'unexpected') continue;
+      const changed = test.results
+        ?.at(-1)
+        ?.attachments?.some((a) => a.name.endsWith('-diff.png'));
+      failed.push(
+        `- ${test.title} (${test.projectName})${
+          changed ? ' – screenshot changed' : ''
+        }`,
+      );
+    }
+    return { name, data: Buffer.from(JSON.stringify(json)) };
+  });
+
+  writeFileSync(
+    out,
+    html.replace(
+      MARKER,
+      (_, open, __, close) => open + zip(entries).toString('base64') + close,
+    ),
+  );
+
+  if (process.env.GITHUB_STEP_SUMMARY && failed.length) {
+    appendFileSync(
+      process.env.GITHUB_STEP_SUMMARY,
+      `Failed tests:\n${failed.join('\n')}\n`,
     );
   }
-  return { name, data: Buffer.from(JSON.stringify(json)) };
-});
-
-writeFileSync(
-  out,
-  html.replace(
-    MARKER,
-    (_, open, __, close) => open + zip(entries).toString('base64') + close,
-  ),
-);
-
-if (process.env.GITHUB_STEP_SUMMARY && failed.length) {
-  appendFileSync(
-    process.env.GITHUB_STEP_SUMMARY,
-    `Failed tests:\n${failed.join('\n')}\n`,
+  console.log(
+    `Wrote ${out}: ${uris.size} attachment(s) inlined, ${failed.length} failed test(s).`,
   );
+};
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  const [dir = 'playwright-report', out = 'playwright-report.html'] =
+    process.argv.slice(2);
+  try {
+    const wanted = JSON.parse(readFileSync('package.json', 'utf8'))
+      .devDependencies?.['@playwright/test'];
+    if (wanted && !wanted.replace(/^[^\d]*/, '').startsWith(`${TESTED_WITH}.`)) {
+      console.warn(
+        `::warning::playwright-report-html.mjs was written for Playwright ${TESTED_WITH}, package.json has ${wanted}.`,
+      );
+    }
+    build(dir, out);
+  } catch (error) {
+    console.error(
+      `::error::Could not build the one-file report (${error.message}). The Playwright report format may have changed; use the zipped report artifact.`,
+    );
+    process.exit(1);
+  }
 }
-console.log(
-  `Wrote ${out}: ${uris.size} attachment(s) inlined, ${failed.length} failed test(s).`,
-);

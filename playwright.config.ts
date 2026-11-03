@@ -14,6 +14,10 @@ const visual = { testMatch: visualSpec, retries: 0 };
 const visualUse = { screenshot: 'off' as const };
 
 /* Visual regression projects are enabled by `npm run test:visual*` (VISUAL_REGRESSION=1). */
+if (process.env.VISUAL_REGRESSION && !process.env.TEST_BASE_URL) {
+  throw new Error('Visual regression needs TEST_BASE_URL, the site to screenshot (e.g. https://example.com).');
+}
+
 const visualProjects = process.env.VISUAL_REGRESSION
   ? [
       {
@@ -55,7 +59,15 @@ export default defineConfig({
   /* Visual regression baselines (git-ignored, machine-specific). */
   snapshotPathTemplate: '{testDir}/__screenshots__/{projectName}/{arg}{ext}',
   expect: {
-    toHaveScreenshot: { maxDiffPixels: 100, animations: 'disabled' },
+    // A ratio, not a pixel count: full-page screenshots change height with content.
+    // visual.css hides carets, videos and iframes while the screenshot is taken.
+    toHaveScreenshot: {
+      maxDiffPixelRatio: 0.001,
+      threshold: 0.2,
+      animations: 'disabled',
+      caret: 'hide',
+      stylePath: './tests/helpers/visual.css',
+    },
   },
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {

@@ -391,7 +391,7 @@ Note: Run these commands with the appropriate environment prefix (`ddev phpunit`
 [Playwright](https://playwright.dev/) runs browser tests from `tests/` inside DDEV (browsers are installed on `ddev start`):
 
 - **End-to-end tests** check that features work, e.g. creating a page. In CI they run in GitHub Actions on pull requests and pushes to `main`.
-- **Visual regression tests** compare desktop + mobile screenshots to catch unintended visual changes. In CI they run in GitHub Actions after CircleCI deploys to Silta.
+- **Visual regression tests** compare desktop + mobile screenshots to catch unintended visual changes. In CI they run in GitHub Actions after CircleCI deploys to Silta, against the real environment; pages are listed in `tests/visual-pages.json`.
 
 ```bash
 ddev npx playwright test          # end-to-end tests
