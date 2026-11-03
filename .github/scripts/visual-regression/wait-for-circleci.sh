@@ -3,7 +3,7 @@
 #
 # CircleCI (GitHub App) reports the whole workflow as one check run named
 # "commit". Deploy is its last job, so success means the commit is deployed.
-# Only the check run's status and conclusion are read, never its summary text.
+# Only status and conclusion decide the result; the title is only printed.
 #
 # Usage: wait-for-circleci.sh <owner/repo> <sha> [timeout-seconds]
 # Requires: gh (authenticated via GH_TOKEN).
@@ -16,11 +16,11 @@ TIMEOUT="${3:-3600}"
 
 DEADLINE=$((SECONDS + TIMEOUT))
 while :; do
-  read -r STATUS CONCLUSION < <(
+  IFS='|' read -r STATUS CONCLUSION TITLE < <(
     gh api "repos/$REPO/commits/$SHA/check-runs?check_name=commit" --jq '
       [.check_runs[] | select(.app.slug == "circleci-checks")]
       | sort_by(.started_at) | last // {}
-      | "\(.status // "missing") \(.conclusion // "-")"'
+      | "\(.status // "missing")|\(.conclusion // "-")|\(.output.title // "")"'
   )
 
   if [ "$STATUS" = "completed" ]; then
@@ -37,6 +37,6 @@ while :; do
     exit 1
   fi
 
-  echo "CircleCI status: $STATUS, checking again in 30s..."
+  echo "CircleCI status: $STATUS ($TITLE), checking again in 30s..."
   sleep 30
 done
