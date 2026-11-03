@@ -7,6 +7,7 @@ use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Consolidation\SiteAlias\SiteAliasManagerInterface;
 use Drush\Attributes as CLI;
 use Drush\Boot\DrupalBootLevels;
+use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Yaml\Yaml;
 
@@ -73,6 +74,23 @@ class SiltaAliasAlterCommands extends DrushCommands {
                 $this->siteAliasManager->setSelf($resolved);
             }
         }
+    }
+
+    /**
+     * Alter the aliases for remote commands that aren't available locally.
+     *
+     * Commands that exist only on a bootstrapped site (config:status, cim,
+     * updb:status, ws...) run through Drush's RemoteCommandProxy, which has
+     * no PRE_INITIALIZE hooks, so alter() above never runs for them and the
+     * alias keeps its ${REPOSITORY} placeholder. Command event hooks run for
+     * every command.
+     *
+     * @param \Symfony\Component\Console\Event\ConsoleCommandEvent $event
+     *   The command event.
+     */
+    #[CLI\Hook(type: HookManager::PRE_COMMAND_EVENT, target: '*')]
+    public function alterForRemoteProxy(ConsoleCommandEvent $event) {
+        $this->alter($event->getInput(), new AnnotationData());
     }
 
     /**
