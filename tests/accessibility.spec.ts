@@ -6,8 +6,7 @@ import { createPromotedArticle, deleteNode } from './helpers/content';
 const authFile = 'playwright/.auth/user.json';
 
 test.describe('Accessibility', { tag: '@a11y' }, () => {
-  // Scan the front page with content, as real sites have it, not the placeholder an
-  // empty site shows. This also keeps the result independent of other tests' content.
+  // Promote an article so the front page isn't Drupal's "Welcome" page with inaccessible links.
   let articlePath: string;
 
   test.beforeAll(async ({ browser }) => {
