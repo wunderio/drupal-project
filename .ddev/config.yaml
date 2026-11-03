@@ -46,6 +46,17 @@ hooks:
         else
           echo "node_modules/ present — skipping npm ci"
         fi
+    # Warn when the Playwright version in the web image (system deps) differs from
+    # package-lock.json. The Dockerfile can't read the lock file because DDEV's
+    # build context is limited to .ddev/web-build/.
+    - exec: |
+        v=$(node -p "require('./package-lock.json').packages['node_modules/playwright'].version")
+        grep -qF "playwright@$v " /mnt/ddev_config/web-build/Dockerfile.playwright \
+          || printf '\n\033[1;31m%s\n%s\n%s\n%s\033[0m\n\n' \
+            "!!! WARNING: Playwright version mismatch !!!" \
+            "package-lock.json has Playwright $v, but .ddev/web-build/Dockerfile.playwright does not." \
+            "Update the playwright@ version in the Dockerfile to $v and run 'ddev restart'." \
+            "Until then the web image has system libraries for an older Playwright version."
     # No-op when the browsers for the installed Playwright version are present;
     # downloads new builds automatically after a Playwright version bump.
     # All browsers from playwright.config.ts; deps are in .ddev/web-build/Dockerfile.playwright.
