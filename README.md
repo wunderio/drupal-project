@@ -452,7 +452,7 @@ ddev npm run test:visual:update   # record baseline
 ddev npm run test:visual          # compare against baseline
 ```
 
-In GitHub Actions the `visual` job of the "Playwright Tests" matrix runs the same tests in DDEV, against a fresh install from `config/sync` (so use only pages that exist without content). A push to `main` records the baseline and uploads it as the `visual-baseline-main` artifact. Pull requests download the newest one and compare against it. If there is none yet, the job records one and compares nothing. Diff images are in the `playwright-report-visual` artifact.
+In GitHub Actions the `visual regression` job of the "Playwright Tests" matrix runs the same tests in DDEV, against a fresh install from `config/sync` (so use only pages that exist without content). A push to `main` records the baseline and uploads it as the `visual-baseline-main` artifact. Pull requests download the newest one and compare against it. If there is none yet, the job records one and compares nothing. Diff images are in the `playwright-report-visual regression` artifact.
 
 ##### Test structure
 

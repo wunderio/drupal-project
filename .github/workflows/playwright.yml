@@ -28,7 +28,7 @@ jobs:
             project: e2e-*
           - name: accessibility
             project: a11y-*
-          - name: visual
+          - name: visual regression
             project: visual-*
             visual: true
 
