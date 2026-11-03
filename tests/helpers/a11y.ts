@@ -32,7 +32,7 @@ function formatViolation(v: Result, index: number) {
     .join('\n');
 
   return [
-    `${index + 1}. [${v.impact}] ${v.id}: ${v.help}`,
+    `${index + 1}. [${v.impact ?? 'unknown'}] ${v.id}: ${v.help}`,
     `   WCAG: ${wcag}`,
     `   Elements (${v.nodes.length}):`,
     ...elements,
