@@ -80,29 +80,6 @@ jobs:
           path: playwright/screenshots/
           retention-days: 90
 
-      # The Playwright HTML report as one file (attachments embedded), so it
-      # opens in the browser like `npx playwright show-report`.
-      - name: Build HTML report
-        if: ${{ !cancelled() && hashFiles('playwright/report/index.html') != '' }}
-        run: node .github/scripts/playwright-report-html.mjs playwright/report playwright-${{ matrix.name }}-report.html
-
-      # Unzipped (archive: false), so the artifact link opens the page directly.
-      - name: Upload HTML report
-        id: html-report
-        if: ${{ !cancelled() && hashFiles(format('playwright-{0}-report.html', matrix.name)) != '' }}
-        uses: actions/upload-artifact@v7
-        with:
-          path: playwright-${{ matrix.name }}-report.html
-          archive: false
-          retention-days: 30
-
-      - name: Link HTML report
-        if: steps.html-report.outputs.artifact-url != ''
-        env:
-          REPORT_URL: ${{ steps.html-report.outputs.artifact-url }}
-        run: echo "<a href=\"$REPORT_URL\" target=\"_blank\" rel=\"noopener\">Open the ${{ matrix.name }} report</a>" >> "$GITHUB_STEP_SUMMARY"
-
-      # Full report with traces, as a zip.
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v6
