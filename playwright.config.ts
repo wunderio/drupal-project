@@ -61,7 +61,7 @@ export default defineConfig({
     : [
         ['html', { open: 'never', outputFolder: 'playwright/report' }],
         ['list'],
-        ['./tests/helpers/ddev-report-hint.ts'],
+        ['./tests/reporters/ddev-report-hint.ts'],
       ],
   /* Visual regression baselines (git-ignored, machine-specific). */
   snapshotDir: './playwright/screenshots',

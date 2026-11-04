@@ -424,7 +424,7 @@ ddev playwright-report
 ```
 
 It prints the report URL for this project (`https://novarnish.<project>.ddev.site:9323`).
-Leave the command running while you browse the report; stop it with `Ctrl+C`. Playwright's own `npx playwright show-report` hint after a run does not work in DDEV; `tests/helpers/ddev-report-hint.ts` adds this command below it.
+Leave the command running while you browse the report; stop it with `Ctrl+C`. Playwright's own `npx playwright show-report` hint after a run does not work in DDEV; `tests/reporters/ddev-report-hint.ts` adds this command below it.
 
 - The URL uses the `novarnish.` hostname. The Varnish add-on serves the main `<project>.ddev.site` hostname and moves the web container to `novarnish.<project>.ddev.site`, and DDEV only exposes the web container's extra ports on that hostname.
   `https://<project>.ddev.site:9323` returns a 404. Without Varnish, the command prints the main hostname instead.
