@@ -19,7 +19,7 @@ const NO_BASELINE =
   'Visual regression: no baseline yet, nothing to compare. Run `ddev npm run test:visual:update` to record one.';
 
 test.describe('Visual regression', () => {
-  for (const { path, name } of PAGES) {
+  for (const [index, { path, name }] of PAGES.entries()) {
     test(name, async ({ page }, testInfo) => {
       // Without a baseline `toHaveScreenshot` would fail. Skip with a hint instead,
       // unless baselines are being recorded (--update-snapshots).
@@ -32,6 +32,15 @@ test.describe('Visual regression', () => {
       await page.goto(path, { waitUntil: 'networkidle' });
       await waitForPageStable(page);
       await expect(page).toHaveScreenshot(`${name}.png`, { fullPage: true });
+
+      // Only reached when the comparison passed (a failure already shows expected / actual / diff).
+      // Attach the baseline of the first page, so the report shows what was compared without growing much.
+      if (index === 0) {
+        await testInfo.attach(`compared against baseline: ${name}`, {
+          path: testInfo.snapshotPath(`${name}.png`),
+          contentType: 'image/png',
+        });
+      }
     });
   }
 });
