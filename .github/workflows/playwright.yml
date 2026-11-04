@@ -10,6 +10,12 @@ permissions:
   # Find and download the visual regression baseline artifact.
   actions: read
 
+concurrency:
+  # Pushes to main run one at a time, so the newest commit uploads the newest baseline.
+  # Pull requests cancel their own superseded runs.
+  group: playwright-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 env:
   # Newest baseline of the visual regression screenshots, taken from main.
   BASELINE_NAME: visual-baseline-main
