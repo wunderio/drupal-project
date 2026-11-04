@@ -58,7 +58,11 @@ export default defineConfig({
         ['html', { open: 'never', outputFolder: 'playwright/report' }],
         ['github'],
       ]
-    : [['html', { open: 'never', outputFolder: 'playwright/report' }], ['list']],
+    : [
+        ['html', { open: 'never', outputFolder: 'playwright/report' }],
+        ['list'],
+        ['./tests/helpers/ddev-report-hint.ts'],
+      ],
   /* Visual regression baselines (git-ignored, machine-specific). */
   snapshotDir: './playwright/screenshots',
   snapshotPathTemplate: '{snapshotDir}/{projectName}/{arg}{ext}',
