@@ -13,22 +13,6 @@ const visualSpec = /.*visual-regression\.spec\.ts/;
 const visual = { testMatch: visualSpec, retries: 0 };
 const visualUse = { screenshot: 'off' as const };
 
-/* Visual regression projects are enabled by `npm run test:visual*` (VISUAL_REGRESSION=1). */
-const visualProjects = process.env.VISUAL_REGRESSION
-  ? [
-      {
-        name: 'visual-desktop',
-        ...visual,
-        use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 }, ...visualUse },
-      },
-      {
-        name: 'visual-mobile',
-        ...visual,
-        use: { ...devices['Pixel 7'], ...visualUse },
-      },
-    ]
-  : [];
-
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -128,7 +112,16 @@ export default defineConfig({
     },
 
     /* Visual regression (desktop + mobile), see tests/visual-regression.spec.ts. */
-    ...visualProjects,
+    {
+      name: 'visual-desktop',
+      ...visual,
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 }, ...visualUse },
+    },
+    {
+      name: 'visual-mobile',
+      ...visual,
+      use: { ...devices['Pixel 7'], ...visualUse },
+    },
 
     /* Test against mobile viewports. */
     // {

@@ -69,11 +69,11 @@ jobs:
 
       - name: Compare with baseline
         if: ${{ matrix.visual && steps.baseline.outputs.found == 'true' }}
-        run: ddev exec env CI=true VISUAL_REGRESSION=1 npx playwright test --project='${{ matrix.project }}'
+        run: ddev exec env CI=true npx playwright test --project='${{ matrix.project }}'
 
       - name: Record baseline
         if: ${{ matrix.visual && steps.baseline.outputs.found != 'true' }}
-        run: ddev exec env CI=true VISUAL_REGRESSION=1 npx playwright test --project='${{ matrix.project }}' --update-snapshots=all
+        run: ddev exec env CI=true npx playwright test --project='${{ matrix.project }}' --update-snapshots=all
 
       - name: Upload baseline
         if: ${{ matrix.visual && github.event_name == 'push' }}

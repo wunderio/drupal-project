@@ -435,7 +435,9 @@ You can also open `playwright/report/index.html` directly in your browser withou
 ##### Visual regression tests
 
 `tests/visual-regression.spec.ts` screenshots the pages in its `PAGES` list (desktop 1440×900 and mobile Pixel 7, the `visual-*` projects) and compares them with baselines in `playwright/screenshots/` (git-ignored, machine-specific, never committed).
-The `visual-*` projects only exist when `VISUAL_REGRESSION=1`, which the npm scripts set:
+The `visual-*` projects also run with a plain `ddev npx playwright test`.
+Until a baseline is recorded they are skipped with a hint, so the first run stays green.
+The npm scripts run only the visual tests:
 
 ```bash
 ddev npm run test:visual:update   # record baseline

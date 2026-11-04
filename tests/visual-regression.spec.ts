@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 import { waitForPageStable } from './helpers/visual';
 
@@ -14,9 +15,20 @@ const PAGES = [
   // { path: '/search', name: 'search' },
 ];
 
+const NO_BASELINE =
+  'Visual regression: no baseline yet, nothing to compare. Run `ddev npm run test:visual:update` to record one.';
+
 test.describe('Visual regression', () => {
   for (const { path, name } of PAGES) {
-    test(name, async ({ page }) => {
+    test(name, async ({ page }, testInfo) => {
+      // Without a baseline `toHaveScreenshot` would fail. Skip with a hint instead,
+      // unless baselines are being recorded (--update-snapshots).
+      const missing = !existsSync(testInfo.snapshotPath(`${name}.png`));
+      if (missing && testInfo.config.updateSnapshots === 'missing') {
+        console.log(`[${testInfo.project.name}] ${NO_BASELINE}`);
+        test.skip(true, NO_BASELINE);
+      }
+
       await page.goto(path, { waitUntil: 'networkidle' });
       await waitForPageStable(page);
       await expect(page).toHaveScreenshot(`${name}.png`, { fullPage: true });
