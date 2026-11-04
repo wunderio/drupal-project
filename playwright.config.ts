@@ -31,7 +31,11 @@ export default defineConfig({
         ['html', { open: 'never', outputFolder: 'playwright/report' }],
         ['github'],
       ]
-    : [['html', { open: 'never', outputFolder: 'playwright/report' }], ['list']],
+    : [
+        ['html', { open: 'never', outputFolder: 'playwright/report' }],
+        ['list'],
+        ['./tests/reporters/ddev-report-hint.ts'],
+      ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
