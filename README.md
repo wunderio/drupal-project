@@ -423,7 +423,8 @@ Each run writes an HTML report to `playwright/report/` (git-ignored, like everyt
 ddev playwright-report
 ```
 
-It prints the report URL for this project (`https://novarnish.<project>.ddev.site:9323`). Leave the command running while you browse the report; stop it with `Ctrl+C`. Playwright's own `npx playwright show-report` hint after a run does not work in DDEV; `tests/helpers/ddev-report-hint.ts` adds this command below it.
+It prints the report URL for this project (`https://novarnish.<project>.ddev.site:9323`).
+Leave the command running while you browse the report; stop it with `Ctrl+C`. Playwright's own `npx playwright show-report` hint after a run does not work in DDEV; `tests/helpers/ddev-report-hint.ts` adds this command below it.
 
 - The URL uses the `novarnish.` hostname. The Varnish add-on serves the main `<project>.ddev.site` hostname and moves the web container to `novarnish.<project>.ddev.site`, and DDEV only exposes the web container's extra ports on that hostname.
   `https://<project>.ddev.site:9323` returns a 404. Without Varnish, the command prints the main hostname instead.
@@ -432,33 +433,24 @@ It prints the report URL for this project (`https://novarnish.<project>.ddev.sit
 
 You can also open `playwright/report/index.html` directly in your browser without a server. The report itself works, but traces don't open from a `file://` URL.
 
-##### Accessibility tests
-
-`tests/accessibility.spec.ts` uses [axe-core](https://github.com/dequelabs/axe-core-npm/tree/develop/packages/playwright) (`@axe-core/playwright`) to scan pages against WCAG 2.0/2.1 A and AA rules.
-Tests run as an anonymous visitor (front page, login form) and as admin (front page, "Add basic page" form). The `a11y-chromium` project loads the admin session from the setup step; the anonymous group clears it with `test.use({ storageState: { cookies: [], origins: [] } })`. Add new pages to the group that matches who sees them.
-Before the scans, the suite creates an article promoted to the front page and deletes it afterwards (`tests/helpers/content.ts`), so the front page is scanned with content instead of the placeholder an empty site shows.
-Any violations are attached as JSON to the test in the HTML report, and the test fails. Run only these tests with:
-
-```bash
-ddev npx playwright test --project=a11y-chromium
-```
-
 ##### Visual regression tests
 
-`tests/visual-regression.spec.ts` screenshots the pages in its `PAGES` list (desktop 1440×900 and mobile Pixel 7, the `visual-*` projects) and compares them with baselines in `playwright/screenshots/` (git-ignored, machine-specific, never committed). The `visual-*` projects only exist when `VISUAL_REGRESSION=1`, which the npm scripts set:
+`tests/visual-regression.spec.ts` screenshots the pages in its `PAGES` list (desktop 1440×900 and mobile Pixel 7, the `visual-*` projects) and compares them with baselines in `playwright/screenshots/` (git-ignored, machine-specific, never committed).
+The `visual-*` projects only exist when `VISUAL_REGRESSION=1`, which the npm scripts set:
 
 ```bash
 ddev npm run test:visual:update   # record baseline
 ddev npm run test:visual          # compare against baseline
 ```
 
-In GitHub Actions the `visual regression` job of the "Playwright Tests" matrix runs the same tests in DDEV, against a fresh install from `config/sync` (so use only pages that exist without content). A push to `main` records the baseline and uploads it as the `visual-baseline-main` artifact. Pull requests download the newest one and compare against it. If there is none yet, the job records one and compares nothing. Diff images are in the `playwright-report-visual regression` artifact.
+In GitHub Actions the `visual regression` job of the "Playwright Tests" matrix runs the same tests in DDEV, against a fresh install from `config/sync` (so use only pages that exist without content).
+A push to `main` records the baseline and uploads it as the `visual-baseline-main` artifact. Pull requests download the newest one and compare against it.
+If there is none yet, the job records one and compares nothing. Diff images are in the `playwright-report-visual regression` artifact.
 
 ##### Test structure
 
 - `tests/helpers/drupal-test.ts` — Custom Playwright test base providing a `drupal` helper (via `@drupal/playwright`) for actions like `drupal.loginAsAdmin()`
 - `tests/example.spec.ts` — Example end-to-end test demonstrating basic page creation
-- `tests/accessibility.spec.ts` — Automated axe accessibility scans
 
 </details>
 

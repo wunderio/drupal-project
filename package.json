@@ -21,7 +21,6 @@
     "test:visual:update": "npm run test:visual -- --update-snapshots=all"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.14.0",
     "@faker-js/faker": "^10.4.0",
     "@playwright/test": "^1.59.1",
     "@types/node": "^25.6.0",
