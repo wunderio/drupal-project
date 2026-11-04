@@ -19,15 +19,12 @@ jobs:
     name: ${{ matrix.name }}
     runs-on: ubuntu-latest
     strategy:
-      # Let all suites finish, so an accessibility failure doesn't cancel e2e.
       fail-fast: false
       matrix:
         include:
           # --project accepts "*" wildcards; each job runs one test type in all its browsers.
           - name: e2e
             project: e2e-*
-          - name: accessibility
-            project: a11y-*
           - name: visual regression
             project: visual-*
             visual: true

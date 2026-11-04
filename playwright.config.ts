@@ -82,24 +82,12 @@ export default defineConfig({
   },
 
   /* Projects are named "<type>-<browser>": "e2e-*" run the functional tests in each
-   * browser; "a11y-chromium" runs the @a11y-tagged axe scans once, in Chromium.
-   * CI runs "e2e-*" and "a11y-*" as separate jobs. */
+   * browser. CI runs "e2e-*" and "visual-*" as separate jobs. */
   projects: [
     {
       name: 'setup',
       testMatch: /.*\.setup\.ts/,
       use: { ...devices['Desktop Chrome'] },
-    },
-
-    {
-      name: 'a11y-chromium',
-      use: {
-        ...devices['Desktop Chrome'],
-        storageState: authFile,
-      },
-      dependencies: ['setup'],
-      testIgnore: [/.*\.setup\.ts/, visualSpec],
-      grep: /@a11y/,
     },
 
     {
@@ -110,7 +98,6 @@ export default defineConfig({
       },
       dependencies: ['setup'],
       testIgnore: [/.*\.setup\.ts/, visualSpec],
-      grepInvert: /@a11y/,
     },
 
     {
@@ -128,7 +115,6 @@ export default defineConfig({
       },
       dependencies: ['setup'],
       testIgnore: [/.*\.setup\.ts/, visualSpec],
-      grepInvert: /@a11y/,
     },
 
     {
@@ -139,7 +125,6 @@ export default defineConfig({
       },
       dependencies: ['setup'],
       testIgnore: [/.*\.setup\.ts/, visualSpec],
-      grepInvert: /@a11y/,
     },
 
     /* Visual regression (desktop + mobile), see tests/visual-regression.spec.ts. */
