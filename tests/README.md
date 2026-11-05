@@ -95,7 +95,15 @@ The visual regression workflow runs once per push, after CircleCI has deployed i
    - ⚠️ pages changed, but a newer push exists, so the result is not reliable; the newer push's run compares instead.
 3. The last step sets the commit status `visual-regression` (⚠️ is pending/yellow) and links the report.
 
-To accept an intended change, run the workflow manually ("Run workflow", mode `baseline`). Mode `compare` compares without waiting for a deploy. Manual runs are only offered once the workflow file is on `main`.
+To accept an intended change, run the workflow manually (**Run workflow**, mode `baseline`). Mode `compare` runs comparisons without waiting for a deploy.
+
+> **Note:** The **Run workflow** button in the GitHub Actions UI is only available once the workflow file is merged into `main`.
+
+To run it manually before merge, use the GitHub CLI:
+
+```bash
+gh workflow run visual-regression.yml --ref <your-branch> -f mode=baseline
+```
 
 Content edits made in the environment also show up as changes. Mask changing elements with `mask` in `visual-pages.json`.
 
