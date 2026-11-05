@@ -17,7 +17,7 @@ ddev npm run test:visual:update          # visual: record a baseline
 ddev npm run test:visual                 # visual: compare against the baseline
 ```
 
-Results are written to `playwright-report/` (open `playwright-report/index.html` in a browser). Failure screenshots, diffs and traces are in `test-results/`.
+All output goes under `playwright/` (git-ignored): the HTML report in `playwright/report/` (open `playwright/report/index.html` in a browser), failure screenshots, diffs and traces in `playwright/test-results/`, visual baselines in `playwright/screenshots/`.
 
 ## Files
 
@@ -30,7 +30,7 @@ Results are written to `playwright-report/` (open `playwright-report/index.html`
 | `tests/visual-regression.spec.ts`    | Visual regression spec, reads the pages from `visual-pages.json`               |
 | `tests/visual-pages.json`            | Pages to screenshot (`path`, `name`, optional `mask`, `fullPage`)              |
 | `tests/helpers/visual.ts`, `.css`    | `waitForPageStable()` (lazy images, fonts) and styles applied while screenshotting |
-| `tests/__screenshots__/`             | Visual baselines (git-ignored, created by `test:visual:update`)                |
+| `playwright/screenshots/`            | Visual baselines (git-ignored, created by `test:visual:update`)                |
 | `.github/workflows/`                 | `playwright.yml` (end-to-end in CI), `visual-regression.yml`                   |
 | `.github/scripts/`                   | `playwright-report-html.mjs` (+ test): one-file HTML report, used by both workflows |
 | `.github/scripts/visual-regression/` | Shell scripts of the visual workflow (wait for CircleCI, wait for URL, find baseline) |
@@ -183,7 +183,7 @@ In [`playwright.config.ts`](../playwright.config.ts):
 | Allowed difference | `expect.toHaveScreenshot.maxDiffPixelRatio` (default 0.1% of the pixels)       |
 | Basic auth         | `TEST_HTTP_USER` / `TEST_HTTP_PASS` environment variables                      |
 | Retries            | `visual`: none, also in CI (a screenshot change fails the same way every time) |
-| Baseline location  | `snapshotPathTemplate` (`tests/__screenshots__/<project>/<name>.png`)          |
+| Baseline location  | `snapshotDir` + `snapshotPathTemplate` (`playwright/screenshots/<project>/<name>.png`) |
 
 ## Troubleshooting visual tests
 
@@ -212,7 +212,7 @@ Each test type can be copied on its own. Copy the files, then adjust the marked 
 
 **Visual regression tests** (on top of the Playwright setup above):
 
-- `playwright.config.ts`: `visualSpec`, `visualProjects`, `snapshotPathTemplate` and the `toHaveScreenshot` options; pin `@playwright/test` to an exact version in `package.json` (the CI Docker image tag is taken from it)
+- `playwright.config.ts`: `visualSpec`, `visualProjects`, `snapshotDir`, `snapshotPathTemplate` and the `toHaveScreenshot` options; pin `@playwright/test` to an exact version in `package.json` (the CI Docker image tag is taken from it)
 - `package.json`: the `test:visual` and `test:visual:update` scripts
 - `tests/visual-regression.spec.ts`, `tests/visual-pages.json`, `tests/helpers/visual.ts` and `tests/helpers/visual.css`
 - CI (Silta + CircleCI only):

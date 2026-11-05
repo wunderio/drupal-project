@@ -35,7 +35,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: playwright-report
-          path: playwright-report/
+          path: playwright/report/
           retention-days: 30
 
       # On the host (not in DDEV), so the script can write the job summary.
@@ -53,9 +53,9 @@ jobs:
       # opens in the browser like `npx playwright show-report`.
       # Optional: the zipped report above is the fallback if this breaks.
       - name: Build HTML report
-        if: ${{ !cancelled() && hashFiles('playwright-report/index.html') != '' }}
+        if: ${{ !cancelled() && hashFiles('playwright/report/index.html') != '' }}
         continue-on-error: true
-        run: node .github/scripts/playwright-report-html.mjs playwright-report playwright-e2e-report.html
+        run: node .github/scripts/playwright-report-html.mjs playwright/report playwright-e2e-report.html
 
       # Unzipped (archive: false), so the artifact link opens the page directly.
       - name: Upload HTML report

@@ -46,6 +46,8 @@ const visualProjects = process.env.VISUAL_REGRESSION
  */
 export default defineConfig({
   testDir: './tests',
+  /* Keep all generated files (results, report, auth state) under playwright/. */
+  outputDir: './playwright/test-results',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -55,9 +57,10 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [['html', { open: 'never' }]],
+  reporter: [['html', { open: 'never', outputFolder: 'playwright/report' }]],
   /* Visual regression baselines (git-ignored, machine-specific). */
-  snapshotPathTemplate: '{testDir}/__screenshots__/{projectName}/{arg}{ext}',
+  snapshotDir: './playwright/screenshots',
+  snapshotPathTemplate: '{snapshotDir}/{projectName}/{arg}{ext}',
   expect: {
     // A ratio, not a pixel count: full-page screenshots change height with content.
     // visual.css hides carets, videos and iframes while the screenshot is taken.

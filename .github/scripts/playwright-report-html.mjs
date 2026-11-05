@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Turn a Playwright HTML report (playwright-report/: index.html + data/) into
+// Turn a Playwright HTML report (playwright/report/: index.html + data/) into
 // one self-contained file, so it can be uploaded as an unzipped artifact and
 // opened straight in the browser, looking the same as
 // `npx playwright show-report`.
@@ -166,7 +166,7 @@ const build = (dir, out) => {
 };
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const [dir = 'playwright-report', out = 'playwright-report.html'] =
+  const [dir = 'playwright/report', out = 'playwright-report.html'] =
     process.argv.slice(2);
   try {
     const wanted = JSON.parse(readFileSync('package.json', 'utf8'))

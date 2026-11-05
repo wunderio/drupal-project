@@ -98,7 +98,7 @@ jobs:
         uses: actions/download-artifact@v7
         with:
           name: ${{ env.BASELINE_NAME }}
-          path: tests/__screenshots__/
+          path: playwright/screenshots/
           github-token: ${{ github.token }}
           run-id: ${{ steps.baseline.outputs.run_id }}
 
@@ -107,7 +107,7 @@ jobs:
         if: steps.baseline.outputs.run_id != ''
         run: |
           WANTED=$(jq -r '.devDependencies["@playwright/test"]' package.json)
-          HAVE=$(jq -r '.playwright // "unknown"' tests/__screenshots__/baseline-meta.json 2>/dev/null || echo unknown)
+          HAVE=$(jq -r '.playwright // "unknown"' playwright/screenshots/baseline-meta.json 2>/dev/null || echo unknown)
           if [ "$HAVE" != "$WANTED" ]; then
             echo "::warning::The baseline was recorded with Playwright $HAVE, now $WANTED. Differences may only come from rendering; accept them with mode \"baseline\" if the pages look right."
           fi
@@ -147,14 +147,14 @@ jobs:
         if: steps.capture.outcome == 'success' || steps.compare.outcome == 'success'
         run: |
           PW=$(jq -r '.devDependencies["@playwright/test"]' package.json)
-          jq -n --arg sha "$GITHUB_SHA" --arg pw "$PW" '{sha: $sha, playwright: $pw}' > tests/__screenshots__/baseline-meta.json
+          jq -n --arg sha "$GITHUB_SHA" --arg pw "$PW" '{sha: $sha, playwright: $pw}' > playwright/screenshots/baseline-meta.json
 
       - name: Upload baseline
         if: steps.keep.outcome == 'success'
         uses: actions/upload-artifact@v6
         with:
           name: ${{ env.BASELINE_NAME }}
-          path: tests/__screenshots__/
+          path: playwright/screenshots/
           retention-days: 90
 
       - name: Upload report
@@ -163,8 +163,8 @@ jobs:
         with:
           name: visual-regression-report
           path: |
-            playwright-report/
-            test-results/
+            playwright/report/
+            playwright/test-results/
           retention-days: 30
           if-no-files-found: ignore
 
@@ -172,9 +172,9 @@ jobs:
       # opens in the browser like `npx playwright show-report`. Optional: the
       # zipped report above is the fallback if this breaks.
       - name: Build HTML report
-        if: ${{ !cancelled() && hashFiles('playwright-report/index.html') != '' }}
+        if: ${{ !cancelled() && hashFiles('playwright/report/index.html') != '' }}
         continue-on-error: true
-        run: node .github/scripts/playwright-report-html.mjs playwright-report visual-regression-report.html
+        run: node .github/scripts/playwright-report-html.mjs playwright/report visual-regression-report.html
 
       # Unzipped (archive: false), so the artifact link opens the page directly.
       - name: Upload HTML report
