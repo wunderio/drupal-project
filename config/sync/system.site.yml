@@ -4,7 +4,7 @@ langcode: en
 uuid: 40e09c31-9fbb-40a1-8eac-d66001980c56
 name: 'Drush Site-Install'
 mail: admin@example.com
-slogan: ''
+slogan: 'Visual regression test'
 page:
   403: ''
   404: ''
