@@ -514,3 +514,4 @@ Deployments are managed with CircleCI. Configurations are in `.circleci/config.y
 - Other branches deploy automatically but can be configured for manual approval.
 
 Manual approvals are managed through the `approve-deployment` job in the CircleCI UI by clicking the "approve-deployment" job label when marked as "Needs Approval."
+
