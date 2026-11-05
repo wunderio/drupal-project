@@ -53,7 +53,7 @@ Each test type has its own workflow, so a run only contains the jobs for its eve
 | Workflow                            | File                                                                  | Jobs                                                   | Runs on                                      |
 | ----------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------ | -------------------------------------------- |
 | Playwright: End-to-end tests        | [`playwright.yml`](../.github/workflows/playwright.yml)               | `playwright_e2e` (chromium, Drupal installed in DDEV)  | pull requests and pushes to `main`           |
-| Playwright: Visual regression tests | [`visual-regression.yml`](../.github/workflows/visual-regression.yml) | `visual` (wait for deploy → baseline or compare) | pushes to the configured branch, manual runs |
+| Playwright: Visual regression tests | [`visual-regression.yml`](../.github/workflows/visual-regression.yml) | `Visual regression` (wait for deploy → baseline or compare) | pushes to the configured branch, manual runs |
 
 The visual workflow is explained in [Visual regression → CI workflow](#ci-workflow).
 
@@ -64,7 +64,7 @@ Both workflows link the Playwright HTML report from the run page, packed into on
 | Workflow          | Where to find the link                                                                                                               | Zipped artifact (also has the traces) |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------- |
 | End-to-end        | **Open the Playwright report** in the `playwright_e2e` job summary                                                                   | `playwright-report`                   |
-| Visual regression | **Open the visual regression report** in the `visual` job summary, or "Details" of the `visual-regression` check on the commit or PR | `visual-regression-report`            |
+| Visual regression | **Open the visual regression report** in the `Visual regression` job summary, or "Details" of the `visual-regression` check on the commit or PR | `visual-regression-report`            |
 
 Anyone with read access to the repository can open the reports (GitHub login required).
 
@@ -194,7 +194,7 @@ In [`playwright.config.ts`](../playwright.config.ts):
 - **CI ❌ keeps failing after the change was intended:** accept it with a manual run of the visual regression workflow in mode `baseline`.
 - **CI warning "baseline was recorded with Playwright X":** Playwright was upgraded. If the pages look right, accept the new rendering with mode `baseline`.
 - **CI fails with "secrets are not set" or HTTP 401/403:** the Silta basic auth credentials are missing or wrong. Add or fix the `SILTA_BASICAUTH_USER` and `SILTA_BASICAUTH_PASS` repository secrets (Settings → Secrets and variables → Actions), then re-run the workflow.
-- **CI ❌ "Workflow error":** usually CircleCI failed, the deploy was not approved within 60 minutes, or the basic auth secrets are missing. See the failing step in the `visual` job log. Once the deploy has succeeded, use "Re-run failed jobs".
+- **CI ❌ "Workflow error":** usually CircleCI failed, the deploy was not approved within 60 minutes, or the basic auth secrets are missing. See the failing step in the `Visual regression` job log. Once the deploy has succeeded, use "Re-run failed jobs".
 - **One-file report step fails:** it is optional (`continue-on-error`). Use the zipped `visual-regression-report` artifact and check `.github/scripts/playwright-report-html.mjs` after a Playwright upgrade (`node --test .github/scripts/`).
 
 ## Using this in another project
