@@ -7,12 +7,19 @@ import { waitForPageStable } from './helpers/visual';
 //   own content; in GitHub Actions it is a fresh install from config/sync with
 //   no content, so use pages that exist there too (front page, user login,
 //   search...), not e.g. /node/1.
+//   An absolute URL also works (it ignores TEST_BASE_URL), but GitHub Actions
+//   would then screenshot a remote site that can change at any time. To test
+//   another environment such as staging, change TEST_BASE_URL instead of the
+//   paths, and record a baseline for it first: baselines are stored per
+//   project and name, not per host.
 // - `name`: the screenshot file name, unique and URL-safe.
 // Viewports (desktop + mobile) are the visual-* projects in playwright.config.ts.
 const PAGES = [
   { path: '/', name: 'homepage' },
   // { path: '/user/login', name: 'user-login' },
   // { path: '/search', name: 'search' },
+  // Absolute URL, local runs only (see above):
+  // { path: 'https://staging.example.com/about', name: 'staging-about' },
 ];
 
 const NO_BASELINE =
