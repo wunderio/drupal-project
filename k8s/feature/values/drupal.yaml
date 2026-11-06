@@ -1,0 +1,54 @@
+---
+# Values of the drupal chart for the feature overlay. Platform and cluster defaults (domain,
+# TLS, storage) come from wunderio/argocd-cluster-management and apply before this file.
+# Chart options: https://github.com/wunderio/charts/blob/master/drupal/values.yaml
+#
+# CI (.github/workflows/build.yml, update-image-tags) sets the image tags after each
+# build; the placeholder tags below are replaced on the branch's first build.
+
+php:
+  drupalCoreVersion: "11"
+  image:
+    repository: registry.wdr.io/PROJECT_NAME/php
+    tag: feature-00000000T000000-0000000
+  cron:
+    drupal:
+      # Disabled in PR environments: a date that never exists.
+      schedule: "~ 0 31 2 *"
+
+nginx:
+  image:
+    repository: registry.wdr.io/PROJECT_NAME/nginx
+    tag: feature-00000000T000000-0000000
+
+shell:
+  image:
+    repository: registry.wdr.io/PROJECT_NAME/shell
+    tag: feature-00000000T000000-0000000
+
+# New environments copy their database and files from the main branch's environment.
+referenceData:
+  referenceEnvironment: main
+
+mailpit:
+  enabled: true
+
+varnish:
+  enabled: true
+
+# ArgoCD's repo-server has no cluster access for lookup(), so the MariaDB subchart would
+# generate new random passwords on every render. Pin them; set your own values per project
+# (README.md). The database is reachable only from inside the environment's namespace.
+mariadb:
+  db:
+    password: DB_PASSWORD
+  rootUser:
+    password: DB_ROOT_PASSWORD
+
+mounts:
+  public-files:
+    enabled: true
+    mountPath: /app/web/sites/default/files
+  private-files:
+    enabled: true
+    mountPath: /app/private
