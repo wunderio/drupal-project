@@ -31,6 +31,12 @@ web_environment:
   - SMTP_ADDRESS=localhost:1025
 
 corepack_enable: false
+# Expose the Playwright HTML report server (npx playwright show-report).
+web_extra_exposed_ports:
+  - name: playwright-report
+    container_port: 9323
+    http_port: 9322
+    https_port: 9323
 hooks:
   post-start:
     - exec: "composer install"

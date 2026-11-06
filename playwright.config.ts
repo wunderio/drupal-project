@@ -2,6 +2,17 @@ import { defineConfig, devices } from '@playwright/test';
 
 const authFile = 'playwright/.auth/user.json';
 
+/* Visual regression spec, only run by the visual-* projects. */
+const visualSpec = /.*visual-regression\.spec\.ts/;
+
+/*
+ * Shared by the visual-* projects. A screenshot change fails the same way every
+ * time, so no retries, and no extra failure screenshot: the expected / actual /
+ * diff images already show it. Keeps the HTML report small and quick to open.
+ */
+const visual = { testMatch: visualSpec, retries: 0 };
+const visualUse = { screenshot: 'off' as const };
+
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -15,6 +26,8 @@ const authFile = 'playwright/.auth/user.json';
  */
 export default defineConfig({
   testDir: './tests',
+  /* Keep all generated files (results, report, auth state) under playwright/. */
+  outputDir: './playwright/test-results',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -24,7 +37,22 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [['html', { open: 'never' }]],
+  reporter: process.env.CI
+    ? [
+        ['html', { open: 'never', outputFolder: 'playwright/report' }],
+        ['github'],
+      ]
+    : [
+        ['html', { open: 'never', outputFolder: 'playwright/report' }],
+        ['list'],
+        ['./tests/reporters/ddev-report-hint.ts'],
+      ],
+  /* Visual regression baselines (git-ignored, machine-specific). */
+  snapshotDir: './playwright/screenshots',
+  snapshotPathTemplate: '{snapshotDir}/{projectName}/{arg}{ext}',
+  expect: {
+    toHaveScreenshot: { maxDiffPixels: 100, animations: 'disabled' },
+  },
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
@@ -37,7 +65,8 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
 
-  /* Configure projects for major browsers */
+  /* Projects are named "<type>-<browser>": "e2e-*" run the functional tests in each
+   * browser. CI runs "e2e-*" and "visual-*" as separate jobs. */
   projects: [
     {
       name: 'setup',
@@ -46,17 +75,17 @@ export default defineConfig({
     },
 
     {
-      name: 'chromium',
+      name: 'e2e-chromium',
       use: {
         ...devices['Desktop Chrome'],
         storageState: authFile,
       },
       dependencies: ['setup'],
-      testIgnore: /.*\.setup\.ts/,
+      testIgnore: [/.*\.setup\.ts/, visualSpec],
     },
 
     {
-      name: 'firefox',
+      name: 'e2e-firefox',
       use: {
         ...devices['Desktop Firefox'],
         storageState: authFile,
@@ -69,17 +98,29 @@ export default defineConfig({
         },
       },
       dependencies: ['setup'],
-      testIgnore: /.*\.setup\.ts/,
+      testIgnore: [/.*\.setup\.ts/, visualSpec],
     },
 
     {
-      name: 'webkit',
+      name: 'e2e-webkit',
       use: {
         ...devices['Desktop Safari'],
         storageState: authFile,
       },
       dependencies: ['setup'],
-      testIgnore: /.*\.setup\.ts/,
+      testIgnore: [/.*\.setup\.ts/, visualSpec],
+    },
+
+    /* Visual regression (desktop + mobile), see tests/visual-regression.spec.ts. */
+    {
+      name: 'visual-desktop',
+      ...visual,
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 }, ...visualUse },
+    },
+    {
+      name: 'visual-mobile',
+      ...visual,
+      use: { ...devices['Pixel 7'], ...visualUse },
     },
 
     /* Test against mobile viewports. */

@@ -409,11 +409,44 @@ To run all tests:
 ddev npx playwright test
 ```
 
-To view the HTML report after a run:
+Tests are split into Playwright projects named `<type>-<browser>`, shown in brackets in the test output (for example `[e2e-firefox]`):
+
+- `e2e-chromium`, `e2e-firefox`, `e2e-webkit` — functional end-to-end tests in each browser
+
+Run one project with `--project`, for example `ddev npx playwright test --project=e2e-firefox`, or all projects of one type with a wildcard: `ddev npx playwright test --project="e2e-*"`.
+The GitHub Actions workflow runs `e2e-*` and `visual-*` as separate jobs ("e2e" and "visual regression"), each with its own status check and report artifact.
+
+Each run writes an HTML report to `playwright/report/` (git-ignored, like everything under `playwright/`). To view it, start the report server inside the web container:
 
 ```bash
-npx playwright show-report
+ddev playwright-report
 ```
+
+It prints the report URL for this project (`https://novarnish.<project>.ddev.site:9323`).
+Leave the command running while you browse the report; stop it with `Ctrl+C`. Playwright's own `npx playwright show-report` hint after a run does not work in DDEV; `tests/reporters/ddev-report-hint.ts` adds this command below it.
+
+- The URL uses the `novarnish.` hostname. The Varnish add-on serves the main `<project>.ddev.site` hostname and moves the web container to `novarnish.<project>.ddev.site`, and DDEV only exposes the web container's extra ports on that hostname.
+  `https://<project>.ddev.site:9323` returns a 404. Without Varnish, the command prints the main hostname instead.
+- Running `ddev npx playwright show-report playwright/report --host 0.0.0.0` directly also works. The explicit report directory selects the configured output, and `--host 0.0.0.0` lets DDEV's router reach the server. The `http://0.0.0.0:9323` address it prints is only valid inside the container.
+- Port 9323 is exposed through `web_extra_exposed_ports` in `.ddev/config.yaml`. If the page doesn't load after you pull this change, run `ddev restart` so DDEV applies the new port.
+
+You can also open `playwright/report/index.html` directly in your browser without a server. The report itself works, but traces don't open from a `file://` URL.
+
+##### Visual regression tests
+
+`tests/visual-regression.spec.ts` screenshots the pages in its `PAGES` list (desktop 1440×900 and mobile Pixel 7, the `visual-*` projects) and compares them with baselines in `playwright/screenshots/` (git-ignored, machine-specific, never committed).
+The `visual-*` projects also run with a plain `ddev npx playwright test`.
+Until a baseline is recorded they are skipped with a hint, so the first run stays green.
+The npm scripts run only the visual tests:
+
+```bash
+ddev npm run test:visual:update   # record baseline
+ddev npm run test:visual          # compare against baseline
+```
+
+In GitHub Actions the `visual regression` job of the "Playwright Tests" matrix runs the same tests in DDEV, against a fresh install from `config/sync` (so use only pages that exist without content).
+A push to `main` records the baseline and uploads it as the `visual-baseline-main` artifact. Pull requests download the newest one and compare against it.
+If there is none yet, the job records one and compares nothing. Diff images are in the `playwright-report-visual regression` artifact.
 
 ##### Test structure
 
