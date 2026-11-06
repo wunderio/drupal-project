@@ -1,0 +1,171 @@
+---
+# Builds the project's images, pushes them to Harbor and commits the new tags to
+# k8s/<overlay>/values/, which ArgoCD then deploys. See README.md, "ArgoCD deployment".
+name: Build & Push Images
+
+on:
+  push:
+    branches: ["**"]
+    paths-ignore:
+      - "k8s/**"
+      - "**.md"
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  REGISTRY: ${{ vars.REGISTRY || 'registry.wdr.io' }}
+
+jobs:
+  # ---------------------------------------------------------------
+  # Validate codebase (lint, static analysis, tests).
+  # Must pass before any build.
+  # ---------------------------------------------------------------
+  validate:
+    name: Validate
+    runs-on: ubuntu-latest
+    container:
+      image: wunderio/silta-cicd:circleci-php8.4-node24-composer2-v1
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: PHP CodeSniffer
+        run: |
+          if [ -d web/modules/custom ] && [ "$(ls -A web/modules/custom 2>/dev/null)" ]; then
+            vendor/bin/phpcs --standard=Drupal,DrupalPractice web/modules/custom
+          else
+            echo "No custom modules found, skipping PHPCS."
+          fi
+
+      - name: npm lint
+        run: |
+          npm ci
+          npm run lint
+
+  # ---------------------------------------------------------------
+  # Install production dependencies and build assets.
+  # ---------------------------------------------------------------
+  build-assets:
+    name: Install & Build
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          tools: composer:v2
+          coverage: none
+
+      - name: Composer install
+        run: |
+          composer install \
+            --no-dev \
+            --no-interaction \
+            --optimize-autoloader \
+            --prefer-dist
+          # Restore execute permissions on all composer bin stubs and their targets.
+          find vendor/bin -type f -o -type l | while read -r f; do
+            chmod +x "$f"
+            [ -L "$f" ] && chmod +x "$(readlink -f "$f")" 2>/dev/null || true
+          done
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: npm install & build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Clean up before artifact upload
+        run: rm -rf .git node_modules
+
+      - name: Upload built codebase
+        uses: pyTooling/upload-artifact@v7
+        with:
+          name: built-codebase
+          include-hidden-files: true
+          path: .
+          retention-days: 1
+
+  # ---------------------------------------------------------------
+  # Build and push the php, nginx and shell images.
+  # ---------------------------------------------------------------
+  build-images:
+    name: Build & Push — ${{ matrix.target.name }}
+    runs-on: ubuntu-latest
+    needs: build-assets
+    # No images from the template repository itself (is_template), so it never deploys: a
+    # repository created from the template has is_template false and builds normally.
+    # Dependency update branches (Dependabot, Renovate) are validated but get no images either:
+    # they never deploy, and Dependabot runs without the registry secrets. Skipping this job
+    # also skips update-tags, which needs it.
+    if: >-
+      !github.event.repository.is_template &&
+      !startsWith(github.head_ref || github.ref_name, 'dependabot/') &&
+      !startsWith(github.head_ref || github.ref_name, 'renovate/')
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - name: php
+            dockerfile: silta/php.Dockerfile
+          - name: nginx
+            dockerfile: silta/nginx.Dockerfile
+          - name: shell
+            dockerfile: silta/shell.Dockerfile
+    steps:
+      - name: Build & push image
+        uses: wunderio/argocd-silta-actions/build-push-image@v1
+        with:
+          artifact-name: built-codebase
+          image-name: ${{ matrix.target.name }}
+          dockerfile: ${{ matrix.target.dockerfile }}
+          registry: ${{ env.REGISTRY }}
+          registry-username: ${{ secrets.REGISTRY_USERNAME }}
+          registry-password: ${{ secrets.REGISTRY_PASSWORD }}
+
+  # ---------------------------------------------------------------
+  # Update image tags in the ArgoCD values file of the branch's overlay.
+  # Queries the registry for the latest tags and commits the update.
+  # ---------------------------------------------------------------
+  update-tags:
+    name: Update Image Tags
+    runs-on: ubuntu-latest
+    needs: build-images
+    permissions:
+      contents: write
+    steps:
+      # The ArgoCD GitHub App token lets the tag commit pass branch protection.
+      - name: Generate ArgoCD App token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ secrets.ARGOCD_APP_ID }}
+          private-key: ${{ secrets.ARGOCD_APP_PRIVATE_KEY }}
+
+      - name: Update image tags
+        uses: wunderio/argocd-silta-actions/update-image-tags@v1
+        with:
+          image-names: "php nginx shell"
+          values-file: values/drupal.yaml
+          registry: ${{ env.REGISTRY }}
+          registry-username: ${{ secrets.REGISTRY_USERNAME }}
+          registry-password: ${{ secrets.REGISTRY_PASSWORD }}
+          token: ${{ steps.app-token.outputs.token }}

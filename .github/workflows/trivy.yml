@@ -1,0 +1,36 @@
+---
+name: Trivy Security Scan
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  schedule:
+    # Weekly scan of the default branch every Monday at 06:00 UTC.
+    - cron: "0 6 * * 1"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  trivy:
+    name: Trivy FS Scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Findings go to the job log as a table. No SARIF upload: GitHub code scanning needs Code
+      # Security on a private repository, which most projects made from this template are. A
+      # HIGH or CRITICAL finding fails the check.
+      - name: Run Trivy filesystem scan
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: table
+          severity: CRITICAL,HIGH
+          exit-code: "1"
