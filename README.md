@@ -495,12 +495,15 @@ The platform side lives in [wunderio/argocd-cluster-management](https://github.c
 - `k8s/staging/`: the `main`/`master` branch deploys to the `staging` environment.
 - `k8s/feature/`: pull requests from `feature/*`, `hotfix/*` and `epic/*` deploy to `pr-<N>`
   environments, removed when the pull request closes.
-- `.github/workflows/build.yml` builds the images, pushes them to `registry.wdr.io/<repository>/` and
-  commits the new tags to `k8s/<overlay>/values/drupal.yaml`. ArgoCD deploys that commit.
+- `.github/workflows/build.yml` builds the images on each push, pushes them to
+  `registry.wdr.io/<repository>/` and commits the new tags to `k8s/<overlay>/values/drupal.yaml`.
+  ArgoCD deploys that commit. Pull requests are validated only.
 
 Add `k8s/develop/` or `k8s/production/` (copies of `k8s/staging/`) to deploy the `develop` or
-`production` branch too. Every project needs `k8s/staging/apps.yaml` on `main`/`master`: the
-staging environment creates the project's ArgoCD project.
+`production` branch too. CI updates the tags of `main`/`master`, `develop` and pull request
+branches; it builds `production` images but leaves `k8s/production/values/` to you, so a release
+changes only when you set its tags. Every project needs `k8s/staging/apps.yaml` on
+`main`/`master`: the staging environment creates the project's ArgoCD project.
 
 **This template repository never deploys itself.** ArgoCD only picks up repositories named
 `client-*` or `internal-*` that have the `silta-argocd` topic. The build workflow skips the
@@ -513,8 +516,8 @@ image and tag jobs when the repository is a template.
    Kubernetes namespace and the Harbor project name:
 
    ```bash
-   name=$(basename "$(git rev-parse --show-toplevel)" | tr '[:upper:]' '[:lower:]')
-   grep -rl PROJECT_NAME k8s | xargs sed -i "s/PROJECT_NAME/$name/g"
+   name=$(basename -s .git "$(git remote get-url origin)" | tr '[:upper:]' '[:lower:]')
+   grep -rl PROJECT_NAME k8s | xargs perl -pi -e "s/PROJECT_NAME/$name/g"
    ```
 
 3. Give the database its own passwords. ArgoCD can't keep the MariaDB chart's generated ones, so
@@ -522,7 +525,7 @@ image and tag jobs when the repository is a template.
 
    ```bash
    for f in k8s/*/values/drupal.yaml; do
-     sed -i "s/DB_ROOT_PASSWORD/$(openssl rand -hex 16)/; s/DB_PASSWORD/$(openssl rand -hex 16)/" "$f"
+     perl -pi -e "s/DB_ROOT_PASSWORD/$(openssl rand -hex 16)/; s/DB_PASSWORD/$(openssl rand -hex 16)/" "$f"
    done
    ```
 

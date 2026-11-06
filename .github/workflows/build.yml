@@ -16,8 +16,13 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+# Read-only default; only update-tags gets contents: write.
+permissions:
+  contents: read
+
 env:
-  REGISTRY: ${{ vars.REGISTRY || 'registry.wdr.io' }}
+  # Must match the image repositories in k8s/*/values/, which ArgoCD pulls from.
+  REGISTRY: registry.wdr.io
 
 jobs:
   # ---------------------------------------------------------------
@@ -111,12 +116,16 @@ jobs:
     name: Build & Push — ${{ matrix.target.name }}
     runs-on: ubuntu-latest
     needs: build-assets
+    # Images only on push. A pull_request run would build the same commit a second time and
+    # race the push run's tag commit, and fork pull requests get no registry secrets; pull
+    # requests are validated only. update-tags commits with "[skip ci]", so it never retriggers.
     # No images from the template repository itself (is_template), so it never deploys: a
     # repository created from the template has is_template false and builds normally.
     # Dependency update branches (Dependabot, Renovate) are validated but get no images either:
     # they never deploy, and Dependabot runs without the registry secrets. Skipping this job
     # also skips update-tags, which needs it.
     if: >-
+      github.event_name == 'push' &&
       !github.event.repository.is_template &&
       !startsWith(github.head_ref || github.ref_name, 'dependabot/') &&
       !startsWith(github.head_ref || github.ref_name, 'renovate/')
