@@ -440,8 +440,10 @@ Before the scans, the suite creates an article promoted to the front page and de
 Any violations are attached as JSON to the test in the HTML report, and the test fails. Run only these tests with:
 
 ```bash
-ddev npx playwright test --project=a11y-chromium
+ddev npm run test:a11y
 ```
+
+The script runs all `a11y-*` projects. Pass extra Playwright options after `--`, for example `ddev npm run test:a11y -- --grep "login"`.
 
 ##### Test structure
 
