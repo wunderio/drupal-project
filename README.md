@@ -446,10 +446,16 @@ ddev npm run test:visual          # compare against baseline
 
 In GitHub Actions the `visual regression` job of the "Playwright Tests" matrix runs the same tests in DDEV, against a fresh install from `config/sync` (so use only pages that exist without content).
 A push to `main` records the baseline and uploads it as the `visual-baseline-main` artifact. Pull requests download the newest one uploaded by `main` and compare against it.
-A page in `PAGES` that has no screenshot in that baseline fails the job.
+The branch is `BASELINE_BRANCH` at the top of `.github/workflows/playwright.yml`; to use another branch, change it there and in `on.push.branches`.
+A page in `PAGES` that has no screenshot in that baseline fails the job with a "No baseline for this page" error: a pull request that adds a page stays red until it is merged and `main` records the new screenshot.
+Check the new page's screenshot in the report before merging.
 If there is no baseline yet, the job records one and compares nothing (only a notice is shown).
 The baseline artifact expires after 90 days, so a project with no pushes to `main` in that time silently falls back to this; push to `main` (or re-run its latest workflow) to record a new one.
 Diff images are in the `playwright-report-visual` artifact.
+
+Diff tolerance is `maxDiffPixels: 100` in `playwright.config.ts` (`expect.toHaveScreenshot`), the same for every page and viewport.
+If long full-page screenshots (mostly `visual-mobile`) fail on anti-aliasing noise rather than real changes, add `maxDiffPixelRatio` (for example `0.001`, 0.1% of the image) instead of raising `maxDiffPixels`.
+When both are set, Playwright allows the smaller of the two, so add a ratio together with a higher `maxDiffPixels` or on its own.
 
 ##### Test structure
 

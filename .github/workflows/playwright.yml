@@ -2,7 +2,10 @@ name: Playwright Tests
 
 on:
   push:
+    # Must include BASELINE_BRANCH (see env below).
     branches: [main]
+    # Trying out the visual regression flow on a feature branch (see env below):
+    # branches: [main, feature/<branch-name>]
   pull_request:
 
 permissions:
@@ -17,8 +20,14 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
-  # Newest baseline of the visual regression screenshots, taken from main.
-  BASELINE_NAME: visual-baseline-main
+  # Visual regression: the branch whose pushes record the baseline screenshots that pull
+  # requests are compared against. Artifact: visual-baseline-<branch>. When changing it,
+  # also change `on.push.branches` above (GitHub does not allow variables in triggers).
+  BASELINE_BRANCH: main
+  # Trying out the visual regression flow before merging: record the baseline on a feature
+  # branch and open a draft PR from a branch based on it. TEMPORARY: switch both this and
+  # `on.push.branches` back to main before merging, or main never records a baseline again.
+  # BASELINE_BRANCH: feature/<branch-name>
 
 jobs:
   playwright:
@@ -53,25 +62,26 @@ jobs:
         run: ddev exec env CI=true npx playwright test --project="${{ matrix.project }}"
 
       # --- Visual regression ---------------------------------------------------
-      # Pushes to main record the baseline. Pull requests are compared against
-      # the newest one, so only changes made by the PR are reported.
+      # Pushes to BASELINE_BRANCH record the baseline. Pull requests are compared
+      # against the newest one, so only changes made by the PR are reported.
       - name: Find baseline
         id: baseline
         if: ${{ matrix.visual && github.event_name == 'pull_request' }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          # Only baselines uploaded by a run on this repository's main branch: a pull request
+          # Only baselines uploaded by a run on BASELINE_BRANCH of this repository: a pull request
           # (or fork) could change this workflow and upload an artifact with the same name.
-          RUN_ID=$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?name=$BASELINE_NAME&per_page=100" \
-            --jq '[.artifacts[] | select((.expired | not) and .workflow_run.head_branch == "main"
+          NAME="visual-baseline-$BASELINE_BRANCH"
+          RUN_ID=$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?name=$NAME&per_page=100" \
+            --jq '[.artifacts[] | select((.expired | not) and .workflow_run.head_branch == env.BASELINE_BRANCH
               and .workflow_run.head_repository_id == .workflow_run.repository_id)]
               | max_by(.created_at) | .workflow_run.id // empty')
           if [ -n "$RUN_ID" ]; then
-            gh run download "$RUN_ID" --repo "$GITHUB_REPOSITORY" --name "$BASELINE_NAME" --dir playwright/screenshots
+            gh run download "$RUN_ID" --repo "$GITHUB_REPOSITORY" --name "$NAME" --dir playwright/screenshots
             echo "found=true" >> "$GITHUB_OUTPUT"
           else
-            echo "::notice::No baseline from main (first run, or expired after 90 days): capturing one, nothing is compared."
+            echo "::notice::No baseline from $BASELINE_BRANCH (first run, or expired after 90 days): capturing one, nothing is compared."
           fi
 
       - name: Compare with baseline
@@ -83,10 +93,10 @@ jobs:
         run: ddev exec env CI=true npx playwright test --project='${{ matrix.project }}' --update-snapshots=all
 
       - name: Upload baseline
-        if: ${{ matrix.visual && github.event_name == 'push' }}
+        if: ${{ matrix.visual && github.event_name == 'push' && github.ref_name == env.BASELINE_BRANCH }}
         uses: actions/upload-artifact@v6
         with:
-          name: ${{ env.BASELINE_NAME }}
+          name: visual-baseline-${{ env.BASELINE_BRANCH }}
           path: playwright/screenshots/
           retention-days: 90
 

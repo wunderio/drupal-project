@@ -25,6 +25,11 @@ const PAGES = [
 const NO_BASELINE =
   'Visual regression: no baseline yet, nothing to compare. Run `ddev npm run test:visual:update` to record one.';
 
+const NEW_PAGE =
+  "No baseline for this page: it is not in the baseline branch's screenshots yet, so it was not compared. " +
+  'Expected for a pull request that adds a page: check its screenshot in the report, ' +
+  'the baseline branch records it after merge.';
+
 test.describe('Visual regression', () => {
   for (const [index, { path, name }] of PAGES.entries()) {
     test(name, async ({ page }, testInfo) => {
@@ -35,13 +40,18 @@ test.describe('Visual regression', () => {
       // unless baselines are being recorded (--update-snapshots). In CI a missing screenshot
       // fails, so a page added to PAGES is not silently left uncompared.
       const missing = !existsSync(baseline);
-      if (missing && testInfo.config.updateSnapshots === 'missing' && !process.env.CI) {
-        console.log(`[${testInfo.project.name}] ${NO_BASELINE}`);
-        test.skip(true, NO_BASELINE);
+      if (missing && testInfo.config.updateSnapshots === 'missing') {
+        if (!process.env.CI) {
+          console.log(`[${testInfo.project.name}] ${NO_BASELINE}`);
+          test.skip(true, NO_BASELINE);
+        }
       }
 
       await page.goto(path, { waitUntil: 'networkidle' });
       await waitForPageStable(page);
+      // CI only (locally the test was skipped): say why it fails on the pull request's checks page.
+      // Soft, so toHaveScreenshot still runs and puts the new screenshot in the report.
+      expect.soft(missing, NEW_PAGE).toBe(false);
       await expect(page).toHaveScreenshot(`${name}.png`, { fullPage: true });
 
       // Only reached when the comparison passed (a failure already shows expected / actual / diff).
