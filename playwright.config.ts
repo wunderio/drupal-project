@@ -51,7 +51,8 @@ export default defineConfig({
   snapshotDir: './playwright/screenshots',
   snapshotPathTemplate: '{snapshotDir}/{projectName}/{arg}{ext}',
   expect: {
-    toHaveScreenshot: { maxDiffPixels: 100 },
+    /* stylePath: CSS applied only while taking screenshots, to hide dynamic content. */
+    toHaveScreenshot: { maxDiffPixels: 100, stylePath: './tests/visual.css' },
   },
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {

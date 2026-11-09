@@ -457,6 +457,14 @@ Diff tolerance is `maxDiffPixels: 100` in `playwright.config.ts` (`expect.toHave
 If long full-page screenshots (mostly `visual-mobile`) fail on anti-aliasing noise rather than real changes, add `maxDiffPixelRatio` (for example `0.001`, 0.1% of the image) instead of raising `maxDiffPixels`.
 When both are set, Playwright allows the smaller of the two, so add a ratio together with a higher `maxDiffPixels` or on its own.
 
+To keep content that changes between runs (dates, videos, status messages, cookie banners) out of the comparison:
+
+- on one page, add `mask: ['<css selector>']` to its entry in `PAGES`: the area is painted over in both screenshots;
+- on every page, add a rule to `tests/visual.css` (for example `visibility: hidden !important`): it is applied only while screenshots are taken.
+
+Re-record the baseline after either change (`ddev npm run test:visual:update` locally; in CI, after the change reaches `main`).
+Locally, visual and e2e tests share the DDEV site, so pages that list content can change after an e2e run.
+
 ##### Test structure
 
 - `tests/helpers/drupal-test.ts` — Custom Playwright test base providing a `drupal` helper (via `@drupal/playwright`) for actions like `drupal.loginAsAdmin()`

@@ -13,10 +13,16 @@ import { waitForPageStable } from './helpers/visual';
 //   paths, and record a baseline for it first: baselines are stored per
 //   project and name, not per host.
 // - `name`: the screenshot file name, unique and URL-safe.
+// - `mask` (optional): CSS selectors of content that changes between runs (dates,
+//   status messages, rotating banners). Those areas are painted over in both the
+//   baseline and the new screenshot. To hide something on every page, use
+//   tests/visual.css instead.
 // Viewports (desktop + mobile) are the visual-* projects in playwright.config.ts.
-const PAGES = [
+// Locally, visual and e2e tests share your DDEV site: pages that list content
+// (front page with promoted nodes, views) change after e2e runs create content.
+const PAGES: { path: string; name: string; mask?: string[] }[] = [
   { path: '/', name: 'homepage' },
-  // { path: '/user/login', name: 'user-login' },
+  // { path: '/user/login', name: 'user-login', mask: ['[data-drupal-messages]'] },
   // { path: '/search', name: 'search' },
   // Absolute URL, local runs only (see above):
   // { path: 'https://staging.example.com/about', name: 'staging-about' },
@@ -31,7 +37,7 @@ const NEW_PAGE =
   'the baseline branch records it after merge.';
 
 test.describe('Visual regression', () => {
-  for (const [index, { path, name }] of PAGES.entries()) {
+  for (const [index, { path, name, mask = [] }] of PAGES.entries()) {
     test(name, async ({ page }, testInfo) => {
       // Same path toHaveScreenshot uses, also if a screenshot-specific pathTemplate is set.
       const baseline = testInfo.snapshotPath(`${name}.png`, { kind: 'screenshot' });
@@ -50,7 +56,10 @@ test.describe('Visual regression', () => {
       // CI only (locally the test was skipped): say why it fails on the pull request's checks page.
       // Soft, so toHaveScreenshot still runs and puts the new screenshot in the report.
       expect.soft(missing, NEW_PAGE).toBe(false);
-      await expect(page).toHaveScreenshot(`${name}.png`, { fullPage: true });
+      await expect(page).toHaveScreenshot(`${name}.png`, {
+        fullPage: true,
+        mask: mask.map((selector) => page.locator(selector)),
+      });
 
       // Only reached when the comparison passed (a failure already shows expected / actual / diff).
       // Attach the baseline of the first page, so the report shows what was compared without growing much.
