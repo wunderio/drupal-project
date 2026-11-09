@@ -39,12 +39,10 @@ test.describe('Visual regression', () => {
       // Without a baseline `toHaveScreenshot` would fail. Locally, skip with a hint instead,
       // unless baselines are being recorded (--update-snapshots). In CI a missing screenshot
       // fails, so a page added to PAGES is not silently left uncompared.
-      const missing = !existsSync(baseline);
-      if (missing && testInfo.config.updateSnapshots === 'missing') {
-        if (!process.env.CI) {
-          console.log(`[${testInfo.project.name}] ${NO_BASELINE}`);
-          test.skip(true, NO_BASELINE);
-        }
+      const missing = !existsSync(baseline) && testInfo.config.updateSnapshots === 'missing';
+      if (missing && !process.env.CI) {
+        console.log(`[${testInfo.project.name}] ${NO_BASELINE}`);
+        test.skip(true, NO_BASELINE);
       }
 
       await page.goto(path, { waitUntil: 'networkidle' });
