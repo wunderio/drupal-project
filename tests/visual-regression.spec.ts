@@ -28,10 +28,14 @@ const NO_BASELINE =
 test.describe('Visual regression', () => {
   for (const [index, { path, name }] of PAGES.entries()) {
     test(name, async ({ page }, testInfo) => {
-      // Without a baseline `toHaveScreenshot` would fail. Skip with a hint instead,
-      // unless baselines are being recorded (--update-snapshots).
-      const missing = !existsSync(testInfo.snapshotPath(`${name}.png`));
-      if (missing && testInfo.config.updateSnapshots === 'missing') {
+      // Same path toHaveScreenshot uses, also if a screenshot-specific pathTemplate is set.
+      const baseline = testInfo.snapshotPath(`${name}.png`, { kind: 'screenshot' });
+
+      // Without a baseline `toHaveScreenshot` would fail. Locally, skip with a hint instead,
+      // unless baselines are being recorded (--update-snapshots). In CI a missing screenshot
+      // fails, so a page added to PAGES is not silently left uncompared.
+      const missing = !existsSync(baseline);
+      if (missing && testInfo.config.updateSnapshots === 'missing' && !process.env.CI) {
         console.log(`[${testInfo.project.name}] ${NO_BASELINE}`);
         test.skip(true, NO_BASELINE);
       }
@@ -44,7 +48,7 @@ test.describe('Visual regression', () => {
       // Attach the baseline of the first page, so the report shows what was compared without growing much.
       if (index === 0) {
         await testInfo.attach(`compared against baseline: ${name}`, {
-          path: testInfo.snapshotPath(`${name}.png`),
+          path: baseline,
           contentType: 'image/png',
         });
       }

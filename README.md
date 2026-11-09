@@ -445,8 +445,11 @@ ddev npm run test:visual          # compare against baseline
 ```
 
 In GitHub Actions the `visual regression` job of the "Playwright Tests" matrix runs the same tests in DDEV, against a fresh install from `config/sync` (so use only pages that exist without content).
-A push to `main` records the baseline and uploads it as the `visual-baseline-main` artifact. Pull requests download the newest one and compare against it.
-If there is none yet, the job records one and compares nothing. Diff images are in the `playwright-report-visual regression` artifact.
+A push to `main` records the baseline and uploads it as the `visual-baseline-main` artifact. Pull requests download the newest one uploaded by `main` and compare against it.
+A page in `PAGES` that has no screenshot in that baseline fails the job.
+If there is no baseline yet, the job records one and compares nothing (only a notice is shown).
+The baseline artifact expires after 90 days, so a project with no pushes to `main` in that time silently falls back to this; push to `main` (or re-run its latest workflow) to record a new one.
+Diff images are in the `playwright-report-visual` artifact.
 
 ##### Test structure
 
