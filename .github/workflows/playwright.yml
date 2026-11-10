@@ -21,7 +21,7 @@ concurrency:
 
 env:
   # Visual regression: the branch whose pushes record the baseline screenshots that pull
-  # requests are compared against. Artifact: visual-baseline-<branch>. When changing it,
+  # requests are compared against (artifact `visual-baseline`). When changing it,
   # also change `on.push.branches` above (GitHub does not allow variables in triggers).
   BASELINE_BRANCH: main
   # Trying out the visual regression flow before merging: record the baseline on a feature
@@ -72,7 +72,7 @@ jobs:
         run: |
           # Only baselines uploaded by a run on BASELINE_BRANCH of this repository: a pull request
           # (or fork) could change this workflow and upload an artifact with the same name.
-          NAME="visual-baseline-$BASELINE_BRANCH"
+          NAME="visual-baseline"
           RUN_ID=$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?name=$NAME&per_page=100" \
             --jq '[.artifacts[] | select((.expired | not) and .workflow_run.head_branch == env.BASELINE_BRANCH
               and .workflow_run.head_repository_id == .workflow_run.repository_id)]
@@ -96,7 +96,9 @@ jobs:
         if: ${{ matrix.visual && github.event_name == 'push' && github.ref_name == env.BASELINE_BRANCH }}
         uses: actions/upload-artifact@v6
         with:
-          name: visual-baseline-${{ env.BASELINE_BRANCH }}
+          # Fixed name: artifact names cannot contain "/" (feature/...). The branch is
+          # checked from the uploading run instead (Find baseline).
+          name: visual-baseline
           path: playwright/screenshots/
           retention-days: 90
 
