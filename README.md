@@ -444,6 +444,13 @@ ddev npm run test:visual:update   # record baseline
 ddev npm run test:visual          # compare against baseline
 ```
 
+Each entry in `PAGES` is visited as an anonymous user:
+
+- `path`: relative to `TEST_BASE_URL`. GitHub Actions tests a fresh install with no content, so use pages that exist there too (front page, `/user/login`, `/search`), not `/node/1`.
+  An absolute URL also works but ignores `TEST_BASE_URL`, so in GitHub Actions it would screenshot a remote site that can change at any time. To test another environment, change `TEST_BASE_URL` instead and record a baseline for it first (baselines are stored per project and name, not per host).
+- `name`: the screenshot file name, unique and URL-safe.
+- `mask` (optional): CSS selectors painted over in both screenshots, see below.
+
 In GitHub Actions the `visual regression` job of the "Playwright Tests" matrix runs the same tests in DDEV, against a fresh install from `config/sync` (so use only pages that exist without content).
 A push to `main` records the baseline and uploads it as the `visual-baseline` artifact. Pull requests download the newest one uploaded by `main` and compare against it.
 The branch is `BASELINE_BRANCH` at the top of `.github/workflows/playwright.yml`; to use another branch, change it there and in `on.push.branches`.
