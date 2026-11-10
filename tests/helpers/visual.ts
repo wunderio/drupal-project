@@ -1,9 +1,8 @@
 import type { Page } from '@playwright/test';
 
 /**
- * Scroll through the page to trigger lazy-loaded content, return to the top
- * and wait until network and web fonts have settled. Scrolling stops after
- * `maxScreens` viewports, so an infinite-scroll page cannot loop until timeout.
+ * Scroll to load lazy content (at most `maxScreens` viewports, so infinite
+ * scroll cannot loop), then wait for network and fonts.
  */
 export async function waitForPageStable(page: Page, maxScreens = 30): Promise<void> {
   await page.evaluate(async (max) => {

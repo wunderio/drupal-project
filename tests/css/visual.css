@@ -1,13 +1,6 @@
 /*
- * Applied only while visual regression screenshots are taken (toHaveScreenshot
- * stylePath in playwright.config.ts), never to the site itself.
- *
- * Hide content that changes between runs and is not what the test is about,
- * for all pages at once. For a single page, prefer `mask` in PAGES
- * (tests/visual-regression.spec.ts): it keeps the layout and paints the area.
- *
- * Use visibility: hidden (keeps the layout) rather than display: none (moves
- * everything below it). Examples:
+ * Applied only while visual regression screenshots are taken. See README
+ * "Visual regression tests". Example:
  *
  * video, iframe[src*="youtube"],
  * .cookie-banner,
