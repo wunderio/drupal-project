@@ -445,7 +445,7 @@ ddev npm run test:visual          # compare against baseline
 ```
 
 In GitHub Actions the `visual regression` job of the "Playwright Tests" matrix runs the same tests in DDEV, against a fresh install from `config/sync` (so use only pages that exist without content).
-A push to `main` records the baseline and uploads it as the `visual-baseline-main` artifact. Pull requests download the newest one uploaded by `main` and compare against it.
+A push to `main` records the baseline and uploads it as the `visual-baseline` artifact. Pull requests download the newest one uploaded by `main` and compare against it.
 The branch is `BASELINE_BRANCH` at the top of `.github/workflows/playwright.yml`; to use another branch, change it there and in `on.push.branches`.
 A page in `PAGES` that has no screenshot in that baseline fails the job with a "No baseline for this page" error: a pull request that adds a page stays red until it is merged and `main` records the new screenshot.
 Check the new page's screenshot in the report before merging.
