@@ -460,7 +460,7 @@ When both are set, Playwright allows the smaller of the two, so add a ratio toge
 To keep content that changes between runs (dates, videos, status messages, cookie banners) out of the comparison:
 
 - on one page, add `mask: ['<css selector>']` to its entry in `PAGES`: the area is painted over in both screenshots;
-- on every page, add a rule to `tests/visual.css` (for example `visibility: hidden !important`): it is applied only while screenshots are taken.
+- on every page, add a rule to `tests/css/visual.css` (for example `visibility: hidden !important`): it is applied only while screenshots are taken.
 
 Re-record the baseline after either change (`ddev npm run test:visual:update` locally; in CI, after the change reaches `main`).
 Locally, visual and e2e tests share the DDEV site, so pages that list content can change after an e2e run.
