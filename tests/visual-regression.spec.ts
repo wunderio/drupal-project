@@ -16,7 +16,7 @@ import { waitForPageStable } from './helpers/visual';
 // - `mask` (optional): CSS selectors of content that changes between runs (dates,
 //   status messages, rotating banners). Those areas are painted over in both the
 //   baseline and the new screenshot. To hide something on every page, use
-//   tests/visual.css instead.
+//   tests/css/visual.css instead.
 // Viewports (desktop + mobile) are the visual-* projects in playwright.config.ts.
 // Locally, visual and e2e tests share your DDEV site: pages that list content
 // (front page with promoted nodes, views) change after e2e runs create content.
