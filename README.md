@@ -455,12 +455,16 @@ The script runs all `a11y-*` projects. Pass extra Playwright options after `--`,
 
 `tests/visual-regression.spec.ts` screenshots the pages in its `PAGES` list (desktop 1440×900 and mobile Pixel 7, the `visual-*` projects) and compares them with baselines in `playwright/screenshots/` (git-ignored, machine-specific, never committed).
 The `visual-*` projects also run with a plain `ddev npx playwright test`.
-Locally, until a baseline is recorded, they are skipped with a hint (in CI a missing baseline fails).
+Locally, until a baseline is recorded, they are skipped with a hint (CI: see below).
 The npm scripts run only the visual tests:
 
 ```bash
 ddev npm run test:visual:update   # record baseline
 ddev npm run test:visual          # compare against baseline
+
+# The same with npx:
+ddev npx playwright test --project='visual-*' --update-snapshots=all
+ddev npx playwright test --project='visual-*'
 ```
 
 Each entry in `PAGES` is visited as an anonymous user:
@@ -479,10 +483,12 @@ It compares them with the newest `visual-baseline` artifact from `main` (`BASELI
   - in GitHub: Actions > Playwright Tests > Run workflow, branch `main`;
   - or in a terminal: `gh workflow run playwright.yml --ref main`.
 - An intended change in a pull request: the PR is red. Check the diff, merge, then accept it on `main`.
+- A new page in `PAGES` does not block a pull request: it is skipped with a `NEW PAGE` warning and the other pages are compared. On `main` it fails until accepted.
 - A failing job shows an error annotation and a note in the run summary:
   - `NO BASELINE`: nothing from `main` to compare with (never recorded, or expired after 90 days);
   - `CHANGED`: screenshots differ, diff images are in the `playwright-report-visual` artifact;
-  - `FAILED`: failed without a diff, for example a new page in `PAGES` that is not in the baseline yet, or a timeout.
+  - `NEW PAGE NOT CHECKED`: a page in `PAGES` is not in the baseline yet;
+  - `FAILED`: failed without a diff, for example a timeout.
 - Every compared run shows which baseline it used (`Visual baseline` notice).
 - To use another baseline branch, change `BASELINE_BRANCH` and `on.push.branches` in the workflow.
 

@@ -10,15 +10,13 @@ const PAGES: { path: string; name: string; mask?: string[] }[] = [
   // { path: 'https://staging.example.com/about', name: 'staging-about' },
 ];
 
-const NO_BASELINE =
-  'Visual regression: no baseline yet, nothing to compare. Run `ddev npm run test:visual:update` to record one.';
+const NO_BASELINE ='Visual regression: no baseline yet, nothing to compare. Run `ddev npm run test:visual:update` to record one.';
 
-const NEW_PAGE_PR = 'has no baseline yet, so it was not compared. It is checked once the page is accepted on the baseline branch.';
+const NEW_PAGE_PR ='has no baseline yet, so it was not compared. It is checked once the page is accepted on the baseline branch.';
 
 const NEW_PAGE =
   "No baseline for this page: it is not in the baseline branch's screenshots yet, so it was not compared. " +
-  'Expected for a pull request that adds a page: check its screenshot in the report, ' +
-  'the baseline branch records it after merge.';
+  'Check its screenshot in the report, then accept it with a manual workflow run on the baseline branch.';
 
 test.describe('Visual regression', () => {
   for (const [index, { path, name, mask = [] }] of PAGES.entries()) {
