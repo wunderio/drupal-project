@@ -1,0 +1,25 @@
+uuid: e1e8a483-5cc5-4dec-ba45-390328ce754b
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - ai_ckeditor
+_core:
+  default_config_hash: 2YVHkYhaaRSRV3nuWPZ7bQhLr62IlDGCz8nDaebw0Ns
+id: ai_ckeditor_tone
+label: 'AI CKEditor tone prompt'
+variables:
+  -
+    name: tone
+    help_text: 'Name of desired tone'
+    required: true
+  -
+    name: toneDescription
+    help_text: 'Description of desired tone'
+    required: false
+  -
+    name: inputText
+    help_text: 'The input text to change the tone for'
+    required: true
+tokens: {  }

@@ -1,0 +1,20 @@
+_meta:
+  version: '1.0'
+  entity_type: taxonomy_term
+  uuid: 939dd161-b504-4265-835e-c187cf6d43e0
+  bundle: ai_tone
+  default_langcode: en
+default:
+  status:
+    -
+      value: true
+  name:
+    -
+      value: 'Friendly'
+  description:
+    -
+      value: 'Warm, approachable and conversational. Use simple words and address the reader directly.'
+      format: plain_text
+  weight:
+    -
+      value: 0

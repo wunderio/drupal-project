@@ -125,3 +125,8 @@ if (file_exists(DRUPAL_ROOT . '/sites/default/settings.local.php')) {
 if (getenv('SILTA_CLUSTER') && file_exists(DRUPAL_ROOT . '/sites/default/settings.silta.php')) {
   include DRUPAL_ROOT . '/sites/default/settings.silta.php';
 }
+
+// MIRAI endpoint for the AI module. Config only holds a placeholder, because this repository is public.
+if ($mirai_api_url = getenv('MIRAI_API_URL')) {
+  $config['ai_provider_openai_compatible.settings']['endpoint'] = $mirai_api_url;
+}

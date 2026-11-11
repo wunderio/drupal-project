@@ -1,0 +1,9 @@
+uuid: c3bdb7a1-39da-4b72-a7f7-71d7e052ebfa
+langcode: en
+status: true
+dependencies: {  }
+name: 'Translation languages'
+vid: ai_translation_languages
+description: 'Target languages for the AI CKEditor translate tool.'
+weight: 0
+new_revision: false
