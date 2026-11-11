@@ -7,6 +7,7 @@ on:
     # Trying out the visual regression flow on a feature branch (see env below):
     # branches: [main, feature/<branch-name>]
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -68,7 +69,7 @@ jobs:
       # against the newest one and fail if there is none.
       - name: Find baseline
         id: baseline
-        if: ${{ matrix.visual && github.event_name == 'pull_request' }}
+        if: ${{ matrix.visual && github.event_name != 'workflow_dispatch' }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -83,22 +84,30 @@ jobs:
             gh run download "$RUN_ID" --repo "$GITHUB_REPOSITORY" --name "$NAME" --dir playwright/screenshots
             echo "found=true" >> "$GITHUB_OUTPUT"
           else
-            MSG="No baseline from $BASELINE_BRANCH (never recorded, or expired after 90 days), so nothing was compared. Push to $BASELINE_BRANCH or re-run its latest workflow, then re-run this job."
+            MSG="No baseline from $BASELINE_BRANCH (never recorded, or expired after 90 days), so nothing was compared. Record one: Actions > Playwright Tests > Run workflow on $BASELINE_BRANCH, then re-run this job."
             echo "::error title=Visual regression: NO BASELINE::$MSG"
             printf '## :x: Visual regression: no baseline\n\n%s\n' "$MSG" >> "$GITHUB_STEP_SUMMARY"
             exit 1
           fi
 
       - name: Compare with baseline
+        id: compare
         if: ${{ matrix.visual && steps.baseline.outputs.found == 'true' }}
         run: ddev exec env CI=true npx playwright test --project='${{ matrix.project }}'
 
+      - name: Explain visual changes
+        if: ${{ failure() && steps.compare.outcome == 'failure' }}
+        run: |
+          MSG="Screenshots differ from the $BASELINE_BRANCH baseline (diffs: playwright-report-visual artifact). Not intended: fix it. Intended: after merge, Actions > Playwright Tests > Run workflow on $BASELINE_BRANCH accepts it."
+          echo "::error title=Visual regression: CHANGED::$MSG"
+          printf '## :x: Visual regression: screenshots changed\n\n%s\n' "$MSG" >> "$GITHUB_STEP_SUMMARY"
+
       - name: Record baseline
-        if: ${{ matrix.visual && steps.baseline.outputs.found != 'true' }}
+        if: ${{ matrix.visual && github.event_name == 'workflow_dispatch' }}
         run: ddev exec env CI=true npx playwright test --project='${{ matrix.project }}' --update-snapshots=all
 
       - name: Upload baseline
-        if: ${{ matrix.visual && github.event_name == 'push' && github.ref_name == env.BASELINE_BRANCH }}
+        if: ${{ matrix.visual && github.event_name != 'pull_request' && github.ref_name == env.BASELINE_BRANCH }}
         uses: actions/upload-artifact@v6
         with:
           # Fixed name: artifact names cannot contain "/" (feature/...). The branch is
