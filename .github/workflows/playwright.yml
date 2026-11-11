@@ -3,7 +3,7 @@ name: Playwright Tests
 on:
   push:
     # Must include BASELINE_BRANCH (see env below).
-    branches: [main] # TEMP: CI trial, never merge
+    branches: [main, test/MID-73-visual-ci] # TEMP: CI trial, never merge
     # Trying out the visual regression flow on a feature branch (see env below):
     # branches: [main, feature/<branch-name>]
   pull_request:
@@ -23,7 +23,7 @@ env:
   # Visual regression: the branch whose pushes record the baseline screenshots that pull
   # requests are compared against (artifact `visual-baseline`). When changing it,
   # also change `on.push.branches` above (GitHub does not allow variables in triggers).
-  BASELINE_BRANCH: main # TEMP: CI trial, never merge
+  BASELINE_BRANCH: test/MID-73-visual-ci # TEMP: CI trial, never merge
   # Trying out the visual regression flow before merging: record the baseline on a feature
   # branch and open a draft PR from a branch based on it. TEMPORARY: switch both this and
   # `on.push.branches` back to main before merging, or main never records a baseline again.
