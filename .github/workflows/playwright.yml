@@ -100,9 +100,15 @@ jobs:
       - name: Explain visual changes
         if: ${{ failure() && steps.compare.outcome == 'failure' }}
         run: |
-          MSG="Screenshots differ from the $BASELINE_BRANCH baseline (diffs: playwright-report-visual artifact). Not intended: fix it. Intended: after merge, Actions > Playwright Tests > Run workflow on $BASELINE_BRANCH accepts it."
-          echo "::error title=Visual regression: CHANGED::$MSG"
-          printf '## :x: Visual regression: screenshots changed\n\n%s\n' "$MSG" >> "$GITHUB_STEP_SUMMARY"
+          if find playwright/test-results -name '*-diff.png' 2>/dev/null | grep -q .; then
+            TITLE="CHANGED"
+            MSG="Screenshots differ from the $BASELINE_BRANCH baseline (diffs: playwright-report-visual artifact). Not intended: fix it. Intended: after merge, Actions > Playwright Tests > Run workflow on $BASELINE_BRANCH accepts it."
+          else
+            TITLE="FAILED"
+            MSG="Visual tests failed without a screenshot diff (page missing from the baseline, timeout or error). See the playwright-report-visual artifact."
+          fi
+          echo "::error title=Visual regression: $TITLE::$MSG"
+          printf '## :x: Visual regression: %s\n\n%s\n' "$TITLE" "$MSG" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Record baseline
         if: ${{ matrix.visual && github.event_name == 'workflow_dispatch' }}
