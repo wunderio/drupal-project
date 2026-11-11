@@ -5,7 +5,7 @@ import { waitForPageStable } from './helpers/visual';
 // See README "Visual regression tests" for what to put here.
 const PAGES: { path: string; name: string; mask?: string[] }[] = [
   { path: '/', name: 'homepage' },
-  // { path: '/user/login', name: 'user-login', mask: ['[data-drupal-messages]'] },
+  { path: '/user/login', name: 'user-login', mask: ['[data-drupal-messages]'] }, // TEMP: CI trial
   // { path: '/search', name: 'search' },
   // { path: 'https://staging.example.com/about', name: 'staging-about' },
 ];
