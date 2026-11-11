@@ -3,10 +3,9 @@ name: Playwright Tests
 on:
   push:
     # Must include BASELINE_BRANCH (see env below).
-    branches: [main] # TEMP: CI trial, never merge
-    # Trying out the visual regression flow on a feature branch (see env below):
-    # branches: [main, feature/<branch-name>]
+    branches: [main, test/MID-73-visual-ci] # TEMP: CI trial, never merge
   pull_request:
+  # Manual run on BASELINE_BRANCH: accept the current screenshots as the new baseline.
   workflow_dispatch:
 
 permissions:
@@ -15,20 +14,15 @@ permissions:
   actions: read
 
 concurrency:
-  # Pushes to main run one at a time, so the newest commit uploads the newest baseline.
+  # Runs on main one at a time, so baseline uploads do not overlap.
   # Pull requests cancel their own superseded runs.
   group: playwright-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
-  # Visual regression: the branch whose pushes record the baseline screenshots that pull
-  # requests are compared against (artifact `visual-baseline`). When changing it,
-  # also change `on.push.branches` above (GitHub does not allow variables in triggers).
-  BASELINE_BRANCH: main # TEMP: CI trial, never merge
-  # Trying out the visual regression flow before merging: record the baseline on a feature
-  # branch and open a draft PR from a branch based on it. TEMPORARY: switch both this and
-  # `on.push.branches` back to main before merging, or main never records a baseline again.
-  # BASELINE_BRANCH: feature/<branch-name>
+  # Branch that holds the visual baseline (artifact `visual-baseline`).
+  # Also change `on.push.branches` (GitHub does not allow variables in triggers).
+  BASELINE_BRANCH: test/MID-73-visual-ci # TEMP: CI trial, never merge
 
 jobs:
   playwright:
@@ -36,11 +30,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
+      # Let both suites finish, so an accessibility failure doesn't cancel e2e.
       fail-fast: false
       matrix:
         include:
           # --project accepts "*" wildcards; each job runs one test type in all its browsers.
-          # `name` is the job and status check name; `id` (optional, no spaces) names the artifacts.
           - name: e2e
             id: e2e
             project: e2e-*
@@ -66,8 +60,7 @@ jobs:
         run: ddev exec env CI=true npx playwright test --project="${{ matrix.project }}"
 
       # --- Visual regression ---------------------------------------------------
-      # Pushes to BASELINE_BRANCH record the baseline. Pull requests are compared
-      # against the newest one and fail if there is none.
+      # Pushes and pull requests compare with the newest baseline; only a manual run records one.
       - name: Find baseline
         id: baseline
         if: ${{ matrix.visual && github.event_name != 'workflow_dispatch' }}
@@ -100,15 +93,19 @@ jobs:
       - name: Explain visual changes
         if: ${{ failure() && steps.compare.outcome == 'failure' }}
         run: |
-          if find playwright/test-results -name '*-diff.png' 2>/dev/null | grep -q .; then
-            TITLE="CHANGED"
-            MSG="Screenshots differ from the $BASELINE_BRANCH baseline (diffs: playwright-report-visual artifact). Not intended: fix it. Intended: after merge, Actions > Playwright Tests > Run workflow on $BASELINE_BRANCH accepts it."
-          else
-            TITLE="FAILED"
-            MSG="Visual tests failed without a screenshot diff (page missing from the baseline, timeout or error). See the playwright-report-visual artifact."
+          report() {
+            echo "::error title=Visual regression: $1::$2"
+            printf '## :x: Visual regression: %s\n\n%s\n\n' "$1" "$2" >> "$GITHUB_STEP_SUMMARY"
+          }
+          # Playwright leaves only *-actual.png for a page with no baseline, and adds *-diff.png for a change.
+          NEW=$(find playwright/test-results -name '*-actual.png' | while read -r f; do
+            [ -e "${f%-actual.png}-expected.png" ] || basename "$f" -actual.png; done | sort -u | xargs)
+          [ -n "$NEW" ] && report "NEW PAGE NOT CHECKED" "No baseline yet for: $NEW. Check its screenshot in the playwright-report-visual artifact; after merge, Run workflow on $BASELINE_BRANCH adds it to the baseline."
+          if find playwright/test-results -name '*-diff.png' | grep -q .; then
+            report "CHANGED" "Screenshots differ from the $BASELINE_BRANCH baseline (diffs: playwright-report-visual artifact). Not intended: fix it. Intended: after merge, Actions > Playwright Tests > Run workflow on $BASELINE_BRANCH accepts it."
+          elif [ -z "$NEW" ]; then
+            report "FAILED" "Visual tests failed without a screenshot diff (timeout or error). See the playwright-report-visual artifact."
           fi
-          echo "::error title=Visual regression: $TITLE::$MSG"
-          printf '## :x: Visual regression: %s\n\n%s\n' "$TITLE" "$MSG" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Record baseline
         if: ${{ matrix.visual && github.event_name == 'workflow_dispatch' }}
@@ -118,8 +115,6 @@ jobs:
         if: ${{ matrix.visual && github.event_name != 'pull_request' && github.ref_name == env.BASELINE_BRANCH }}
         uses: actions/upload-artifact@v6
         with:
-          # Fixed name: artifact names cannot contain "/" (feature/...). The branch is
-          # checked from the uploading run instead (Find baseline).
           name: visual-baseline
           path: playwright/screenshots/
           retention-days: 90
