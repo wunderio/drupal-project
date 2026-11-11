@@ -416,6 +416,9 @@ Tests are split into Playwright projects named `<type>-<browser>`, shown in brac
 
 Run one project with `--project`, for example `ddev npx playwright test --project=e2e-firefox`, or all projects of one type with a wildcard: `ddev npx playwright test --project="e2e-*"`.
 The GitHub Actions workflow runs `e2e-*`, `a11y-*` and `visual-*` as separate jobs ("e2e", "accessibility" and "visual regression"), each with its own status check and report artifact.
+Each job stops after 10 minutes (`timeout-minutes`); raise it if the test suite grows.
+To keep failing code off `main` (and out of its automatic deploy), a repository admin can make these checks required for `main` in the branch protection settings.
+A required "visual regression" check also blocks intended visual changes, because they can only be accepted on `main` after merge (see below).
 
 Each run writes an HTML report to `playwright/report/` (git-ignored, like everything under `playwright/`). To view it, start the report server inside the web container:
 
@@ -452,7 +455,7 @@ The script runs all `a11y-*` projects. Pass extra Playwright options after `--`,
 
 `tests/visual-regression.spec.ts` screenshots the pages in its `PAGES` list (desktop 1440×900 and mobile Pixel 7, the `visual-*` projects) and compares them with baselines in `playwright/screenshots/` (git-ignored, machine-specific, never committed).
 The `visual-*` projects also run with a plain `ddev npx playwright test`.
-Until a baseline is recorded they are skipped with a hint, so the first run stays green.
+Locally, until a baseline is recorded, they are skipped with a hint (in CI a missing baseline fails).
 The npm scripts run only the visual tests:
 
 ```bash
@@ -467,14 +470,21 @@ Each entry in `PAGES` is visited as an anonymous user:
 - `name`: the screenshot file name, unique and URL-safe.
 - `mask` (optional): CSS selectors painted over in both screenshots, see below.
 
-In GitHub Actions the `visual regression` job of the "Playwright Tests" matrix runs the same tests in DDEV, against a fresh install from `config/sync` (so use only pages that exist without content).
-A push to `main` records the baseline and uploads it as the `visual-baseline` artifact. Pull requests download the newest one uploaded by `main` and compare against it.
-The branch is `BASELINE_BRANCH` at the top of `.github/workflows/playwright.yml`; to use another branch, change it there and in `on.push.branches`.
-A page in `PAGES` that has no screenshot in that baseline fails the job with a "No baseline for this page" error: a pull request that adds a page stays red until it is merged and `main` records the new screenshot.
-Check the new page's screenshot in the report before merging.
-If there is no baseline yet, the job records one and compares nothing (only a notice is shown).
-The baseline artifact expires after 90 days, so a project with no pushes to `main` in that time silently falls back to this; push to `main` (or re-run its latest workflow) to record a new one.
-Diff images are in the `playwright-report-visual` artifact.
+**In GitHub Actions** the `visual regression` job runs the same tests in DDEV, against a fresh install from `config/sync`.
+It compares them with the newest `visual-baseline` artifact from `main` (`BASELINE_BRANCH` in `.github/workflows/playwright.yml`).
+
+- Pull requests and pushes to `main` only compare. A push never records a new baseline, so a visual change stays red until it is fixed or accepted.
+- A passing push to `main` uploads the same baseline again, which restarts its 90-day expiry.
+- To accept a change, or to record the first baseline, run the workflow manually on `main`, then re-run the failed jobs:
+  - in GitHub: Actions > Playwright Tests > Run workflow, branch `main`;
+  - or in a terminal: `gh workflow run playwright.yml --ref main`.
+- An intended change in a pull request: the PR is red. Check the diff, merge, then accept it on `main`.
+- A failing job shows an error annotation and a note in the run summary:
+  - `NO BASELINE`: nothing from `main` to compare with (never recorded, or expired after 90 days);
+  - `CHANGED`: screenshots differ, diff images are in the `playwright-report-visual` artifact;
+  - `FAILED`: failed without a diff, for example a new page in `PAGES` that is not in the baseline yet, or a timeout.
+- Every compared run shows which baseline it used (`Visual baseline` notice).
+- To use another baseline branch, change `BASELINE_BRANCH` and `on.push.branches` in the workflow.
 
 Diff tolerance is `maxDiffPixels: 100` in `playwright.config.ts` (`expect.toHaveScreenshot`), the same for every page and viewport.
 If long full-page screenshots (mostly `visual-mobile`) fail on anti-aliasing noise rather than real changes, add `maxDiffPixelRatio` (for example `0.001`, 0.1% of the image) instead of raising `maxDiffPixels`.
@@ -485,7 +495,7 @@ To keep content that changes between runs (dates, videos, status messages, cooki
 - on one page, add `mask: ['<css selector>']` to its entry in `PAGES`: the area is painted over in both screenshots;
 - on every page, add a rule to `tests/css/visual.css` (for example `visibility: hidden !important`): it is applied only while screenshots are taken.
 
-Re-record the baseline after either change (`ddev npm run test:visual:update` locally; in CI, after the change reaches `main`).
+Re-record the baseline after either change (`ddev npm run test:visual:update` locally; in CI, accept it on `main`).
 Locally, visual and e2e tests share the DDEV site, so pages that list content can change after an e2e run.
 
 ##### Test structure
