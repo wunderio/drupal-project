@@ -65,7 +65,7 @@ jobs:
 
       # --- Visual regression ---------------------------------------------------
       # Pushes to BASELINE_BRANCH record the baseline. Pull requests are compared
-      # against the newest one, so only changes made by the PR are reported.
+      # against the newest one and fail if there is none.
       - name: Find baseline
         id: baseline
         if: ${{ matrix.visual && github.event_name == 'pull_request' }}
@@ -83,7 +83,10 @@ jobs:
             gh run download "$RUN_ID" --repo "$GITHUB_REPOSITORY" --name "$NAME" --dir playwright/screenshots
             echo "found=true" >> "$GITHUB_OUTPUT"
           else
-            echo "::notice::No baseline from $BASELINE_BRANCH (first run, or expired after 90 days): capturing one, nothing is compared."
+            MSG="No baseline from $BASELINE_BRANCH (never recorded, or expired after 90 days), so nothing was compared. Push to $BASELINE_BRANCH or re-run its latest workflow, then re-run this job."
+            echo "::error title=Visual regression: NO BASELINE::$MSG"
+            printf '## :x: Visual regression: no baseline\n\n%s\n' "$MSG" >> "$GITHUB_STEP_SUMMARY"
+            exit 1
           fi
 
       - name: Compare with baseline
