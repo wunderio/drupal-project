@@ -84,6 +84,7 @@ jobs:
           if [ -n "$RUN_ID" ]; then
             gh run download "$RUN_ID" --repo "$GITHUB_REPOSITORY" --name "$NAME" --dir playwright/screenshots
             echo "found=true" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Visual baseline::From $BASELINE_BRANCH, run $RUN_ID"
           else
             MSG="No baseline from $BASELINE_BRANCH (never recorded, or expired after 90 days), so nothing was compared. Record one: Actions > Playwright Tests > Run workflow on $BASELINE_BRANCH, then re-run this job."
             echo "::error title=Visual regression: NO BASELINE::$MSG"
