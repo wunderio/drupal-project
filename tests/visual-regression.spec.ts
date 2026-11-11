@@ -13,6 +13,8 @@ const PAGES: { path: string; name: string; mask?: string[] }[] = [
 const NO_BASELINE =
   'Visual regression: no baseline yet, nothing to compare. Run `ddev npm run test:visual:update` to record one.';
 
+const NEW_PAGE_PR = 'has no baseline yet, so it was not compared. It is checked once the page is accepted on the baseline branch.';
+
 const NEW_PAGE =
   "No baseline for this page: it is not in the baseline branch's screenshots yet, so it was not compared. " +
   'Expected for a pull request that adds a page: check its screenshot in the report, ' +
@@ -23,8 +25,12 @@ test.describe('Visual regression', () => {
     test(name, async ({ page }, testInfo) => {
       const baseline = testInfo.snapshotPath(`${name}.png`, { kind: 'screenshot' });
 
-      // Locally skip a missing baseline with a hint, in CI fail, so no page goes uncompared.
+      // Skip a missing baseline locally (hint) and in pull requests (warning); fail on the baseline branch.
       const missing = !existsSync(baseline) && testInfo.config.updateSnapshots === 'missing';
+      if (missing && process.env.VISUAL_SKIP_NEW_PAGES === 'true') {
+        console.log(`::warning title=Visual regression: NEW PAGE::${name} (${testInfo.project.name}) ${NEW_PAGE_PR}`);
+        test.skip(true, NEW_PAGE_PR);
+      }
       if (missing && !process.env.CI) {
         console.log(`[${testInfo.project.name}] ${NO_BASELINE}`);
         test.skip(true, NO_BASELINE);
