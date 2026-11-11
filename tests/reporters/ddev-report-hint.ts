@@ -20,8 +20,6 @@ export default class DdevReportHintReporter implements Reporter {
     if (this.showHint) {
       // The HTML reporter prints its hint in onExit only when stdin is a TTY,
       // and Playwright runs every reporter's onEnd before any onExit.
-      // Both are Playwright internals, checked against @playwright/test 1.59.1:
-      // re-check after an upgrade if the npx hint comes back.
       process.stdin.isTTY = false;
     }
   }

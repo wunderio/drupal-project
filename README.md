@@ -411,10 +411,11 @@ ddev npx playwright test
 
 Tests are split into Playwright projects named `<type>-<browser>`, shown in brackets in the test output (for example `[e2e-firefox]`):
 
-- `e2e-chromium`, `e2e-firefox`, `e2e-webkit` — functional end-to-end tests in each browser
+- `e2e-chromium`, `e2e-firefox`, `e2e-webkit` — functional end-to-end tests in each browser (everything not tagged `@a11y`)
+- `a11y-chromium` — accessibility scans (tests tagged `@a11y`), Chromium only
 
 Run one project with `--project`, for example `ddev npx playwright test --project=e2e-firefox`, or all projects of one type with a wildcard: `ddev npx playwright test --project="e2e-*"`.
-The GitHub Actions workflow runs `e2e-*` and `visual-*` as separate jobs ("e2e" and "visual regression"), each with its own status check and report artifact.
+The GitHub Actions workflow runs `e2e-*`, `a11y-*` and `visual-*` as separate jobs ("e2e", "accessibility" and "visual regression"), each with its own status check and report artifact.
 
 Each run writes an HTML report to `playwright/report/` (git-ignored, like everything under `playwright/`). To view it, start the report server inside the web container:
 
@@ -431,6 +432,21 @@ Leave the command running while you browse the report; stop it with `Ctrl+C`. Pl
 - Port 9323 is exposed through `web_extra_exposed_ports` in `.ddev/config.yaml`. If the page doesn't load after you pull this change, run `ddev restart` so DDEV applies the new port.
 
 You can also open `playwright/report/index.html` directly in your browser without a server. The report itself works, but traces don't open from a `file://` URL.
+
+##### Accessibility tests
+
+`tests/accessibility.spec.ts` uses [axe-core](https://github.com/dequelabs/axe-core-npm/tree/develop/packages/playwright) (`@axe-core/playwright`) to scan pages against WCAG 2.0/2.1 A and AA rules.
+Tests run as an anonymous visitor (front page, login form) and as admin (front page, "Add basic page" form). The `a11y-chromium` project loads the admin session from the setup step;
+the anonymous group clears it with `test.use({ storageState: { cookies: [], origins: [] } })`.
+Add new pages to the group that matches who sees them.
+Before the scans, the suite creates an article promoted to the front page and deletes it afterwards (`tests/helpers/content.ts`), so the front page is scanned with content instead of the placeholder an empty site shows.
+Any violations are attached as JSON to the test in the HTML report, and the test fails. Run only these tests with:
+
+```bash
+ddev npm run test:a11y
+```
+
+The script runs all `a11y-*` projects. Pass extra Playwright options after `--`, for example `ddev npm run test:a11y -- --grep "login"`.
 
 ##### Visual regression tests
 
@@ -476,6 +492,7 @@ Locally, visual and e2e tests share the DDEV site, so pages that list content ca
 
 - `tests/helpers/drupal-test.ts` — Custom Playwright test base providing a `drupal` helper (via `@drupal/playwright`) for actions like `drupal.loginAsAdmin()`
 - `tests/example.spec.ts` — Example end-to-end test demonstrating basic page creation
+- `tests/accessibility.spec.ts` — Automated axe accessibility scans
 
 </details>
 

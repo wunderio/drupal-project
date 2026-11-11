@@ -42,6 +42,8 @@ jobs:
           - name: e2e
             id: e2e
             project: e2e-*
+          - name: accessibility
+            project: a11y-*
           - name: visual regression
             id: visual
             project: visual-*
