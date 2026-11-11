@@ -88,7 +88,7 @@ jobs:
       - name: Compare with baseline
         id: compare
         if: ${{ matrix.visual && steps.baseline.outputs.found == 'true' }}
-        run: ddev exec env CI=true npx playwright test --project='${{ matrix.project }}'
+        run: ddev exec env CI=true VISUAL_SKIP_NEW_PAGES=${{ github.event_name == 'pull_request' }} npx playwright test --project='${{ matrix.project }}'
 
       - name: Explain visual changes
         if: ${{ failure() && steps.compare.outcome == 'failure' }}
