@@ -67,6 +67,17 @@ export default defineConfig({
     },
 
     {
+      name: 'a11y-chromium',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: authFile,
+      },
+      dependencies: ['setup'],
+      testIgnore: /.*\.setup\.ts/,
+      grep: /@a11y/,
+    },
+
+    {
       name: 'e2e-chromium',
       use: {
         ...devices['Desktop Chrome'],
@@ -74,6 +85,7 @@ export default defineConfig({
       },
       dependencies: ['setup'],
       testIgnore: [/.*\.setup\.ts/, visualSpec],
+      grepInvert: /@a11y/,
     },
 
     {
@@ -91,6 +103,7 @@ export default defineConfig({
       },
       dependencies: ['setup'],
       testIgnore: [/.*\.setup\.ts/, visualSpec],
+      grepInvert: /@a11y/,
     },
 
     {
@@ -101,6 +114,7 @@ export default defineConfig({
       },
       dependencies: ['setup'],
       testIgnore: [/.*\.setup\.ts/, visualSpec],
+      grepInvert: /@a11y/,
     },
 
     {
