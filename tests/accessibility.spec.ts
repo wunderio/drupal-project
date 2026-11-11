@@ -20,6 +20,9 @@ test.describe('Accessibility', { tag: '@a11y' }, () => {
   });
 
   test.afterAll(async ({ browser }) => {
+    if (!articlePath) {
+      return;
+    }
     const page = await browser.newPage({ storageState: authFile });
     await deleteNode(page, articlePath);
     await page.close();
