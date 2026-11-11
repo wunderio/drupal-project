@@ -28,7 +28,7 @@ test.describe('Visual regression', () => {
       // Skip a missing baseline locally (hint) and in pull requests (warning); fail on the baseline branch.
       const missing = !existsSync(baseline) && testInfo.config.updateSnapshots === 'missing';
       if (missing && process.env.VISUAL_SKIP_NEW_PAGES === 'true') {
-        console.log(`::warning title=Visual regression: NEW PAGE::${name} (${testInfo.project.name}) ${NEW_PAGE_PR}`);
+        console.log(`\n::warning title=Visual regression: NEW PAGE::${name} (${testInfo.project.name}) ${NEW_PAGE_PR}`);
         test.skip(true, NEW_PAGE_PR);
       }
       if (missing && !process.env.CI) {
