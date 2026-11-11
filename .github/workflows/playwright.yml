@@ -93,15 +93,19 @@ jobs:
       - name: Explain visual changes
         if: ${{ failure() && steps.compare.outcome == 'failure' }}
         run: |
-          if find playwright/test-results -name '*-diff.png' 2>/dev/null | grep -q .; then
-            TITLE="CHANGED"
-            MSG="Screenshots differ from the $BASELINE_BRANCH baseline (diffs: playwright-report-visual artifact). Not intended: fix it. Intended: after merge, Actions > Playwright Tests > Run workflow on $BASELINE_BRANCH accepts it."
-          else
-            TITLE="FAILED"
-            MSG="Visual tests failed without a screenshot diff (page missing from the baseline, timeout or error). See the playwright-report-visual artifact."
+          report() {
+            echo "::error title=Visual regression: $1::$2"
+            printf '## :x: Visual regression: %s\n\n%s\n\n' "$1" "$2" >> "$GITHUB_STEP_SUMMARY"
+          }
+          # Playwright leaves only *-actual.png for a page with no baseline, and adds *-diff.png for a change.
+          NEW=$(find playwright/test-results -name '*-actual.png' | while read -r f; do
+            [ -e "${f%-actual.png}-expected.png" ] || basename "$f" -actual.png; done | sort -u | xargs)
+          [ -n "$NEW" ] && report "NEW PAGE NOT CHECKED" "No baseline yet for: $NEW. Check its screenshot in the playwright-report-visual artifact; after merge, Run workflow on $BASELINE_BRANCH adds it to the baseline."
+          if find playwright/test-results -name '*-diff.png' | grep -q .; then
+            report "CHANGED" "Screenshots differ from the $BASELINE_BRANCH baseline (diffs: playwright-report-visual artifact). Not intended: fix it. Intended: after merge, Actions > Playwright Tests > Run workflow on $BASELINE_BRANCH accepts it."
+          elif [ -z "$NEW" ]; then
+            report "FAILED" "Visual tests failed without a screenshot diff (timeout or error). See the playwright-report-visual artifact."
           fi
-          echo "::error title=Visual regression: $TITLE::$MSG"
-          printf '## :x: Visual regression: %s\n\n%s\n' "$TITLE" "$MSG" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Record baseline
         if: ${{ matrix.visual && github.event_name == 'workflow_dispatch' }}
