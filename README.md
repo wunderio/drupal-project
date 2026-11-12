@@ -413,9 +413,15 @@ Tests are split into Playwright projects named `<type>-<browser>`, shown in brac
 
 - `e2e-chromium`, `e2e-firefox`, `e2e-webkit` — functional end-to-end tests in each browser (everything not tagged `@a11y`)
 - `a11y-chromium` — accessibility scans (tests tagged `@a11y`), Chromium only
+- `visual-desktop`, `visual-mobile` — visual regression screenshots (see [Visual regression tests](#visual-regression-tests))
 
 Run one project with `--project`, for example `ddev npx playwright test --project=e2e-firefox`, or all projects of one type with a wildcard: `ddev npx playwright test --project="e2e-*"`.
-The GitHub Actions workflow runs `e2e-*` and `a11y-*` as separate jobs ("e2e" and "accessibility"), each with its own status check and report artifact.
+In GitHub Actions ("Playwright Tests" workflow):
+
+- `e2e-*`, `a11y-*` and `visual-*` run as separate jobs ("e2e", "accessibility", "visual regression"), each with its own status check and report artifact.
+- Each job stops after 10 minutes (`timeout-minutes`); raise it if the test suite grows.
+- To keep failing code off `main` (and out of its automatic deploy), a repository admin can make these checks required for `main` in the branch protection settings.
+  A required "visual regression" check also blocks intended visual changes, because they can only be accepted on `main` after merge.
 
 Each run writes an HTML report to `playwright/report/` (git-ignored, like everything under `playwright/`). To view it, start the report server inside the web container:
 
@@ -423,7 +429,8 @@ Each run writes an HTML report to `playwright/report/` (git-ignored, like everyt
 ddev playwright-report
 ```
 
-It prints the report URL for this project (`https://novarnish.<project>.ddev.site:9323`). Leave the command running while you browse the report; stop it with `Ctrl+C`.
+It prints the report URL for this project (`https://novarnish.<project>.ddev.site:9323`).
+Leave the command running while you browse the report; stop it with `Ctrl+C`. Playwright's own `npx playwright show-report` hint after a run does not work in DDEV; `tests/reporters/ddev-report-hint.ts` adds this command below it.
 
 - The URL uses the `novarnish.` hostname. The Varnish add-on serves the main `<project>.ddev.site` hostname and moves the web container to `novarnish.<project>.ddev.site`, and DDEV only exposes the web container's extra ports on that hostname.
   `https://<project>.ddev.site:9323` returns a 404. Without Varnish, the command prints the main hostname instead.
@@ -435,7 +442,9 @@ You can also open `playwright/report/index.html` directly in your browser withou
 ##### Accessibility tests
 
 `tests/accessibility.spec.ts` uses [axe-core](https://github.com/dequelabs/axe-core-npm/tree/develop/packages/playwright) (`@axe-core/playwright`) to scan pages against WCAG 2.0/2.1 A and AA rules.
-Tests run as an anonymous visitor (front page, login form) and as admin (front page, "Add basic page" form). The `a11y-chromium` project loads the admin session from the setup step; the anonymous group clears it with `test.use({ storageState: { cookies: [], origins: [] } })`. Add new pages to the group that matches who sees them.
+Tests run as an anonymous visitor (front page, login form) and as admin (front page, "Add basic page" form). The `a11y-chromium` project loads the admin session from the setup step;
+the anonymous group clears it with `test.use({ storageState: { cookies: [], origins: [] } })`.
+Add new pages to the group that matches who sees them.
 Before the scans, the suite creates an article promoted to the front page and deletes it afterwards (`tests/helpers/content.ts`), so the front page is scanned with content instead of the placeholder an empty site shows.
 Any violations are attached as JSON to the test in the HTML report, and the test fails. Run only these tests with:
 
@@ -445,11 +454,26 @@ ddev npm run test:a11y
 
 The script runs all `a11y-*` projects. Pass extra Playwright options after `--`, for example `ddev npm run test:a11y -- --grep "login"`.
 
+##### Visual regression tests
+
+> [!TIP]
+> **Full guide:** [tests/docs/visual-regression.md](tests/docs/visual-regression.md): adding pages, hiding dynamic content, error messages, diff tolerance.
+
+Full-page screenshots of the pages in `PAGES` (`tests/visual-regression.spec.ts`), desktop and mobile, compared with earlier accepted screenshots (the baseline).
+
+- **What is compared:** in GitHub Actions (DDEV on a fresh install, not a Silta environment), every pull request and push to `main` against the newest baseline from `main`. Locally, against your own baseline in `playwright/screenshots/` (git-ignored).
+- **Locally:** record a baseline first with `ddev npx playwright test --project='visual-*' --update-snapshots=all`; after your changes, compare with `ddev npx playwright test --project='visual-*'`. Without a baseline the tests are skipped.
+- **New project:** after the first merge to `main`, record the GitHub Actions baseline once: `gh workflow run playwright.yml --ref main` (or Actions > Playwright Tests > Run workflow, branch `main`).
+- **Test failed:** check the diff in the run's `playwright-report-visual` artifact (locally: `ddev playwright-report`).
+  Not intended: fix it. Intended: merge, run `gh workflow run playwright.yml --ref main`, then re-run the failed job on `main`.
+- **New page in `PAGES`:** a pull request shows a `NEW PAGE` warning and is not blocked; accept it on `main` after merge.
+
 ##### Test structure
 
 - `tests/helpers/drupal-test.ts` — Custom Playwright test base providing a `drupal` helper (via `@drupal/playwright`) for actions like `drupal.loginAsAdmin()`
 - `tests/example.spec.ts` — Example end-to-end test demonstrating basic page creation
 - `tests/accessibility.spec.ts` — Automated axe accessibility scans
+- `tests/visual-regression.spec.ts` — Visual regression screenshots, see `tests/docs/visual-regression.md`
 
 </details>
 
