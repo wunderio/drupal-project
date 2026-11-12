@@ -2,7 +2,7 @@ import { existsSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 import { waitForPageStable } from './helpers/visual';
 
-// See README "Visual regression tests" for what to put here.
+// See tests/docs/visual-regression.md for what to put here.
 const PAGES: { path: string; name: string; mask?: string[] }[] = [
   { path: '/', name: 'homepage' },
   // { path: '/user/login', name: 'user-login', mask: ['[data-drupal-messages]'] },

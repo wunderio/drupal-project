@@ -1,6 +1,6 @@
 /*
- * Applied only while visual regression screenshots are taken. See README
- * "Visual regression tests". Example:
+ * Applied only while visual regression screenshots are taken.
+ * See tests/docs/visual-regression.md. Example:
  *
  * video, iframe[src*="youtube"],
  * .cookie-banner,
