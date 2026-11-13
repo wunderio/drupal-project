@@ -1,20 +1,24 @@
-name: "Playwright: End-to-end tests"
-
-# Installs Drupal in DDEV and runs the end-to-end specs in chromium.
-# Visual regression runs in its own workflow, visual-regression.yml.
+name: Playwright Tests
 
 on:
   push:
     branches: [main]
   pull_request:
 
-permissions:
-  contents: read
-
 jobs:
-  e2e:
-    name: playwright_e2e
+  playwright:
+    name: ${{ matrix.name }}
     runs-on: ubuntu-latest
+    strategy:
+      # Let both suites finish, so an accessibility failure doesn't cancel e2e.
+      fail-fast: false
+      matrix:
+        include:
+          # --project accepts "*" wildcards; each job runs one test type in all its browsers.
+          - name: e2e
+            project: e2e-*
+          - name: accessibility
+            project: a11y-*
 
     steps:
       - name: Checkout
@@ -27,48 +31,12 @@ jobs:
         run: ddev drush site:install --existing-config --yes --account-pass=admin
 
       - name: Run Playwright tests
-        run: ddev exec env CI=true npx playwright test --project=chromium
+        run: ddev exec env CI=true npx playwright test --project="${{ matrix.project }}"
 
-      # Zipped, with traces.
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.name }}
           path: playwright/report/
           retention-days: 30
-
-      # On the host (not in DDEV), so the script can write the job summary.
-      - uses: actions/setup-node@v6
-        if: ${{ !cancelled() }}
-        with:
-          node-version: "24"
-
-      # Smoke test of the report script, it depends on Playwright's report format.
-      - name: Test report script
-        if: ${{ !cancelled() }}
-        run: node --test .github/scripts/*.test.mjs
-
-      # The Playwright HTML report as one file (attachments embedded), so it
-      # opens in the browser like `npx playwright show-report`.
-      # Optional: the zipped report above is the fallback if this breaks.
-      - name: Build HTML report
-        if: ${{ !cancelled() && hashFiles('playwright/report/index.html') != '' }}
-        continue-on-error: true
-        run: node .github/scripts/playwright-report-html.mjs playwright/report playwright-e2e-report.html
-
-      # Unzipped (archive: false), so the artifact link opens the page directly.
-      - name: Upload HTML report
-        id: html-report
-        if: ${{ !cancelled() && hashFiles('playwright-e2e-report.html') != '' }}
-        uses: actions/upload-artifact@v7
-        with:
-          path: playwright-e2e-report.html
-          archive: false
-          retention-days: 30
-
-      - name: Link HTML report
-        if: steps.html-report.outputs.artifact-url != ''
-        env:
-          REPORT_URL: ${{ steps.html-report.outputs.artifact-url }}
-        run: echo "[Open the Playwright report]($REPORT_URL)" >> "$GITHUB_STEP_SUMMARY"

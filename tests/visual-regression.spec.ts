@@ -21,7 +21,7 @@ for (const name of names) {
   }
 }
 
-test.describe('Visual regression', () => {
+test.describe('Visual regression', { tag: '@visual' }, () => {
   for (const { path, name, mask = [], fullPage = true } of PAGES) {
     test(name, async ({ page }) => {
       const response = await page.goto(path, { waitUntil: 'networkidle' });

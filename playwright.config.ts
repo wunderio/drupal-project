@@ -57,7 +57,16 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [['html', { open: 'never', outputFolder: 'playwright/report' }]],
+  reporter: process.env.CI
+    ? [
+        ['html', { open: 'never', outputFolder: 'playwright/report' }],
+        ['github'],
+      ]
+    : [
+        ['html', { open: 'never', outputFolder: 'playwright/report' }],
+        ['list'],
+        ['./tests/reporters/ddev-report-hint.ts'],
+      ],
   /* Visual regression baselines (git-ignored, machine-specific). */
   snapshotDir: './playwright/screenshots',
   snapshotPathTemplate: '{snapshotDir}/{projectName}/{arg}{ext}',
@@ -95,7 +104,9 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
 
-  /* Configure projects for major browsers */
+  /* Projects are named "<type>-<browser>": "e2e-*" run the functional tests in each
+   * browser; "a11y-chromium" runs the @a11y-tagged axe scans once, in Chromium.
+   * CI runs "e2e-*" and "a11y-*" as separate jobs. */
   projects: [
     {
       name: 'setup',
@@ -104,17 +115,29 @@ export default defineConfig({
     },
 
     {
-      name: 'chromium',
+      name: 'a11y-chromium',
       use: {
         ...devices['Desktop Chrome'],
         storageState: authFile,
       },
       dependencies: ['setup'],
-      testIgnore: [/.*\.setup\.ts/, visualSpec],
+      testIgnore: /.*\.setup\.ts/,
+      grep: /@a11y/,
     },
 
     {
-      name: 'firefox',
+      name: 'e2e-chromium',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: authFile,
+      },
+      dependencies: ['setup'],
+      testIgnore: /.*\.setup\.ts/,
+      grepInvert: /@a11y|@visual/,
+    },
+
+    {
+      name: 'e2e-firefox',
       use: {
         ...devices['Desktop Firefox'],
         storageState: authFile,
@@ -127,17 +150,19 @@ export default defineConfig({
         },
       },
       dependencies: ['setup'],
-      testIgnore: [/.*\.setup\.ts/, visualSpec],
+      testIgnore: /.*\.setup\.ts/,
+      grepInvert: /@a11y|@visual/,
     },
 
     {
-      name: 'webkit',
+      name: 'e2e-webkit',
       use: {
         ...devices['Desktop Safari'],
         storageState: authFile,
       },
       dependencies: ['setup'],
-      testIgnore: [/.*\.setup\.ts/, visualSpec],
+      testIgnore: /.*\.setup\.ts/,
+      grepInvert: /@a11y|@visual/,
     },
 
     /* Visual regression (desktop + mobile), see tests/visual-regression.spec.ts. */
