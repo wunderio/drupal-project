@@ -1,0 +1,19 @@
+---
+# ArgoCD applications of the staging overlay: the main/master branch deploys to the
+# staging environment.
+# The platform chart in wunderio/argocd-cluster-management reads this file and renders
+# one ArgoCD Application per entry in apps[]. See README.md, "ArgoCD deployment".
+
+# Must equal the repository name in lowercase, or rendering fails.
+namespace: PROJECT_NAME
+
+apps:
+  - name: drupal
+    chart: drupal
+    repoURL: https://storage.googleapis.com/charts.wdr.io
+    version: ">=1.43.0"
+    valuesFile: values/drupal.yaml
+
+# Set to true once k8s/staging/secrets/ holds SOPS-encrypted Secrets (README.md).
+secrets:
+  enabled: false
