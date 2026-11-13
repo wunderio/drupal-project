@@ -411,8 +411,9 @@ ddev npx playwright test
 
 Tests are split into Playwright projects named `<type>-<browser>`, shown in brackets in the test output (for example `[e2e-firefox]`):
 
-- `e2e-chromium`, `e2e-firefox`, `e2e-webkit` — functional end-to-end tests in each browser (everything not tagged `@a11y`)
+- `e2e-chromium`, `e2e-firefox`, `e2e-webkit` — functional end-to-end tests in each browser (everything not tagged `@a11y` or `@visual`)
 - `a11y-chromium` — accessibility scans (tests tagged `@a11y`), Chromium only
+- `visual-desktop`, `visual-mobile` — visual regression (tests tagged `@visual`), enabled only by `npm run test:visual*`; see [tests/README.md](tests/README.md)
 
 Run one project with `--project`, for example `ddev npx playwright test --project=e2e-firefox`, or all projects of one type with a wildcard: `ddev npx playwright test --project="e2e-*"`.
 The GitHub Actions workflow runs `e2e-*` and `a11y-*` as separate jobs ("e2e" and "accessibility"), each with its own status check and report artifact.
