@@ -500,10 +500,13 @@ The platform side lives in [wunderio/argocd-cluster-management](https://github.c
   ArgoCD deploys that commit. Pull requests are validated only.
 
 Add `k8s/develop/` or `k8s/production/` (copies of `k8s/staging/`) to deploy the `develop` or
-`production` branch too. CI updates the tags of `main`/`master`, `develop` and pull request
-branches; it builds `production` images but leaves `k8s/production/values/` to you, so a release
-changes only when you set its tags. Every project needs `k8s/staging/apps.yaml` on
-`main`/`master`: the staging environment creates the project's ArgoCD project.
+`production` branch too. CI updates the tags of `main`/`master`, `develop`, `production` and pull
+request branches, so a release is a merge to `production`: CI builds the `production` images,
+commits their tags to `k8s/production/values/` and ArgoCD deploys that commit. Until
+`k8s/production/` exists, the tag job skips `production` with a warning. To set production tags
+by hand instead, remove `production: "true"` from `build.yml`. Every project needs
+`k8s/staging/apps.yaml` on `main`/`master`: the staging environment creates the project's ArgoCD
+project.
 
 **This template repository never deploys itself.** ArgoCD only picks up repositories named
 `client-*` or `internal-*` that have the `silta-argocd` topic. The build workflow skips the

@@ -180,3 +180,6 @@ jobs:
           registry-username: ${{ secrets.REGISTRY_USERNAME }}
           registry-password: ${{ secrets.REGISTRY_PASSWORD }}
           token: ${{ steps.app-token.outputs.token }}
+          # Also commit the production branch's tags to k8s/production/, so merging to
+          # production releases it.
+          production: "true"
