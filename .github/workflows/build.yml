@@ -110,25 +110,57 @@ jobs:
           retention-days: 1
 
   # ---------------------------------------------------------------
+  # Resolve the pushed branch to its k8s overlay. Images are built only
+  # for a branch whose overlay exists, the only branches ArgoCD deploys.
+  # ---------------------------------------------------------------
+  overlay:
+    name: Resolve Overlay
+    runs-on: ubuntu-latest
+    # Images only on push. A pull_request run would build the same commit a second time and
+    # race the push run's tag commit, and fork pull requests get no registry secrets; pull
+    # requests are validated only. No images from the template repository itself
+    # (is_template), so it never deploys: a repository created from the template has
+    # is_template false and builds normally.
+    if: github.event_name == 'push' && !github.event.repository.is_template
+    outputs:
+      deploys: ${{ steps.resolve.outputs.deploys }}
+    steps:
+      - name: Checkout k8s/
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: k8s
+
+      # The branch -> overlay mapping of update-image-tags. Other branches (topic branches
+      # without k8s/feature/, Dependabot, Renovate) are validated but get no images: nothing
+      # would deploy them, and Dependabot runs without the registry secrets.
+      - name: Resolve overlay
+        id: resolve
+        run: |
+          case "$GITHUB_REF_NAME" in
+            main|master)               overlay=staging ;;
+            develop)                   overlay=develop ;;
+            production)                overlay=production ;;
+            feature/*|hotfix/*|epic/*) overlay=feature ;;
+            *)                         overlay="" ;;
+          esac
+          if [ -n "$overlay" ] && [ -f "k8s/$overlay/apps.yaml" ]; then
+            echo "deploys=true" >> "$GITHUB_OUTPUT"
+            echo "$GITHUB_REF_NAME deploys k8s/$overlay/."
+          else
+            echo "deploys=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::No k8s overlay for $GITHUB_REF_NAME, so no images are built."
+          fi
+
+  # ---------------------------------------------------------------
   # Build and push the php, nginx and shell images.
   # ---------------------------------------------------------------
   build-images:
     name: Build & Push — ${{ matrix.target.name }}
     runs-on: ubuntu-latest
-    needs: build-assets
-    # Images only on push. A pull_request run would build the same commit a second time and
-    # race the push run's tag commit, and fork pull requests get no registry secrets; pull
-    # requests are validated only. update-tags commits with "[skip ci]", so it never retriggers.
-    # No images from the template repository itself (is_template), so it never deploys: a
-    # repository created from the template has is_template false and builds normally.
-    # Dependency update branches (Dependabot, Renovate) are validated but get no images either:
-    # they never deploy, and Dependabot runs without the registry secrets. Skipping this job
-    # also skips update-tags, which needs it.
-    if: >-
-      github.event_name == 'push' &&
-      !github.event.repository.is_template &&
-      !startsWith(github.head_ref || github.ref_name, 'dependabot/') &&
-      !startsWith(github.head_ref || github.ref_name, 'renovate/')
+    needs: [build-assets, overlay]
+    # Only for a branch whose overlay exists (the overlay job). update-tags commits with
+    # "[skip ci]", so it never retriggers. Skipping this job also skips update-tags, which needs it.
+    if: needs.overlay.outputs.deploys == 'true'
     permissions:
       contents: read
     strategy:

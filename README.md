@@ -495,7 +495,8 @@ The platform side lives in [wunderio/argocd-cluster-management](https://github.c
 - `k8s/staging/`: the `main`/`master` branch deploys to the `staging` environment.
 - `k8s/feature/`: pull requests from `feature/*`, `hotfix/*` and `epic/*` deploy to `pr-<N>`
   environments, removed when the pull request closes.
-- `.github/workflows/build.yml` builds the images on each push, pushes them to
+- `.github/workflows/build.yml` builds the images on each push to a branch with an overlay here (other
+  branches are validated only), pushes them to
   `registry.wdr.io/<repository>/` and commits the new tags to `k8s/<overlay>/values/drupal.yaml`.
   ArgoCD deploys that commit. Pull requests are validated only.
 
@@ -503,7 +504,7 @@ Add `k8s/develop/` or `k8s/production/` (copies of `k8s/staging/`) to deploy the
 `production` branch too. CI updates the tags of `main`/`master`, `develop`, `production` and pull
 request branches, so a release is a merge to `production`: CI builds the `production` images,
 commits their tags to `k8s/production/values/` and ArgoCD deploys that commit. Until
-`k8s/production/` exists, the tag job skips `production` with a warning. To set production tags
+`k8s/production/` exists, `production` builds no images. To set production tags
 by hand instead, remove `production: "true"` from `build.yml`. Every project needs
 `k8s/staging/apps.yaml` on `main`/`master`: the staging environment creates the project's ArgoCD
 project.
