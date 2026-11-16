@@ -493,12 +493,13 @@ The platform side lives in [wunderio/argocd-cluster-management](https://github.c
 (`templates/argocd/README.md` there).
 
 - `k8s/staging/`: the `main`/`master` branch deploys to the `staging` environment.
-- `k8s/feature/`: pull requests from `feature/*`, `hotfix/*` and `epic/*` deploy to `pr-<N>`
-  environments, removed when the pull request closes.
-- `.github/workflows/build.yml` builds the images on each push to a branch with an overlay here (other
-  branches are validated only), pushes them to
-  `registry.wdr.io/<repository>/` and commits the new tags to `k8s/<overlay>/values/drupal.yaml`.
-  ArgoCD deploys that commit. Pull requests are validated only.
+- `k8s/feature/`: a pull request from `feature/*`, `hotfix/*` or `epic/*` gets a `pr-<N>`
+  environment only while it carries the `preview` label (create the label in the repository if
+  it does not exist yet). Removing the label or closing the pull request deletes the environment.
+- `.github/workflows/build.yml` builds the images on each push to a branch with an overlay
+  here, pushes them to `registry.wdr.io/<repository>/` and commits the new tags to
+  `k8s/<overlay>/values/drupal.yaml`. ArgoCD deploys that commit. Other branches and pull
+  requests are validated only.
 
 Add `k8s/develop/` or `k8s/production/` (copies of `k8s/staging/`) to deploy the `develop` or
 `production` branch too. CI updates the tags of `main`/`master`, `develop`, `production` and pull
