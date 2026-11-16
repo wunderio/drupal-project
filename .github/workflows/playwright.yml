@@ -104,7 +104,7 @@ jobs:
           if find playwright/test-results -name '*-diff.png' | grep -q .; then
             report "CHANGED" "Screenshots differ from the $BASELINE_BRANCH baseline (diffs: playwright-report-visual artifact). Not intended: fix it. Intended: after merge, Actions > Playwright Tests > Run workflow on $BASELINE_BRANCH accepts it."
           elif [ -z "$NEW" ]; then
-            report "FAILED" "Visual tests failed without a screenshot diff (timeout or error). See the playwright-report-visual artifact."
+            report "FAILED" "Visual tests failed without a screenshot diff (test timeout or error). See the playwright-report-visual artifact."
           fi
 
       - name: Record baseline

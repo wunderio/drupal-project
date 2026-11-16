@@ -118,7 +118,7 @@ To see the screenshots, open the run in GitHub, download the `playwright-report-
 - `NO BASELINE`: nothing from `main` to compare with (never recorded, or expired after 90 days without a passing push). Record one with a manual run on `main`, then re-run the job.
 - `CHANGED`: screenshots differ; the diff images are in the `playwright-report-visual` artifact. Fix it, or [accept the change](#accept-a-change-or-record-the-first-baseline).
 - `NEW PAGE NOT CHECKED` (on `main` only): a page in `PAGES` is not in the baseline yet. Check its screenshot in the report, then accept it with a manual run on `main`.
-- `FAILED`: failed without a diff, for example an error or the 10-minute job timeout. The error is in the report.
+- `FAILED`: failed without a diff, for example an error or a Playwright test timeout. The error is in the report. A job that hits the 10-minute `timeout-minutes` is cancelled and shows only GitHub's own timeout message.
 
 In a pull request, a new page shows only a `NEW PAGE` warning, not an error.
 
