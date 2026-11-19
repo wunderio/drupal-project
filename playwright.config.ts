@@ -2,6 +2,12 @@ import { defineConfig, devices } from '@playwright/test';
 
 const authFile = 'playwright/.auth/user.json';
 
+const visualSpec = /.*visual-regression\.spec\.ts/;
+
+/* No retries (a changed page fails every time), no failure screenshot (report shows the diff). */
+const visual = { testMatch: visualSpec, retries: 0 };
+const visualUse = { screenshot: 'off' as const };
+
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -15,7 +21,6 @@ const authFile = 'playwright/.auth/user.json';
  */
 export default defineConfig({
   testDir: './tests',
-  /* Keep all generated files (results, report, auth state) under playwright/. */
   outputDir: './playwright/test-results',
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -36,6 +41,11 @@ export default defineConfig({
         ['list'],
         ['./tests/reporters/ddev-report-hint.ts'],
       ],
+  snapshotDir: './playwright/screenshots',
+  snapshotPathTemplate: '{snapshotDir}/{projectName}/{arg}{ext}',
+  expect: {
+    toHaveScreenshot: { maxDiffPixels: 100, stylePath: './tests/css/visual.css' },
+  },
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
@@ -48,9 +58,7 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
 
-  /* Projects are named "<type>-<browser>": "e2e-*" run the functional tests in each
-   * browser; "a11y-chromium" runs the @a11y-tagged axe scans once, in Chromium.
-   * CI runs "e2e-*" and "a11y-*" as separate jobs. */
+  /* Names are <test type>-<browser or device>, so --project="e2e-*" runs one type. */
   projects: [
     {
       name: 'setup',
@@ -76,7 +84,7 @@ export default defineConfig({
         storageState: authFile,
       },
       dependencies: ['setup'],
-      testIgnore: /.*\.setup\.ts/,
+      testIgnore: [/.*\.setup\.ts/, visualSpec],
       grepInvert: /@a11y/,
     },
 
@@ -94,7 +102,7 @@ export default defineConfig({
         },
       },
       dependencies: ['setup'],
-      testIgnore: /.*\.setup\.ts/,
+      testIgnore: [/.*\.setup\.ts/, visualSpec],
       grepInvert: /@a11y/,
     },
 
@@ -105,8 +113,19 @@ export default defineConfig({
         storageState: authFile,
       },
       dependencies: ['setup'],
-      testIgnore: /.*\.setup\.ts/,
+      testIgnore: [/.*\.setup\.ts/, visualSpec],
       grepInvert: /@a11y/,
+    },
+
+    {
+      name: 'visual-desktop',
+      ...visual,
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 }, ...visualUse },
+    },
+    {
+      name: 'visual-mobile',
+      ...visual,
+      use: { ...devices['Pixel 7'], ...visualUse },
     },
 
     /* Test against mobile viewports. */
