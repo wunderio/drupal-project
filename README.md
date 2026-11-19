@@ -462,7 +462,7 @@ The script runs all `a11y-*` projects. Pass extra Playwright options after `--`,
 Full-page screenshots of the pages in `PAGES` (`tests/visual-regression.spec.ts`), desktop and mobile, compared with earlier accepted screenshots (the baseline).
 
 - **What is compared:** in GitHub Actions (DDEV on a fresh install, not a Silta environment), every pull request and push to `main` against the newest baseline from `main`. Locally, against your own baseline in `playwright/screenshots/` (git-ignored).
-- **Locally:** record a baseline first with `ddev npx playwright test --project='visual-*' --update-snapshots=all`; after your changes, compare with `ddev npx playwright test --project='visual-*'`. Without a baseline the tests are skipped.
+- **Locally:** record a baseline first with `ddev npm run test:visual:update`; after your changes, compare with `ddev npm run test:visual`. Without a baseline the tests are skipped.
 - **New project:** after the first merge to `main`, record the GitHub Actions baseline once: `gh workflow run playwright.yml --ref main` (or Actions > Playwright Tests > Run workflow, branch `main`).
 - **Test failed:** check the diff in the run's `playwright-report-visual` artifact (locally: `ddev playwright-report`).
   Not intended: fix it. Intended: merge, run `gh workflow run playwright.yml --ref main`, then re-run the failed job on `main`.
