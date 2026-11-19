@@ -102,6 +102,7 @@ To use another baseline branch, change `BASELINE_BRANCH` and `on.push.branches` 
    - or in a terminal: `gh workflow run playwright.yml --ref main`.
 
    A manual run on another branch uploads nothing.
+   If a push to `main` arrives while the manual run is still waiting to start, GitHub cancels the manual run and records nothing; start it again.
 4. When the manual run has finished, re-run the failed jobs of the push run on `main`. They now compare with the new baseline and turn green.
 
 For a new project, start at step 3 after the first merge to `main`: the Run workflow button only appears once the workflow file is on `main`.

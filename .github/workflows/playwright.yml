@@ -14,7 +14,7 @@ permissions:
   actions: read
 
 concurrency:
-  # Runs on main one at a time, so baseline uploads do not overlap.
+  # Runs on main do not overlap; a newer push cancels a waiting manual run.
   # Pull requests cancel their own superseded runs.
   group: playwright-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
