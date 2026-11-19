@@ -112,7 +112,7 @@ If the "visual regression" check is required for `main` in branch protection, st
 
 ### In a GitHub Actions run
 
-A failing job shows an error annotation and a note in the run summary.
+A failing job shows an error annotation.
 To see the screenshots, open the run in GitHub, download the `playwright-report-visual` artifact from the bottom of its Summary page, unzip it and open `index.html` in your browser.
 
 - `NO BASELINE`: nothing from `main` to compare with (never recorded, or expired after 90 days without a passing push). Record one with a manual run on `main`, then re-run the job.

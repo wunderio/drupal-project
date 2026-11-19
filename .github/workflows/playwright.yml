@@ -81,7 +81,8 @@ jobs:
           else
             MSG="No baseline from $BASELINE_BRANCH (never recorded, or expired after 90 days), so nothing was compared. Record one: Actions > Playwright Tests > Run workflow on $BASELINE_BRANCH, then re-run this job."
             echo "::error title=Visual regression: NO BASELINE::$MSG"
-            printf '## :x: Visual regression: no baseline\n\n%s\n' "$MSG" >> "$GITHUB_STEP_SUMMARY"
+            # The annotation already shows MSG. A job summary is for richer content (tables, image links):
+            # printf '## :x: Visual regression: no baseline\n\n%s\n' "$MSG" >> "$GITHUB_STEP_SUMMARY"
             exit 1
           fi
 
@@ -95,7 +96,8 @@ jobs:
         run: |
           report() {
             echo "::error title=Visual regression: $1::$2"
-            printf '## :x: Visual regression: %s\n\n%s\n\n' "$1" "$2" >> "$GITHUB_STEP_SUMMARY"
+            # Same text as the annotation; enable for richer content (tables, image links):
+            # printf '## :x: Visual regression: %s\n\n%s\n\n' "$1" "$2" >> "$GITHUB_STEP_SUMMARY"
           }
           # Playwright leaves only *-actual.png for a page with no baseline, and adds *-diff.png for a change.
           NEW=$(find playwright/test-results -name '*-actual.png' | while read -r f; do
