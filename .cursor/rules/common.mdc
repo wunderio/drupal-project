@@ -17,8 +17,6 @@ alwaysApply: true
   - Drupal's generated files and directories
   - Vendor directories and dependencies
   - Temporary files, logs, and cache files
-  - Sensitive deployment files:
-    - silta/*.secrets
 
 ## Key Project Files
 - **Configuration & Setup**
@@ -31,10 +29,9 @@ alwaysApply: true
   - @grumphp.yml - Git hooks and code quality checks
 
 - **Deployment & CI/CD**
-  - @.circleci/config.yml - CircleCI configuration for CI/CD pipelines
-  - @silta/silta.yml - Kubernetes deployment configuration
-  - @silta/silta-main.yml - Main environment specific configuration
-  - @silta/silta-prod.yml - Production environment specific configuration
+  - @.github/workflows/build.yml - GitHub Actions: validate, build and push images, update image tags
+  - @k8s/staging/apps.yaml, @k8s/feature/apps.yaml - ArgoCD environments (staging, pull request previews)
+  - @k8s/staging/values/drupal.yaml, @k8s/feature/values/drupal.yaml - Drupal Helm chart values
 
 - **Utilities & Scripts**
   - DDEV commands:
@@ -133,7 +130,7 @@ When creating commit messages, always analyze the actual changes using `git diff
   - Silta deployment system (Wunder's Kubernetes deployment solution) [@wunderio/silta](https://github.com/wunderio/silta)
   - Helm charts for Kubernetes orchestration
   - Docker containerization (Nginx and PHP containers)
-  - Google Cloud Platform (GCP) infrastructure
+  - ArgoCD GitOps deployment to UpCloud Kubernetes clusters
   - Kubernetes-based autoscaling (2-10 replicas in production)
   - Varnish caching (configurable)
-  - CircleCI for continuous integration
+  - GitHub Actions for continuous integration

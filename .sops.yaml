@@ -1,0 +1,13 @@
+---
+# SOPS rules for ArgoCD secrets. Secrets live in k8s/<overlay>/secrets/*.sops.yaml and are
+# encrypted to the shared tenant age key, which only ArgoCD's sops-tenant plugin can decrypt.
+# Encrypt with: sops --encrypt --in-place k8s/staging/secrets/<name>.sops.yaml
+# Rules for what such a file may contain: README.md, "ArgoCD deployment".
+creation_rules:
+  - path_regex: k8s/(staging|develop|production|feature)/secrets/.*\.sops\.ya?ml$
+    encrypted_regex: "^(data|stringData)$"
+    mac_only_encrypted: true
+    age: "age1qgrju7ts4s59a9ae5auxtem63au0ctrazlqgg4553klp3qxq8q2s7ss37a"
+stores:
+  yaml:
+    indent: 2
