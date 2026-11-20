@@ -1,6 +1,6 @@
 # Wunder template for Drupal projects
 
-This project is a tailored fork of the popular [drupal-composer template](https://github.com/drupal-composer/drupal-project). It is designed for deploying to [Kubernetes](https://kubernetes.io/) clusters via [CircleCI](https://circleci.com/).
+This project is a tailored fork of the popular [drupal-composer template](https://github.com/drupal-composer/drupal-project). It is designed for deploying to [Kubernetes](https://kubernetes.io/) clusters with ArgoCD, see [ArgoCD deployment](#argocd-deployment).
 
 ## Getting started
 
@@ -15,7 +15,7 @@ This project is a tailored fork of the popular [drupal-composer template](https:
    - Update `README.md` with the project details
    - Update `composer.json` with the project name
    - In real client projects, remove `/composer.lock` from `.gitignore` so the lockfile is committed and reproducible
-   - Modify the `silta/silta*` files [values](https://github.com/wunderio/charts/blob/master/drupal/values.yaml)
+   - Modify the `k8s/*/values/drupal.yaml` files [values](https://github.com/wunderio/charts/blob/master/drupal/values.yaml)
    - Adjust `grumphp.yml` tasks, including updating the project name in the `git_commit_message` regex
    - Configure local development environment:
      - For DDEV: Update project settings in `.ddev/config.yaml`
@@ -25,47 +25,13 @@ This project is a tailored fork of the popular [drupal-composer template](https:
    - Adjust `web/sites/default/settings.php` settings (`stage_file_proxy` etc)
    - Adjust `config_split` settings for silta (default), production, main, local environments
 
-3. **Set up CircleCI**
-   - Log in to [CircleCI](https://app.circleci.com/) using your GitHub account.
-   - Add the new project to CircleCI using the existing configuration.
+3. **Set up the ArgoCD deployment**
+   - Follow [Setting up a new project](#setting-up-a-new-project) and [Secrets](#secrets) under ArgoCD deployment.
 
-4. **Configure encryption keys and secrets**
-   - Define encryption keys for `silta_dev` and `silta_finland` contexts in the CircleCI project settings and backup the keys in LastPass. Use the following naming convention: `SEC_{PROJECT_NAME}_{CONTEXT}` where `CONTEXT` is the environment, such as `silta_dev` or `silta_finland`.
-   - Update the `.circleci/config.yml` file with the corresponding `secret_key_env` values.
-   - Define the secret environment variables in the `silta/silta*.secrets` YAML files for the `silta_dev` and `silta_finland` contexts.
-   - Encrypt the `silta/silta*.secrets` files using the encryption keys and commit the encrypted files to the repository.
-   - See the relevant [Silta's documentation](https://wunderio.github.io/silta/docs/encrypting-sensitive-configuration/#using-a-custom-encryption-key) for details.
-
-5. **Enable JIRA integration**
+4. **Enable JIRA integration**
    - Configure [automatic autolinks](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/autolinked-references-and-urls#custom-autolinks-to-external-resources) for the project's JIRA environment to link ticket IDs to JIRA issues seamlessly.
 
 For additional instructions, please refer to the [Silta documentation](https://github.com/wunderio/silta).
-
-## Production environment
-
-- **URL**: <https://production.drupal-project.finland.wdr.io>
-- **Drush alias**: `drush @production st`
-- **SSH**: `ssh www-admin@production-shell.drupal-project -J www-admin@ssh.finland.wdr.io`
-
-### Environment variables for `silta_finland` context
-
-The following secret variables are defined in the `silta/silta-prod.secrets` file for the `silta_finland` context:
-
-- `TEST_KEY_PROD` - Secret key for testing purposes.
-
-## Main environment
-
-- **URL**: <https://main.drupal-project.dev.wdr.io>
-- **Drush alias**: `drush @main st`
-- **SSH**: `ssh www-admin@main-shell.drupal-project -J www-admin@ssh.dev.wdr.io`
-
-The Drush alias for the **current** Silta feature branch deployment is `drush @current st`.
-
-### Environment variables for `silta_dev` context
-
-The following secret variables are defined in the `silta/silta.secrets` file for the `silta_dev` context:
-
-- `TEST_KEY` - Secret key for testing purposes.
 
 ## Local development
 
@@ -422,16 +388,6 @@ npx playwright show-report
 
 </details>
 
-### Secrets handling
-
-[Silta CLI](https://github.com/wunderio/silta-cli) is a command-line tool to manage secrets and configurations for Silta projects. Use the following commands:
-
-- Encrypt a file: `silta secrets encrypt --file silta/silta.secrets --secret-key=<secret_key_env>`
-- Decrypt a file: `silta secrets decrypt --file silta/silta.secrets --secret-key=<secret_key_env>`
-- Display help: `silta secrets --help`
-
-See the corresponding `secret_key_env` values in the `.circleci/config.yml` file for the `silta_dev` and `silta_finland` contexts. Refer to the Getting Started section for details.
-
 ## Contributing
 
 This project is maintained by [Wunder](https://wunder.io/). Contributions from the community are welcome.
@@ -479,16 +435,11 @@ Refer to the [WunderFlow repository](https://github.com/wunderio/WunderFlow) for
 
 ### Deployments
 
-Deployments are managed with CircleCI. Configurations are in `.circleci/config.yml`.
-
-- Feature branches require manual approval for deployment by default.
-- Other branches deploy automatically but can be configured for manual approval.
-
-Manual approvals are managed through the `approve-deployment` job in the CircleCI UI by clicking the "approve-deployment" job label when marked as "Needs Approval."
+Deployments are managed with ArgoCD, see [ArgoCD deployment](#argocd-deployment).
 
 ## ArgoCD deployment
 
-Projects created from this template can deploy with ArgoCD instead of Silta's CircleCI jobs.
+Projects created from this template deploy with ArgoCD; there is no CircleCI deployment.
 The platform side lives in [wunderio/argocd-cluster-management](https://github.com/wunderio/argocd-cluster-management)
 (`templates/argocd/README.md` there).
 
@@ -534,8 +485,7 @@ image and tag jobs when the repository is a template.
    done
    ```
 
-4. Remove the Silta deploy jobs from `.circleci/config.yml` so the project doesn't deploy twice.
-5. Add the `silta-argocd` topic to the repository (repository page → About → Topics). New
+4. Add the `silta-argocd` topic to the repository (repository page → About → Topics). New
    repositories don't inherit the template's topics.
 
 The build workflow uses the organisation's `REGISTRY_USERNAME`, `REGISTRY_PASSWORD`,
