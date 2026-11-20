@@ -492,6 +492,23 @@ The build workflow uses the organisation's `REGISTRY_USERNAME`, `REGISTRY_PASSWO
 `ARGOCD_APP_ID` and `ARGOCD_APP_PRIVATE_KEY` secrets. The tag commit is made with the
 ArgoCD GitHub App so it passes branch protection.
 
+### Drush and SSH
+
+`drush/sites/self.site.yml` has aliases for the ArgoCD environments: `drush @main st` (staging, on
+the dev cluster) and `drush @production st` (once `k8s/production/` exists). Change `main` to
+`master` there if that is the staging branch. Shell access works for the repository's
+collaborators with push access:
+
+```bash
+ssh www-admin@main-shell.<namespace> -J www-admin@ssh.dev.silta.cloud
+ssh www-admin@pr-<N>-shell.<namespace> -J www-admin@ssh.dev.silta.cloud
+ssh www-admin@production-shell.<namespace> -J www-admin@ssh.prod.silta.cloud
+```
+
+`<namespace>` is the repository name in lowercase. Staging is at `https://main-<project>.dev.silta.cloud`
+and a pull request preview at `https://pr-<N>-<project>.dev.silta.cloud`; the pull request gets a
+comment with its URL.
+
 ### Secrets
 
 Put Kubernetes Secrets in `k8s/<overlay>/secrets/<name>.sops.yaml`, encrypt them, and set

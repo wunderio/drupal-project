@@ -8,7 +8,6 @@ use Consolidation\SiteAlias\SiteAliasManagerInterface;
 use Drush\Attributes as CLI;
 use Drush\Boot\DrupalBootLevels;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * Class SiltaAliasAlterCommands.
@@ -27,11 +26,11 @@ class SiltaAliasAlterCommands extends DrushCommands {
     }
 
     /**
-     * Alter feature alias.
+     * Fill in the project of the aliases in drush/sites/self.site.yml.
      *
-     * Silta generates environment URLs and hostnames dynamically based on the
-     * branch name. This attempts to mimic the same behaviour in order to
-     * dynamically target the specific Silta environment of the branch you're on.
+     * ArgoCD deploys the project into a namespace named after the repository,
+     * and the drupal chart builds the environment hostname from the project
+     * name. Both are derived from the git remote here.
      *
      * @param \Symfony\Component\Console\Input\InputInterface $input
      *   Input interface instance.
@@ -44,23 +43,13 @@ class SiltaAliasAlterCommands extends DrushCommands {
             return;
         }
 
-        // Get branch name we're currently on.
-        $branch = exec('git rev-parse --abbrev-ref HEAD');
-
-        $environment_name = $this->prepareEnvironmentName($branch);
         $repository_name = exec('basename -s .git `git config --get remote.origin.url`');
-        $project_name = $this->getProjectName();
-
-        // If project name is not explicitly set in silta.yml then we use the
-        // default - repository name.
-        if (is_null($project_name)) {
-            $project_name = $repository_name;
-        }
 
         $this->siteAliasManager->setReferenceData($this->getConfig()->export() + [
-            'ENVIRONMENT' => $environment_name,
-            'REPOSITORY' => $repository_name,
-            'PROJECT' => $project_name,
+            // The namespace: k8s/*/apps.yaml sets it to the repository name in
+            // lowercase.
+            'NAMESPACE' => strtolower($repository_name),
+            'PROJECT' => $this->prepareProjectName($repository_name),
         ]);
 
         // Preflight may have cached @self before reference data was set; remote
@@ -86,53 +75,28 @@ class SiltaAliasAlterCommands extends DrushCommands {
     }
 
     /**
-     * Prepare environment name to be used in the alias.
+     * Prepare the project name used in environment hostnames.
      *
-     * Mimic what Silta does - replace all non-alphanumeric characters with
-     * dahses to create environment name.
+     * Mimic the drupal chart: replace all non-alphanumeric characters with
+     * dashes, and shorten names of 30 characters or more to 27 characters
+     * plus the first 3 characters of their sha256 hash.
      *
-     * @param string $branch
-     *   Git branch name.
+     * @param string $repository_name
+     *   Git repository name.
      *
      * @return string
-     *   Environment name matching what Silta has generated.
+     *   Project name matching the one in the environment hostname.
      *
-     * @see https://github.com/wunderio/charts/blob/master/drupal/templates/_domains.tpl#L4
+     * @see https://github.com/wunderio/charts/blob/master/drupal/templates/_domains.tpl
      */
-    private function prepareEnvironmentName(string $branch) {
+    private function prepareProjectName(string $repository_name): string {
+        $project_name = strtolower(preg_replace('/-$/', '', preg_replace('/[^\da-z]/i', '-', $repository_name)));
 
-        $environment_name = preg_replace('/[^\da-z]/i', '-', $branch);
-
-        // If environment name exceeds 64 then we trim it to 64 chars and add
-        // first chars for sha hash to it.
-        if (strlen($environment_name) > 64) {
-            $environment_name = substr($environment_name, 0, 64);
-            $sha = hash('sha256', $environment_name);
-            $prefix = substr($sha, 0, 3);
-            $environment_name = $prefix . $environment_name;
+        if (strlen($project_name) >= 30) {
+            $project_name = substr($project_name, 0, 27) . substr(hash('sha256', $project_name), 0, 3);
         }
 
-        // Finally make it all lowercase and return.
-        return strtolower($environment_name);
-    }
-
-    /**
-     * Get project name.
-     *
-     * Attempts to read Silta project name form silta.yml file.
-     *
-     * @return string|null
-     *   Silta project name or NULL.
-     */
-    private function getProjectName() {
-        $silta_config_file = 'silta/silta.yml';
-        if (file_exists($silta_config_file)) {
-            $silta_config = Yaml::parse(file_get_contents($silta_config_file));
-            if (isset($silta_config['projectName'])) {
-                return $silta_config['projectName'];
-            }
-        }
-        return NULL;
+        return $project_name;
     }
 
 }
