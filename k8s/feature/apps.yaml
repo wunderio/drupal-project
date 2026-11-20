@@ -10,7 +10,7 @@ namespace: PROJECT_NAME
 apps:
   - name: drupal
     chart: drupal
-    repoURL: https://storage.googleapis.com/charts.wdr.io
+    repoURL: oci://registry.wdr.io/charts
     version: ">=1.43.0"
     valuesFile: values/drupal.yaml
 
