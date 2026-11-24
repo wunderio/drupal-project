@@ -1,0 +1,17 @@
+uuid: d1f509eb-e3d6-41ab-ae01-00e8fe5ffd6c
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - ai_ckeditor
+_core:
+  default_config_hash: KCDIr2tFfDB15evqCQpDN4HO69u-vReV0jnZWSjYF_o
+id: ai_ckeditor_summarize
+label: 'AI CKEditor summarize prompt'
+variables:
+  -
+    name: inputText
+    help_text: 'The input text to summarize'
+    required: true
+tokens: {  }

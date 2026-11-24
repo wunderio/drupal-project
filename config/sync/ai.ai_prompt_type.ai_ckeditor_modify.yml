@@ -1,0 +1,21 @@
+uuid: 03d8f304-c04e-486c-af14-b652eb4465d0
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - ai_ckeditor
+_core:
+  default_config_hash: e7IFiVOD88JJELdj1eEZ4SGQ54VBosXXZpqizSMgMOY
+id: ai_ckeditor_modify
+label: 'AI CKEditor modify prompt'
+variables:
+  -
+    name: modifyPrompt
+    help_text: 'User-provided prompt, instructing how to modify the selected text'
+    required: true
+  -
+    name: inputText
+    help_text: 'The input text to modify'
+    required: true
+tokens: {  }

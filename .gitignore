@@ -39,6 +39,7 @@
 
 # Ignore .env files as they are personal
 /.env
+/.ddev/.env.web
 
 # Ignore node modules
 node_modules

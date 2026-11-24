@@ -1,0 +1,20 @@
+_meta:
+  version: '1.0'
+  entity_type: taxonomy_term
+  uuid: b5902cf1-8966-4729-a274-a5885fcf70d2
+  bundle: ai_tone
+  default_langcode: en
+default:
+  status:
+    -
+      value: true
+  name:
+    -
+      value: 'Formal'
+  description:
+    -
+      value: 'Professional and polite. Avoid slang, contractions and jokes.'
+      format: plain_text
+  weight:
+    -
+      value: 1

@@ -1,0 +1,9 @@
+uuid: bc0830bd-cd8d-4346-97af-65fd2a6df98c
+langcode: en
+status: true
+dependencies: {  }
+name: 'Tone of voice'
+vid: ai_tone
+description: 'Tones for the AI CKEditor tone tool. The term description tells the AI how to write.'
+weight: 0
+new_revision: false

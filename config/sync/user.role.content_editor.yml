@@ -7,6 +7,7 @@ dependencies:
     - node.type.page
     - taxonomy.vocabulary.tags
   module:
+    - ai_ckeditor
     - comment
     - contextual
     - file
@@ -42,6 +43,7 @@ permissions:
   - 'edit own page content'
   - 'edit terms in tags'
   - 'revert all revisions'
+  - 'use ai ckeditor'
   - 'view all revisions'
   - 'view own unpublished content'
   - 'view the administration theme'
