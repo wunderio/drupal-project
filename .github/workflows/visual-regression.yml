@@ -1,0 +1,221 @@
+name: "Playwright: Visual regression tests"
+
+# Screenshots the deployed Silta environment (real content) after CircleCI
+# has deployed a push, and compares them with the baseline
+# (tests/visual-regression.spec.ts, desktop + mobile).
+#
+# - No baseline yet (first run, expired, or manual mode "baseline"):
+#   the screenshots become the baseline, nothing is compared.
+# - Otherwise they are compared with the newest baseline. When nothing
+#   changed they become the new baseline. When something changed the
+#   baseline stays, so the run keeps failing until the change is fixed or
+#   accepted with a manual run in mode "baseline".
+#
+# Required repository secrets: SILTA_BASICAUTH_USER, SILTA_BASICAUTH_PASS
+
+on:
+  push:
+    branches:
+      # - main
+      # [FEATURE BRANCH]
+      - feature/MID-73-playwright-visual
+  # Manual run (available once this file is on the default branch).
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "compare = against the latest baseline, baseline = accept the current look as baseline"
+        type: choice
+        default: compare
+        options: [compare, baseline]
+  # Reuse from another workflow: the only per-project values are these two.
+  workflow_call:
+    inputs:
+      base-url:
+        type: string
+        required: true
+      baseline-name:
+        type: string
+        required: true
+    secrets:
+      SILTA_BASICAUTH_USER:
+        required: true
+      SILTA_BASICAUTH_PASS:
+        required: true
+
+env:
+  # Per-project settings. Main environment, enable after testing (and the
+  # `main` branch above): https://main.drupal-project.dev.wdr.io and
+  # visual-regression-baseline-main. [FEATURE BRANCH] values:
+  TEST_BASE_URL: ${{ inputs.base-url || 'https://feature-mid-73-playwright-visual.drupal-project.dev.wdr.io' }}
+  BASELINE_NAME: ${{ inputs.baseline-name || 'visual-regression-baseline-feature-mid-73' }}
+  MODE: ${{ inputs.mode || 'compare' }}
+  CI: "true"
+  TEST_HTTP_USER: ${{ secrets.SILTA_BASICAUTH_USER }}
+  TEST_HTTP_PASS: ${{ secrets.SILTA_BASICAUTH_PASS }}
+  GH_TOKEN: ${{ github.token }}
+
+permissions:
+  contents: read
+  actions: read
+  checks: read
+  statuses: write
+
+# One run per branch at a time, never cancelled: the environment is shared
+# between pushes, and a cancelled run would leave its change uncompared.
+concurrency:
+  group: visual-regression-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  visual:
+    name: Visual regression
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: ./.github/actions/setup-visual
+
+      - name: Wait for CircleCI deploy
+        if: github.event_name == 'push'
+        run: .github/scripts/visual-regression/wait-for-circleci.sh "$GITHUB_REPOSITORY" "$GITHUB_SHA"
+
+      - name: Wait for environment
+        run: .github/scripts/visual-regression/wait-for-url.sh "$TEST_BASE_URL/"
+
+      # Newest non-expired baseline. Mode "baseline" ignores it.
+      - name: Find baseline
+        id: baseline
+        run: |
+          RUN_ID=""
+          if [ "$MODE" = "compare" ]; then
+            read -r _ RUN_ID <<< "$(.github/scripts/visual-regression/latest-artifact.sh "$GITHUB_REPOSITORY" "$BASELINE_NAME")"
+          fi
+          echo "run_id=${RUN_ID:-}" >> "$GITHUB_OUTPUT"
+
+      - name: Download baseline
+        if: steps.baseline.outputs.run_id != ''
+        uses: actions/download-artifact@v7
+        with:
+          name: ${{ env.BASELINE_NAME }}
+          path: playwright/screenshots/
+          github-token: ${{ github.token }}
+          run-id: ${{ steps.baseline.outputs.run_id }}
+
+      # Screenshots from another Playwright version render differently.
+      - name: Check baseline version
+        if: steps.baseline.outputs.run_id != ''
+        run: |
+          WANTED=$(jq -r '.devDependencies["@playwright/test"]' package.json)
+          HAVE=$(jq -r '.playwright // "unknown"' playwright/screenshots/baseline-meta.json 2>/dev/null || echo unknown)
+          if [ "$HAVE" != "$WANTED" ]; then
+            echo "::warning::The baseline was recorded with Playwright $HAVE, now $WANTED. Differences may only come from rendering; accept them with mode \"baseline\" if the pages look right."
+          fi
+
+      # --- No baseline: capture one -------------------------------------------
+      - name: Capture baseline
+        id: capture
+        if: steps.baseline.outputs.run_id == ''
+        uses: ./.github/actions/run-visual
+        with:
+          script: test:visual:update
+
+      # --- Baseline found: compare --------------------------------------------
+      - name: Compare with baseline
+        id: compare
+        if: steps.baseline.outputs.run_id != ''
+        # The result is decided in "Report result" below.
+        continue-on-error: true
+        uses: ./.github/actions/run-visual
+        with:
+          script: test:visual
+
+      # The environment is shared: when a newer push exists, the screenshots
+      # may show that push instead of this one.
+      - name: Check for newer push
+        id: superseded
+        if: github.event_name == 'push' && steps.compare.outcome == 'failure'
+        run: |
+          HEAD=$(git ls-remote origin "$GITHUB_REF" | cut -f1)
+          if [ "$HEAD" != "$GITHUB_SHA" ]; then
+            echo "superseded=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Captured or unchanged screenshots are the new baseline.
+      - name: Write baseline metadata
+        id: keep
+        if: steps.capture.outcome == 'success' || steps.compare.outcome == 'success'
+        run: |
+          PW=$(jq -r '.devDependencies["@playwright/test"]' package.json)
+          jq -n --arg sha "$GITHUB_SHA" --arg pw "$PW" '{sha: $sha, playwright: $pw}' > playwright/screenshots/baseline-meta.json
+
+      - name: Upload baseline
+        if: steps.keep.outcome == 'success'
+        uses: actions/upload-artifact@v6
+        with:
+          name: ${{ env.BASELINE_NAME }}
+          path: playwright/screenshots/
+          retention-days: 90
+
+      - name: Upload report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: visual-regression-report
+          path: |
+            playwright/report/
+            playwright/test-results/
+          retention-days: 30
+          if-no-files-found: ignore
+
+      # The Playwright HTML report as one file (attachments embedded), so it
+      # opens in the browser like `npx playwright show-report`. Optional: the
+      # zipped report above is the fallback if this breaks.
+      - name: Build HTML report
+        if: ${{ !cancelled() && hashFiles('playwright/report/index.html') != '' }}
+        continue-on-error: true
+        run: node .github/scripts/playwright-report-html.mjs playwright/report visual-regression-report.html
+
+      # Unzipped (archive: false), so the artifact link opens the page directly.
+      - name: Upload HTML report
+        id: html-report
+        if: ${{ !cancelled() && hashFiles('visual-regression-report.html') != '' }}
+        uses: actions/upload-artifact@v7
+        with:
+          path: visual-regression-report.html
+          archive: false
+          retention-days: 30
+
+      # Single place that maps the outcome to a commit status and a result.
+      - name: Report result
+        if: ${{ !cancelled() }}
+        env:
+          CAPTURE: ${{ steps.capture.outcome }}
+          COMPARE: ${{ steps.compare.outcome }}
+          SUPERSEDED: ${{ steps.superseded.outputs.superseded }}
+          REPORT_URL: ${{ steps.html-report.outputs.artifact-url }}
+        run: |
+          case "$CAPTURE:$COMPARE:$SUPERSEDED" in
+            success:*)      if [ "$MODE" = baseline ]; then STATE=success MESSAGE="✅ Baseline accepted"; else STATE=pending MESSAGE="⚠️ Baseline captured, not compared"; fi ;;
+            *:success:*)    STATE=success MESSAGE="✅ No visual changes" ;;
+            *:failure:true) STATE=pending MESSAGE="⚠️ Newer push during comparison, not reliable" ;;
+            *:failure:*)    STATE=failure MESSAGE="❌ Visual changes detected" ;;
+            *)              STATE=error   MESSAGE="❌ Workflow error" ;;
+          esac
+
+          # Commit status on the commit / PR (pending shows as yellow). Its
+          # "Details" link opens the HTML report when there is one.
+          gh api -X POST "repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" \
+            -f context="visual-regression" -f state="$STATE" -f description="$MESSAGE" \
+            -f target_url="${REPORT_URL:-$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID}" > /dev/null
+
+          echo "### Visual regression: $MESSAGE" >> "$GITHUB_STEP_SUMMARY"
+          [ -z "$REPORT_URL" ] || echo "[Open the visual regression report]($REPORT_URL)" >> "$GITHUB_STEP_SUMMARY"
+
+          case "$STATE" in
+            success) echo "$MESSAGE" ;;
+            pending) echo "::warning::$MESSAGE" ;;
+            failure) echo "::error::$MESSAGE. Fix them, or accept them by running this workflow with mode \"baseline\"."; exit 1 ;;
+            *)       echo "::error::$MESSAGE. Check the step logs above."; exit 1 ;;
+          esac

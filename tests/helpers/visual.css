@@ -1,0 +1,11 @@
+/* Applied by Playwright only while a visual regression screenshot is taken
+   (stylePath in playwright.config.ts). Hide what changes on its own. */
+video,
+iframe {
+  visibility: hidden !important;
+}
+
+* {
+  caret-color: transparent !important;
+  scroll-behavior: auto !important;
+}

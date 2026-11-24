@@ -1,0 +1,22 @@
+name: Run visual regression
+description: Run an npm script in the official Playwright Docker image that matches the pinned @playwright/test version, so screenshots render the same on every run.
+
+inputs:
+  script:
+    description: npm script to run (test:visual or test:visual:update).
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Run ${{ inputs.script }}
+      shell: bash
+      env:
+        SCRIPT: ${{ inputs.script }}
+      run: |
+        # package.json pins @playwright/test exactly; strip a ^ or ~ just in case.
+        VERSION=$(jq -r '.devDependencies["@playwright/test"]' package.json | sed 's/^[^0-9]*//')
+        docker run --rm --ipc=host -v "$PWD:/work" -w /work \
+          -e CI -e TEST_BASE_URL -e TEST_HTTP_USER -e TEST_HTTP_PASS \
+          "mcr.microsoft.com/playwright:v$VERSION-noble" \
+          bash -c "npm ci --no-audit --no-fund && npm run $SCRIPT"
