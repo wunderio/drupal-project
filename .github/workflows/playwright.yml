@@ -24,6 +24,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
+      # The web image's Playwright system deps are pinned in the Dockerfile, which
+      # can't read package-lock.json. Fail when an npm bump (e.g. Dependabot) leaves it behind.
+      - name: Check Playwright version in Dockerfile
+        run: |
+          v=$(node -p "require('./package-lock.json').packages['node_modules/playwright'].version")
+          grep -qF "playwright@$v " .ddev/web-build/Dockerfile.playwright \
+            || { echo "::error file=.ddev/web-build/Dockerfile.playwright::package-lock.json has Playwright $v, but .ddev/web-build/Dockerfile.playwright does not. Change it to playwright@$v."; exit 1; }
+
       - name: Setup DDEV
         uses: ddev/github-action-setup-ddev@v1
 
