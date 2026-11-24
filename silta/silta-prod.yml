@@ -86,13 +86,17 @@ mariadb:
       # Database storage disk space allocation.
       # Request assistance from Ops team to change this on an existing deployment.
       size: 5Gi
+    # Memory request: innodb_buffer_pool_size + about 400Mi of fixed overhead
+    # (performance_schema, table_open_cache, table_definition_cache, threads), + 10%.
+    # Memory limit: request + max_connections x memory of one busy connection x 0.5.
+    # A limit costs nothing until it is used; an OOM kill restarts the database.
     resources:
       requests:
         cpu: 250m
-        memory: 500Mi
+        memory: 832Mi
       limits:
         cpu: 1000m
-        memory: 750Mi
+        memory: 2Gi
     config: |-
       [mysqld]
       skip-name-resolve
@@ -109,11 +113,15 @@ mariadb:
       character-set-server=UTF8
       collation-server=utf8_unicode_ci
       transaction-isolation=READ-COMMITTED
-      # Default max_connections value is 150.
-      # Each active connection consumes approx. 19-20MB of memory.
-      # Consider adding additional memory for production requests/limits when scaling up.
-      max_connections=200
-      # Set innodb_buffer_pool_size to 70/80% of resources.requests.memory (500Mi).
+      # Default max_connections value is 151.
+      # Match what the app can open: (autoscaling.maxReplicas 5 + 3 surge pods during
+      # a rollout) x pm.max_children 6 + 5 for cron and drush = 53.
+      # A busy connection can use about 37Mi with the buffers below
+      # (max_heap_table_size + sort, join and read buffers + thread stack).
+      # Raise the memory limit with max_connections, autoscaling or pm.max_children.
+      max_connections=60
+      # The pool is not the whole memory: resources.requests.memory must be the pool
+      # + about 400Mi (375Mi + 400Mi + 10% = 832Mi).
       innodb_buffer_pool_size=375Mi
       innodb_log_buffer_size=8M
       # Set innodb_log_file_size to 12.5% of innodb_buffer_pool_size (47Mi is 12.5% of 375Mi).
