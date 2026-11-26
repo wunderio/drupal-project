@@ -39,6 +39,11 @@ This project is a tailored fork of the popular [drupal-composer template](https:
 5. **Enable JIRA integration**
    - Configure [automatic autolinks](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/autolinked-references-and-urls#custom-autolinks-to-external-resources) for the project's JIRA environment to link ticket IDs to JIRA issues seamlessly.
 
+6. **Record the first visual regression baseline**
+   - After the first merge to `main`, run `gh workflow run playwright.yml --ref main` (or Actions > Playwright Tests > Run workflow, branch `main`), then re-run the failed `visual regression` job.
+   - Until then the `visual regression` job fails with `NO BASELINE`; that is expected.
+   - Details: [Visual regression tests](#visual-regression-tests).
+
 For additional instructions, please refer to the [Silta documentation](https://github.com/wunderio/silta).
 
 ## Production environment
