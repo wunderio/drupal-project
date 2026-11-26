@@ -1,6 +1,7 @@
 ---
 # Builds the project's images, pushes them to the container registry and commits the new
-# tags to k8s/<overlay>/values/, which ArgoCD then deploys. See README.md, "ArgoCD deployment".
+# tags to k8s/<overlay>/values/, which ArgoCD then deploys. The build and tag steps are
+# https://github.com/wunderio/argocd-actions. See README.md, "ArgoCD deployment".
 name: Build & Push Images
 
 on:
@@ -21,7 +22,7 @@ permissions:
   contents: read
 
 env:
-  # The container registry (README.md, "Setting up a new project"). The image repositories in
+  # The Harbor registry (README.md, "Setting up a new project"). The image repositories in
   # k8s/*/values/ must point at the same registry.
   REGISTRY: REGISTRY_HOST
   # "true": the production branch's tags are committed to k8s/production/ too, so merging to
@@ -114,9 +115,8 @@ jobs:
           retention-days: 1
 
   # ---------------------------------------------------------------
-  # Resolve the pushed branch to its k8s overlay and compute the image tag.
-  # Images are built only for a branch whose overlay exists, the only
-  # branches ArgoCD deploys.
+  # Resolve the pushed branch to its k8s overlay. Images are built only
+  # for a branch whose overlay exists, the only branches ArgoCD deploys.
   # ---------------------------------------------------------------
   overlay:
     name: Resolve Overlay
@@ -129,10 +129,7 @@ jobs:
     if: github.event_name == 'push' && !github.event.repository.is_template
     outputs:
       deploys: ${{ steps.resolve.outputs.deploys }}
-      commit: ${{ steps.resolve.outputs.commit }}
-      values: ${{ steps.resolve.outputs.values }}
       project: ${{ steps.resolve.outputs.project }}
-      tag: ${{ steps.resolve.outputs.tag }}
     steps:
       - name: Checkout k8s/
         uses: actions/checkout@v4
@@ -142,7 +139,7 @@ jobs:
       # The branch -> overlay mapping of the ArgoCD platform. Other branches (topic branches
       # without k8s/feature/, Dependabot, Renovate) are validated but get no images: nothing
       # would deploy them, and Dependabot runs without the registry secrets.
-      - name: Resolve overlay and tag
+      - name: Resolve overlay
         id: resolve
         run: |
           case "$GITHUB_REF_NAME" in
@@ -157,20 +154,12 @@ jobs:
             echo "::notice::No k8s overlay for $GITHUB_REF_NAME, so no images are built."
             exit 0
           fi
-          commit=true
-          if [ "$overlay" = production ] && [ "$COMMIT_PRODUCTION_TAGS" != true ]; then
-            commit=false
-          fi
-          # <branch>-<UTC timestamp>-<short SHA>: one branch's tags sort by build time.
-          branch=$(echo "$GITHUB_REF_NAME" | tr '/_' '--' | cut -c1-40)
           repository="${GITHUB_REPOSITORY##*/}"
           {
             echo "deploys=true"
-            echo "commit=$commit"
-            echo "values=k8s/$overlay/values/drupal.yaml"
-            # The registry project, as in the image repositories in k8s/*/values/.
+            # The registry project, as in the image repositories in k8s/*/values/. Lowercase:
+            # registry project names can't have capitals.
             echo "project=${repository,,}"
-            echo "tag=$branch-$(date -u +%Y%m%dT%H%M%S)-${GITHUB_SHA::7}"
           } >> "$GITHUB_OUTPUT"
           echo "$GITHUB_REF_NAME deploys k8s/$overlay/."
 
@@ -197,53 +186,18 @@ jobs:
           - name: shell
             dockerfile: silta/shell.Dockerfile
     steps:
-      - name: Download built codebase
-        uses: pyTooling/download-artifact@v4
-        with:
-          name: built-codebase
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to the registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ secrets.REGISTRY_USERNAME }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
-
-      # Harbor only accepts pushes to an existing project, so the first build creates it, with
-      # vulnerability scan and SBOM on push. Other registries: remove this step.
-      - name: Create the Harbor project
-        env:
-          PROJECT: ${{ needs.overlay.outputs.project }}
-          REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
-          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-        run: |
-          api="https://$REGISTRY/api/v2.0/projects"
-          if curl -sf -u "$REGISTRY_USERNAME:$REGISTRY_PASSWORD" "$api?name=$PROJECT" | grep -q '"project_id"'; then
-            echo "Project $PROJECT exists."
-          elif curl -sf -X POST -u "$REGISTRY_USERNAME:$REGISTRY_PASSWORD" -H "Content-Type: application/json" "$api" \
-            -d "{\"project_name\":\"$PROJECT\",\"metadata\":{\"public\":\"false\",\"auto_scan\":\"true\",\"auto_sbom_generation\":\"true\"}}"
-          then
-            echo "Created project $PROJECT."
-          else
-            echo "::warning::Could not create project $PROJECT; the push fails if it does not exist."
-          fi
-
+      # Pushes <registry>/<project>/<image>:<branch>-<UTC timestamp>-<short SHA>. The first push
+      # creates the Harbor project, with vulnerability scan and SBOM on push.
       - name: Build & push image
-        uses: docker/build-push-action@v6
+        uses: wunderio/argocd-actions/build-push-image@v2
         with:
-          context: .
-          file: ${{ matrix.image.dockerfile }}
-          pull: true
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ needs.overlay.outputs.project }}/${{ matrix.image.name }}:${{ needs.overlay.outputs.tag }}
-          labels: |
-            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
-            org.opencontainers.image.revision=${{ github.sha }}
-          cache-from: type=gha,scope=${{ matrix.image.name }}
-          cache-to: type=gha,scope=${{ matrix.image.name }},mode=max
+          image-name: ${{ matrix.image.name }}
+          dockerfile: ${{ matrix.image.dockerfile }}
+          artifact-name: built-codebase
+          registry: ${{ env.REGISTRY }}
+          registry-username: ${{ secrets.REGISTRY_USERNAME }}
+          registry-password: ${{ secrets.REGISTRY_PASSWORD }}
+          repository: ${{ needs.overlay.outputs.project }}
 
   # ---------------------------------------------------------------
   # Commit the new image tags to the values file of the branch's
@@ -253,7 +207,6 @@ jobs:
     name: Update Image Tags
     runs-on: ubuntu-latest
     needs: [overlay, build-images]
-    if: needs.overlay.outputs.commit == 'true'
     permissions:
       contents: write
     steps:
@@ -265,54 +218,17 @@ jobs:
           app-id: ${{ secrets.ARGOCD_APP_ID }}
           private-key: ${{ secrets.ARGOCD_APP_PRIVATE_KEY }}
 
-      - name: Checkout branch
-        uses: actions/checkout@v4
+      # Sets each image's tag to the branch's newest one in the registry, so a run that finishes
+      # after a newer one never rolls back. The commit ("[skip ci]") goes through the GitHub API,
+      # which signs it and attributes it to the App.
+      - name: Update image tags
+        uses: wunderio/argocd-actions/update-image-tags@v2
         with:
-          ref: ${{ github.ref_name }}
+          image-names: php nginx shell
+          values-file: values/drupal.yaml
+          production: ${{ env.COMMIT_PRODUCTION_TAGS }}
+          registry: ${{ env.REGISTRY }}
+          registry-username: ${{ secrets.REGISTRY_USERNAME }}
+          registry-password: ${{ secrets.REGISTRY_PASSWORD }}
+          repository: ${{ needs.overlay.outputs.project }}
           token: ${{ steps.app-token.outputs.token }}
-
-      - name: Set image tags
-        id: update
-        env:
-          VALUES: ${{ needs.overlay.outputs.values }}
-          TAG: ${{ needs.overlay.outputs.tag }}
-          # yq paths of the image tags in the values file.
-          TAG_PATHS: .php.image.tag .nginx.image.tag .shell.image.tag
-        run: |
-          updated=false
-          for path in $TAG_PATHS; do
-            current=$(yq e "$path" "$VALUES")
-            # A run that finishes after a newer one of the same branch must not roll back.
-            if [ "${current%-*-*}" = "${TAG%-*-*}" ] && [[ ! "$current" < "$TAG" ]]; then
-              echo "$path: $current is not older than $TAG, keeping it."
-              continue
-            fi
-            echo "$path: $current -> $TAG"
-            yq e -i "$path = strenv(TAG)" "$VALUES"
-            updated=true
-          done
-          echo "updated=$updated" >> "$GITHUB_OUTPUT"
-
-      # Committed through the API, not git push: GitHub signs the commit and attributes it to
-      # the App, and expectedHeadOid fails the commit if the branch moved since checkout.
-      - name: Commit image tags
-        if: steps.update.outputs.updated == 'true'
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-          VALUES: ${{ needs.overlay.outputs.values }}
-        run: |
-          jq -n \
-            --arg repo "$GITHUB_REPOSITORY" \
-            --arg branch "$GITHUB_REF_NAME" \
-            --arg head "$(git rev-parse HEAD)" \
-            --arg path "$VALUES" \
-            --arg contents "$(base64 -w0 "$VALUES")" \
-            '{
-              query: "mutation($input: CreateCommitOnBranchInput!) { createCommitOnBranch(input: $input) { commit { oid } } }",
-              variables: { input: {
-                branch: { repositoryNameWithOwner: $repo, branchName: $branch },
-                expectedHeadOid: $head,
-                message: { headline: "ci: update image tags [skip ci]" },
-                fileChanges: { additions: [{ path: $path, contents: $contents }] }
-              } }
-            }' | gh api graphql --input - --jq '"Committed " + .data.createCommitOnBranch.commit.oid'
