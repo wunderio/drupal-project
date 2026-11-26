@@ -68,9 +68,6 @@ logs/
 .DS_Store
 Thumbs.db
 
-# Sensitive deployment files
-silta/*.secrets
-
 # Package lock files (large files with minimal value for indexing)
 composer.lock
 package-lock.json

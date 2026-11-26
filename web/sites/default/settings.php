@@ -24,8 +24,8 @@ $settings['hash_salt'] = getenv('HASH_SALT');
 // Public files path.
 $settings['file_public_path']  = 'sites/default/files';
 
-// Stage File Proxy origin site.
-$config['stage_file_proxy.settings']['origin'] = 'https://production.drupal-project.finland.wdr.io';
+// Stage File Proxy origin site: the project's production URL.
+$config['stage_file_proxy.settings']['origin'] = 'https://production.example.com';
 
 // Load services definition file.
 // Note: settings.silta.php defines Monolog services override via silta.services.yml.

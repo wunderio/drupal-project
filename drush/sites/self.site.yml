@@ -1,26 +1,28 @@
 # Edit or remove this file as needed.
 # Docs at https://github.com/drush-ops/drush/blob/master/examples/example.site.yml
+#
+# ArgoCD environments (README.md, "Drush and SSH"). The shell host is
+# <release>-shell.<namespace>, reached through the cluster's SSH jump host
+# ssh.<cluster domain>; the release is the branch (main, production) or pr-<N>
+# for a pull request preview. The cluster domains are set when the project is
+# created (README.md, "Setting up a new project"). ${NAMESPACE} and ${PROJECT}
+# come from drush/Commands/SiltaAliasAlterCommands.php.
+# Change main to master if that is the project's staging branch.
 
-current:
-  host: ${ENVIRONMENT}-shell.${REPOSITORY}
-  ssh:
-    options: -J www-admin@ssh.dev.wdr.io
-  user: www-admin
-  root: /app/web
-  uri: https://${ENVIRONMENT}.${PROJECT}.dev.wdr.io
-
+# Staging environment (main branch).
 main:
-  host: main-shell.${REPOSITORY}
+  host: main-shell.${NAMESPACE}
   ssh:
-    options: -J www-admin@ssh.dev.wdr.io
+    options: -J www-admin@ssh.DEV_DOMAIN
   user: www-admin
   root: /app/web
-  uri: https://main.${PROJECT}.dev.wdr.io
+  uri: https://main-${PROJECT}.DEV_DOMAIN
 
+# Production environment (production branch, k8s/production/).
 production:
-  host: production-shell.${REPOSITORY}
+  host: production-shell.${NAMESPACE}
   ssh:
-    options: -J www-admin@ssh.finland.wdr.io
+    options: -J www-admin@ssh.PROD_DOMAIN
   user: www-admin
   root: /app/web
-  uri: https://production.${PROJECT}.finland.wdr.io
+  uri: https://production-${PROJECT}.PROD_DOMAIN

@@ -1,6 +1,6 @@
 # Wunder template for Drupal projects
 
-This project is a tailored fork of the popular [drupal-composer template](https://github.com/drupal-composer/drupal-project). It is designed for deploying to [Kubernetes](https://kubernetes.io/) clusters via [CircleCI](https://circleci.com/).
+This project is a tailored fork of the popular [drupal-composer template](https://github.com/drupal-composer/drupal-project). It is designed for deploying to [Kubernetes](https://kubernetes.io/) clusters with ArgoCD, see [ArgoCD deployment](#argocd-deployment).
 
 ## Getting started
 
@@ -15,7 +15,7 @@ This project is a tailored fork of the popular [drupal-composer template](https:
    - Update `README.md` with the project details
    - Update `composer.json` with the project name
    - In real client projects, remove `/composer.lock` from `.gitignore` so the lockfile is committed and reproducible
-   - Modify the `silta/silta*` files [values](https://github.com/wunderio/charts/blob/master/drupal/values.yaml)
+   - Modify the `k8s/*/values/drupal.yaml` files [values](https://github.com/wunderio/charts/blob/master/drupal/values.yaml)
    - Adjust `grumphp.yml` tasks, including updating the project name in the `git_commit_message` regex
    - Configure local development environment:
      - For DDEV: Update project settings in `.ddev/config.yaml`
@@ -25,47 +25,13 @@ This project is a tailored fork of the popular [drupal-composer template](https:
    - Adjust `web/sites/default/settings.php` settings (`stage_file_proxy` etc)
    - Adjust `config_split` settings for silta (default), production, main, local environments
 
-3. **Set up CircleCI**
-   - Log in to [CircleCI](https://app.circleci.com/) using your GitHub account.
-   - Add the new project to CircleCI using the existing configuration.
+3. **Set up the ArgoCD deployment**
+   - Follow [Setting up a new project](#setting-up-a-new-project) and [Secrets](#secrets) under ArgoCD deployment.
 
-4. **Configure encryption keys and secrets**
-   - Define encryption keys for `silta_dev` and `silta_finland` contexts in the CircleCI project settings and backup the keys in LastPass. Use the following naming convention: `SEC_{PROJECT_NAME}_{CONTEXT}` where `CONTEXT` is the environment, such as `silta_dev` or `silta_finland`.
-   - Update the `.circleci/config.yml` file with the corresponding `secret_key_env` values.
-   - Define the secret environment variables in the `silta/silta*.secrets` YAML files for the `silta_dev` and `silta_finland` contexts.
-   - Encrypt the `silta/silta*.secrets` files using the encryption keys and commit the encrypted files to the repository.
-   - See the relevant [Silta's documentation](https://wunderio.github.io/silta/docs/encrypting-sensitive-configuration/#using-a-custom-encryption-key) for details.
-
-5. **Enable JIRA integration**
+4. **Enable JIRA integration**
    - Configure [automatic autolinks](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/autolinked-references-and-urls#custom-autolinks-to-external-resources) for the project's JIRA environment to link ticket IDs to JIRA issues seamlessly.
 
 For additional instructions, please refer to the [Silta documentation](https://github.com/wunderio/silta).
-
-## Production environment
-
-- **URL**: <https://production.drupal-project.finland.wdr.io>
-- **Drush alias**: `drush @production st`
-- **SSH**: `ssh www-admin@production-shell.drupal-project -J www-admin@ssh.finland.wdr.io`
-
-### Environment variables for `silta_finland` context
-
-The following secret variables are defined in the `silta/silta-prod.secrets` file for the `silta_finland` context:
-
-- `TEST_KEY_PROD` - Secret key for testing purposes.
-
-## Main environment
-
-- **URL**: <https://main.drupal-project.dev.wdr.io>
-- **Drush alias**: `drush @main st`
-- **SSH**: `ssh www-admin@main-shell.drupal-project -J www-admin@ssh.dev.wdr.io`
-
-The Drush alias for the **current** Silta feature branch deployment is `drush @current st`.
-
-### Environment variables for `silta_dev` context
-
-The following secret variables are defined in the `silta/silta.secrets` file for the `silta_dev` context:
-
-- `TEST_KEY` - Secret key for testing purposes.
 
 ## Local development
 
@@ -453,16 +419,6 @@ The script runs all `a11y-*` projects. Pass extra Playwright options after `--`,
 
 </details>
 
-### Secrets handling
-
-[Silta CLI](https://github.com/wunderio/silta-cli) is a command-line tool to manage secrets and configurations for Silta projects. Use the following commands:
-
-- Encrypt a file: `silta secrets encrypt --file silta/silta.secrets --secret-key=<secret_key_env>`
-- Decrypt a file: `silta secrets decrypt --file silta/silta.secrets --secret-key=<secret_key_env>`
-- Display help: `silta secrets --help`
-
-See the corresponding `secret_key_env` values in the `.circleci/config.yml` file for the `silta_dev` and `silta_finland` contexts. Refer to the Getting Started section for details.
-
 ## Contributing
 
 This project is maintained by [Wunder](https://wunder.io/). Contributions from the community are welcome.
@@ -510,9 +466,103 @@ Refer to the [WunderFlow repository](https://github.com/wunderio/WunderFlow) for
 
 ### Deployments
 
-Deployments are managed with CircleCI. Configurations are in `.circleci/config.yml`.
+Deployments are managed with ArgoCD, see [ArgoCD deployment](#argocd-deployment).
 
-- Feature branches require manual approval for deployment by default.
-- Other branches deploy automatically but can be configured for manual approval.
+## ArgoCD deployment
 
-Manual approvals are managed through the `approve-deployment` job in the CircleCI UI by clicking the "approve-deployment" job label when marked as "Needs Approval."
+Projects created from this template deploy with [ArgoCD](https://argo-cd.readthedocs.io/) from
+`k8s/`; there is no CircleCI deployment. The ArgoCD platform reads `k8s/<overlay>/apps.yaml`,
+deploys the [Silta `drupal` chart](https://github.com/wunderio/charts/tree/master/drupal) with the
+values in `k8s/<overlay>/values/`, and adds the cluster's defaults (domain, TLS, storage).
+
+- `k8s/staging/`: the `main`/`master` branch deploys to the `staging` environment.
+- `k8s/feature/`: a pull request from `feature/*`, `hotfix/*` or `epic/*` gets a `pr-<N>`
+  environment only while it carries the `preview` label (create the label in the repository if
+  it does not exist yet). Removing the label or closing the pull request deletes the environment.
+- `.github/workflows/build.yml` builds the images on each push to a branch with an overlay
+  here with [wunderio/argocd-actions](https://github.com/wunderio/argocd-actions), pushes them
+  to `<registry>/<project>/` and commits the new tags to
+  `k8s/<overlay>/values/drupal.yaml`. ArgoCD deploys that commit. Other branches and pull
+  requests are validated only.
+
+Add `k8s/develop/` or `k8s/production/` (copies of `k8s/staging/`) to deploy the `develop` or
+`production` branch too. CI updates the tags of `main`/`master`, `develop`, `production` and pull
+request branches, so a release is a merge to `production`: CI builds the `production` images,
+commits their tags to `k8s/production/values/` and ArgoCD deploys that commit. Until
+`k8s/production/` exists, `production` builds no images. To set production tags by hand instead,
+set `COMMIT_PRODUCTION_TAGS` to `"false"` in `build.yml`. Every project needs
+`k8s/staging/apps.yaml` on `main`/`master`: the staging environment creates the project's ArgoCD
+project.
+
+**This template repository never deploys itself.** The ArgoCD platform deploys only the
+repositories it is set up to discover, and the build workflow skips the image and tag jobs when
+the repository is a template.
+
+### Setting up a new project
+
+1. Create the repository from this template and make it discoverable as your ArgoCD platform
+   requires (for example its name and a repository topic; GitHub copies no topics from a
+   template).
+2. Replace the placeholders. Your platform team has the values:
+   - `PROJECT_NAME`: the repository name in lowercase. It is the Kubernetes namespace and the
+     project in the container registry.
+   - `REGISTRY_HOST`: the [Harbor](https://goharbor.io/) registry the clusters pull images from.
+   - `AGE_RECIPIENT`: the platform's age public key for the project's secrets.
+   - `DEV_DOMAIN`, `PROD_DOMAIN`: the domains of the clusters that run staging and pull request
+     previews, and production. The Drush aliases use them (see [Drush and SSH](#drush-and-ssh)).
+
+   ```bash
+   name=$(basename -s .git "$(git remote get-url origin)" | tr '[:upper:]' '[:lower:]')
+   registry=registry.example.com        # container registry host
+   age_recipient=age1...                # the platform's age public key
+   dev_domain=dev.example.com           # domain of the cluster that runs staging and previews
+   prod_domain=prod.example.com         # domain of the cluster that runs production
+   git grep -lz -e PROJECT_NAME -e REGISTRY_HOST -e AGE_RECIPIENT -e DEV_DOMAIN -e PROD_DOMAIN -- ':!README.md' \
+     | xargs -0 perl -pi -e "s/PROJECT_NAME/$name/g; s/REGISTRY_HOST/$registry/g; s/AGE_RECIPIENT/$age_recipient/g; s/DEV_DOMAIN/$dev_domain/g; s/PROD_DOMAIN/$prod_domain/g"
+   ```
+
+3. Give the database its own passwords. ArgoCD can't keep the MariaDB chart's generated ones, so
+   they are pinned in the values files:
+
+   ```bash
+   for f in k8s/*/values/drupal.yaml; do
+     perl -pi -e "s/DB_ROOT_PASSWORD/$(openssl rand -hex 16)/; s/DB_PASSWORD/$(openssl rand -hex 16)/" "$f"
+   done
+   ```
+
+The build workflow needs these repository or organisation secrets:
+
+- `REGISTRY_USERNAME`, `REGISTRY_PASSWORD`: a registry account that can push, pull and list the
+  project's images, and create the project on the first build.
+- `ARGOCD_APP_ID`, `ARGOCD_APP_PRIVATE_KEY`: a GitHub App allowed to push to the deployed
+  branches, so the tag commit passes branch protection.
+
+### Drush and SSH
+
+`drush/sites/self.site.yml` has aliases for the ArgoCD environments: `drush @main st` (staging)
+and `drush @production st` (once `k8s/production/` exists). Change `main` to `master` there if
+that is the staging branch. Each environment has a shell pod, reached through its cluster's SSH
+jump host:
+
+```bash
+ssh www-admin@main-shell.<namespace> -J www-admin@ssh.<dev domain>
+ssh www-admin@pr-<N>-shell.<namespace> -J www-admin@ssh.<dev domain>
+ssh www-admin@production-shell.<namespace> -J www-admin@ssh.<prod domain>
+```
+
+`<namespace>` is the repository name in lowercase. Staging is at `https://main-<project>.<dev domain>`
+and a pull request preview at `https://pr-<N>-<project>.<dev domain>`; the pull request gets a
+comment with its URL.
+
+### Secrets
+
+Put Kubernetes Secrets in `k8s/<overlay>/secrets/<name>.sops.yaml`, encrypt them, and set
+`secrets.enabled: true` in that overlay's `apps.yaml`. `.sops.yaml` encrypts them to the
+platform's age key, which only ArgoCD can decrypt:
+
+```bash
+sops --encrypt --in-place k8s/staging/secrets/app.sops.yaml
+```
+
+A file may hold only `apiVersion: v1`, `kind: Secret` objects in the project's namespace;
+anything else fails the deployment. Never commit a decrypted file.

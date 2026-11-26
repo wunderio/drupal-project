@@ -1,0 +1,234 @@
+---
+# Builds the project's images, pushes them to the container registry and commits the new
+# tags to k8s/<overlay>/values/, which ArgoCD then deploys. The build and tag steps are
+# https://github.com/wunderio/argocd-actions. See README.md, "ArgoCD deployment".
+name: Build & Push Images
+
+on:
+  push:
+    branches: ["**"]
+    paths-ignore:
+      - "k8s/**"
+      - "**.md"
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+# Read-only default; only update-tags gets contents: write.
+permissions:
+  contents: read
+
+env:
+  # The Harbor registry (README.md, "Setting up a new project"). The image repositories in
+  # k8s/*/values/ must point at the same registry.
+  REGISTRY: REGISTRY_HOST
+  # "true": the production branch's tags are committed to k8s/production/ too, so merging to
+  # production releases it. "false": production images are built, their tags set by hand.
+  COMMIT_PRODUCTION_TAGS: "true"
+
+jobs:
+  # ---------------------------------------------------------------
+  # Validate codebase (lint, static analysis, tests).
+  # Must pass before any build.
+  # ---------------------------------------------------------------
+  validate:
+    name: Validate
+    runs-on: ubuntu-latest
+    container:
+      image: wunderio/silta-cicd:circleci-php8.4-node24-composer2-v1
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: PHP CodeSniffer
+        run: |
+          if [ -d web/modules/custom ] && [ "$(ls -A web/modules/custom 2>/dev/null)" ]; then
+            vendor/bin/phpcs --standard=Drupal,DrupalPractice web/modules/custom
+          else
+            echo "No custom modules found, skipping PHPCS."
+          fi
+
+      # Not blocking yet: once composer installs web/core, ESLint loads core's config, which
+      # needs eslint-plugin-jsdoc, and package.json doesn't have it.
+      - name: npm lint
+        run: |
+          npm ci
+          npm run lint || true
+
+  # ---------------------------------------------------------------
+  # Install production dependencies and build assets.
+  # ---------------------------------------------------------------
+  build-assets:
+    name: Install & Build
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          tools: composer:v2
+          coverage: none
+
+      - name: Composer install
+        run: |
+          composer install \
+            --no-dev \
+            --no-interaction \
+            --optimize-autoloader \
+            --prefer-dist
+          # Restore execute permissions on all composer bin stubs and their targets.
+          find vendor/bin -type f -o -type l | while read -r f; do
+            chmod +x "$f"
+            [ -L "$f" ] && chmod +x "$(readlink -f "$f")" 2>/dev/null || true
+          done
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: npm install & build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Clean up before artifact upload
+        run: rm -rf .git node_modules
+
+      - name: Upload built codebase
+        uses: pyTooling/upload-artifact@v7
+        with:
+          name: built-codebase
+          include-hidden-files: true
+          path: .
+          retention-days: 1
+
+  # ---------------------------------------------------------------
+  # Resolve the pushed branch to its k8s overlay. Images are built only
+  # for a branch whose overlay exists, the only branches ArgoCD deploys.
+  # ---------------------------------------------------------------
+  overlay:
+    name: Resolve Overlay
+    runs-on: ubuntu-latest
+    # Images only on push. A pull_request run would build the same commit a second time and
+    # race the push run's tag commit, and fork pull requests get no registry secrets; pull
+    # requests are validated only. No images from the template repository itself
+    # (is_template), so it never deploys: a repository created from the template has
+    # is_template false and builds normally.
+    if: github.event_name == 'push' && !github.event.repository.is_template
+    outputs:
+      deploys: ${{ steps.resolve.outputs.deploys }}
+      project: ${{ steps.resolve.outputs.project }}
+    steps:
+      - name: Checkout k8s/
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: k8s
+
+      # The branch -> overlay mapping of the ArgoCD platform. Other branches (topic branches
+      # without k8s/feature/, Dependabot, Renovate) are validated but get no images: nothing
+      # would deploy them, and Dependabot runs without the registry secrets.
+      - name: Resolve overlay
+        id: resolve
+        run: |
+          case "$GITHUB_REF_NAME" in
+            main|master)               overlay=staging ;;
+            develop)                   overlay=develop ;;
+            production)                overlay=production ;;
+            feature/*|hotfix/*|epic/*) overlay=feature ;;
+            *)                         overlay="" ;;
+          esac
+          if [ -z "$overlay" ] || [ ! -f "k8s/$overlay/apps.yaml" ]; then
+            echo "deploys=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::No k8s overlay for $GITHUB_REF_NAME, so no images are built."
+            exit 0
+          fi
+          repository="${GITHUB_REPOSITORY##*/}"
+          {
+            echo "deploys=true"
+            # The registry project, as in the image repositories in k8s/*/values/. Lowercase:
+            # registry project names can't have capitals.
+            echo "project=${repository,,}"
+          } >> "$GITHUB_OUTPUT"
+          echo "$GITHUB_REF_NAME deploys k8s/$overlay/."
+
+  # ---------------------------------------------------------------
+  # Build and push the images.
+  # ---------------------------------------------------------------
+  build-images:
+    name: Build & Push — ${{ matrix.image.name }}
+    runs-on: ubuntu-latest
+    needs: [build-assets, overlay]
+    # Only for a branch whose overlay exists (the overlay job). update-tags commits with
+    # "[skip ci]", so it never retriggers. Skipping this job also skips update-tags, which needs it.
+    if: needs.overlay.outputs.deploys == 'true'
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        image:
+          - name: php
+            dockerfile: silta/php.Dockerfile
+          - name: nginx
+            dockerfile: silta/nginx.Dockerfile
+          - name: shell
+            dockerfile: silta/shell.Dockerfile
+    steps:
+      # Pushes <registry>/<project>/<image>:<branch>-<UTC timestamp>-<short SHA>. The first push
+      # creates the Harbor project, with vulnerability scan and SBOM on push.
+      - name: Build & push image
+        uses: wunderio/argocd-actions/build-push-image@v2
+        with:
+          image-name: ${{ matrix.image.name }}
+          dockerfile: ${{ matrix.image.dockerfile }}
+          artifact-name: built-codebase
+          registry: ${{ env.REGISTRY }}
+          registry-username: ${{ secrets.REGISTRY_USERNAME }}
+          registry-password: ${{ secrets.REGISTRY_PASSWORD }}
+          repository: ${{ needs.overlay.outputs.project }}
+
+  # ---------------------------------------------------------------
+  # Commit the new image tags to the values file of the branch's
+  # overlay. ArgoCD deploys that commit.
+  # ---------------------------------------------------------------
+  update-tags:
+    name: Update Image Tags
+    runs-on: ubuntu-latest
+    needs: [overlay, build-images]
+    permissions:
+      contents: write
+    steps:
+      # A GitHub App token lets the tag commit pass branch protection (README.md).
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ secrets.ARGOCD_APP_ID }}
+          private-key: ${{ secrets.ARGOCD_APP_PRIVATE_KEY }}
+
+      # Sets each image's tag to the branch's newest one in the registry, so a run that finishes
+      # after a newer one never rolls back. The commit ("[skip ci]") goes through the GitHub API,
+      # which signs it and attributes it to the App.
+      - name: Update image tags
+        uses: wunderio/argocd-actions/update-image-tags@v2
+        with:
+          image-names: php nginx shell
+          values-file: values/drupal.yaml
+          production: ${{ env.COMMIT_PRODUCTION_TAGS }}
+          registry: ${{ env.REGISTRY }}
+          registry-username: ${{ secrets.REGISTRY_USERNAME }}
+          registry-password: ${{ secrets.REGISTRY_PASSWORD }}
+          repository: ${{ needs.overlay.outputs.project }}
+          token: ${{ steps.app-token.outputs.token }}
